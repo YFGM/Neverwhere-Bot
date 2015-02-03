@@ -3,10 +3,19 @@ from django.db import models
 # Create your models here.
 
 
+class Game(models.Model):
+    name = models.CharField()
+    interval = models.IntegerField(default=30)
+    start_date = models.DateField(auto_now_add=True)
+    date_modifier = models.IntegerField(default=0)  # Added onto current date to determine time of year
+    winter_severity = models.IntegerField(default=1)
+
+
 class Player(models.Model):
     nick = models.CharField(max_length=128, unique=True)
     password = models.CharField(max_length=32)
     op = models.BooleanField(default=False)
+    over_gm = models.BooleanField(default=False)
 
 
 class Character(models.Model):
@@ -34,6 +43,8 @@ class Character(models.Model):
     perks = models.ManyToManyField("Perk")
     inventory = models.ForeignKey("Storage")
     description = models.TextField(max_length=8192, blank=True)
+    deleted = models.BooleanField(default=False)
+    house = models.ForeignKey("Building")
 
 
 class Skill(models.Model):
@@ -141,14 +152,7 @@ class Acre(models.Model):
 class Worksite(models.Model):
     name = models.CharField(max_length=128, unique=True)
     owner = models.ForeignKey("Character", blank=True)
-    TYPE_CHOICES = (
-        ('F', "Farm"),
-        ('M', "Mine"),
-        ('C', "Craft"),
-        ('W', "Wilderness"),
-        ('O', "Other"),
-    )
-    type = models.CharField(choices=TYPE_CHOICES)
+    type = models.CharField()
     description = models.TextField(max_length=8192, blank=True)
     storage = models.ForeignKey("Storage")
     tree_modifier = models.IntegerField(default=1)
@@ -168,6 +172,9 @@ class Employee(models.Model):
     job = models.ForeignKey("Job")
     part_time = models.BooleanField(default=False)
     tunnel = models.ForeignKey("Tunnel", blank=True)
+    part = models.IntegerField(max_length=16, default=0)
+    craft = models.ForeignKey("Craft", blank=True)
+    salary = models.IntegerField(default=0)
 
 
 class Job(models.Model):
@@ -181,8 +188,8 @@ class Job(models.Model):
     )
     type = models.CharField(choices=TYPE_CHOICES)
     description = models.TextField(max_length=8192)
-    salary = models.IntegerField(default=0)
     process = models.ForeignKey("Process", blank=True)
+    default_salary = models.IntegerField()
 
 
 class Upgrade(models.Model):
@@ -191,6 +198,7 @@ class Upgrade(models.Model):
     tunnel = models.ForeignKey("Tunnel", blank=True)
     acre = models.ForeignKey("Acre", blank=True)
     storage = models.ForeignKey("Storage", blank=True)
+    building = models.ForeignKey("Building", blank=True)
 
 
 class HerbList(models.Model):
@@ -283,6 +291,7 @@ class Crop(models.Model):
     name = models.CharField(max_length=64, unique=True)
     temperature_good = models.CharField()  # Not choices because multiple possible
     temperature_tolerate = models.CharField()
+    temperature_survive = models.CharField()
     humidity_good = models.CharField()
     humidity_tolerate = models.CharField()
     difficulty = models.IntegerField()
@@ -290,6 +299,7 @@ class Crop(models.Model):
     product_name = models.CharField(max_length=128, blank=True)
     perennial = models.BooleanField()
     seed = models.IntegerField()
+    seed_type = models.ForeignKey("ItemType", blank=True)
     time = models.IntegerField()
     legume = models.BooleanField()
     loss = models.BooleanField()
@@ -367,6 +377,7 @@ class Item(models.Model):
     unit = models.CharField(blank=True)
     value = models.IntegerField(blank=True)
     worn = models.BooleanField(default=False)
+    stored = models.ForeignKey("Storage")
 
 
 class ItemType(models.Model):
@@ -405,3 +416,11 @@ class ItemType(models.Model):
     kcal = models.IntegerField(blank=True)
     spoils = models.IntegerField(blank=True)
     herbal_uses = models.CharField(blank=True, max_length=64)
+    cyclical = models.BooleanField(default=False)
+
+
+class Building:
+    name = models.CharField(max_length=128, unique=True)
+    owner = models.ForeignKey("Character")
+    capacity = models.IntegerField(default=1)
+    storage = models.ForeignKey("Storage")
