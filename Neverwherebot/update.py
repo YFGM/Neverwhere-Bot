@@ -3,6 +3,7 @@ import threading
 import imp
 import datetime
 import math
+import re
 import neverwherebot.models as models
 
 threads = []
@@ -77,7 +78,7 @@ def update():
         print("Successfully updated food for %s characters, %s failed, namely: %s" % (str(food_count), str(food_failed_count), str(food_failed)))
 
     for acre in acres:
-        acre.update(hour, day)  # Set growth and such
+        update_acre(acre, hour)  # Set growth and such
 
     for storage in storages:
         storage.update(hour, day)  # Check for spoilage etc
@@ -150,7 +151,7 @@ def update_jobs(character, scripts, scripts_dir, hour):
                         print("Failed to load job script %s, even so it should exist." % job_script)
                         return False
                     try:
-                        mod.update(character, hour, day)
+                        mod.update(character, job, hour)
                     except:
                             print("Failed to execute update method in %s" % job_script)
                             return False
@@ -192,7 +193,7 @@ def give_salary(character, part, hour):
             )
             send_message("", models.Player.objects.filter(pk=character.player).nick, message, flags="bw")
             message = "Today at %s, you payed %s %s$ for their work at %s" % (
-                str(datetime.datetime.now()), charactern.name, str(money), worksite.name,
+                str(datetime.datetime.now()), character.name, str(money), worksite.name,
             )
             send_message("", models.Player.objects.filter(pk=models.Character.objects.filter(pk=worksite.owner).player).nick, message, flags="bw")
 
@@ -301,3 +302,151 @@ def get_current_day():
     start_date = models.Game.objects.get(pk=1).start_date
     diff = start_date - now
     return diff.days
+
+
+def get_skill(character, skill):
+    if models.CharacterSkill.objects.filter(character=character.pk).filter(skill=models.Skill.objects.filter(name=skill).pk).exists:
+        characterskill = models.CharacterSkill.objects.filter(character=character.pk).filter(skill=models.Skill.objects.filter(name=skill).pk).level
+    else:
+        characterskill = 0
+
+    if characterskill == 1:
+        characterskill = 2
+    elif characterskill > 1:
+        characterskill += 2
+
+    if models.Skill.objects.filter(name=skill).attribute == "Str":
+        att = characterskill + (character.str-10)
+    elif models.Skill.objects.filter(name=skill).attribute == "Dex":
+        att = characterskill + (character.dex-10)
+    elif models.Skill.objects.filter(name=skill).attribute == "Int":
+        att = characterskill + (character.int-10)
+    elif models.Skill.objects.filter(name=skill).attribute == "Vit":
+        att = characterskill + (character.vit-10)
+
+    if models.Skill.objects.filter(name=skill).difficulty == "E":
+        final = att - 2
+    elif models.Skill.objects.filter(name=skill).difficulty == "A":
+        final = att -4
+    elif models.Skill.objects.filter(name=skill).difficulty == "H":
+        final = att - 6
+    elif models.Skill.objects.filter(name=skill).difficulty == "VH":
+        final = att - 8
+
+    return final
+
+
+def update_acre(acre, hour):
+    if hour != 15:
+        return True
+    if acre.farm:
+        farm = models.Worksite.objects.filter(pk=acre.farm)
+        employee = models.Employee.objects.filter(worksite=farm).filter(job=models.Job.objects.filter(name="farmer").pk)
+        character = models.Character.objects.filter(pk=employee.character)
+    elif acre.owner:
+        character = models.Character.objects.filter(pk=acre.owner)
+    else:
+        character = None
+
+    if acre.crop:
+        crop = models.Crop.objects.filter(pk=acre.crop)
+        if acre.temperature not in crop.temperature_survive:
+            growth_time = (datetime.date.today() - acre.planted).days
+            acre.growth_days = growth_time
+            acre.save()
+            if acre.temperature in crop.temperature_tolerate:
+                acre.bonus -= 1
+                acre.save()
+            elif acre.temperature not in crop.temperature_good:
+                if character:
+                    message = "Your %s on acre %s is dying from the temperature! It usually tolerates %s, " \
+                              "but the temperature on this acre is %s! They will die in a few days if nothing " \
+                              "is done." % (crop.name_plural, acre.id, verbose_temperature_tolerance(crop),
+                                            acre.temperature)
+                    send_message("", character.name, message, "bwi")
+                acre.bonus -= 10
+
+            if acre.humidity in crop.humidity_tolerate:
+                acre.bonus -= 1
+                acre.save()
+
+            elif acre.humidity not in crop.humidity_good:
+                if character:
+                    message = "Your %s on acre %s is dying from the humidity! It usually tolerates %s, " \
+                              "but the humidity on this acre is %s! They will die in a few days if nothing " \
+                              "is done." % (crop.name_plural, acre.id, verbose_humidity_tolerance(crop),
+                                            acre.temperature)
+                    send_message("", character.name, message, "bwi")
+                acre.bonus -= 10
+                acre.save()
+
+            if not character or character.pk == acre.owner:
+                last_30 = models.Tending.objects.filter(acre=acre.pk).filter(day__in=[get_current_day()-30, get_current_day()])
+                if len(last_30) < 25:
+                    acre.bonus -= 5
+                    acre.save()
+
+            if acre.growth_days == crop.time:
+                acre.produce = crop.gross_yield * (1+(acre.bonus/100))
+                acre.harvest_per = acre.produce / 5
+                acre.save()
+                if character:
+                    message = "Your acre %s is ready for harvest! Better do so soon or the yield will begin to " \
+                              "rot." % acre.id
+                    send_message("", character.name, message, "bwi")
+
+            if acre.growth_days >= crop.time:
+                if growth_time - crop.time == 7:
+                    if character:
+                        message = "Your acre %s has been ready for harvest for a week now, the fruits of your " \
+                                  "labor are beginning to spoil! Harvest it quickly." % acre.id
+                        send_message("", character.name, message, "bwi")
+                if growth_time - crop.time > 7:
+                    acre.produce *= 0.95
+                    acre.save()
+
+            if acre.bonus <= -100:
+                if character:
+                    message = "Disaster! Your %s on acre %s have withered away to nothingness! You will have " \
+                              "to start over from scratch." % (crop.name_plural, acre.id)
+                    send_message("", character.name, message, "bwi")
+                acre.crop = None
+                acre.pesticide = False
+                acre.poisoned = False
+                acre.tilled = 0
+                acre.planted = None
+                acre.harvest = 0
+                acre.bonus = 0
+                acre.harvest_per = 0
+                acre.save()
+
+            if acre.growth_days % 30 == 0:
+                running = True
+                count = 0
+                while running:
+                    if models.Tending.objects.filter(day=get_current_day()-count).filter(acre=acre.pk).exists and count <= 30:
+                        acre.bonus += (models.Tending.objects.filter(day=get_current_day()-count).filter(acre=acre.pk).roll-crop.difficulty) * 5
+                        running = False
+                    elif count > 30:
+                        running = False
+                    else:
+                        count += 1
+                acre.save()
+
+
+def verbose_temperature_tolerance(crop):
+    result = ""
+    wordlist = re.sub("[^\w]", " ",  crop.temperature_good + " " + crop.temperature_tolerate).split()
+    if len(wordlist) > 1:
+        for s in wordlist:
+            result += s + " and"
+    return result[:-4]
+
+
+def verbose_humidity_tolerance(crop):
+    result = ""
+    wordlist = re.sub("[^\w]", " ",  crop.humidity_good + " " + crop.humidity_tolerate).split()
+    if len(wordlist) > 1:
+        for s in wordlist:
+            result += s + " and"
+    return result[:-4]

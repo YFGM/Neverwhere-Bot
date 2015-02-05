@@ -50,22 +50,22 @@ class Character(models.Model):
 class Skill(models.Model):
     name = models.CharField(unique=True)
     DIFFICULTY_CHOICES = (
-        ('E', 'Easy'),
-        ('A', 'Average'),
-        ('H', 'Hard'),
-        ('VH', 'Very Hard'),
+        'E',
+        'A',
+        'H',
+        'VH',
     )
     difficulty = models.CharField(max_length=128, choices=DIFFICULTY_CHOICES)
     ATTRIBUTE_CHOICES = (
-        ('Str', 'Strength'),
-        ('Dex', 'Dexterity'),
-        ('Int', 'Intelligence'),
-        ('Vit', 'Vitality'),
+        'Str',
+        'Dex',
+        'Int',
+        'Vit',
     )
     attribute = models.CharField(max_length=128, choices=ATTRIBUTE_CHOICES)
 
 
-class CharacterSkills(models.Model):
+class CharacterSkill(models.Model):
     character = models.ForeignKey("Character")
     skill = models.ForeignKey("Skill")
     level = models.IntegerField(default=0)
@@ -116,37 +116,41 @@ class College(models.Model):
 class Acre(models.Model):
     owner = models.ForeignKey("Character")
     TEMPERATURE_CHOICES = (
-        ('H', "Hot"),
-        ('N', "Normal"),
-        ('CH', "Chilly"),
-        ('C', "Cold"),
+        "Hot",
+        "Normal",
+        "Chilly",
+        "Cold",
     )
     temperature = models.CharField(choices=TEMPERATURE_CHOICES)
     HUMIDITY_CHOICES = (
-        ('H', "Humid"),
-        ('N', "Normal"),
-        ('D', "Dry"),
-        ('A', "Arid"),
+        "Humid",
+        "Normal",
+        "Dry",
+        "Arid",
     )
     humidity = models.CharField(choices=HUMIDITY_CHOICES)
     FERTILITY_CHOICES = (
-        ('BR', "Barren"),
-        ('B', "Bad"),
-        ('N', "Normal"),
-        ('F', "Fertile"),
-        ('VF', "Very Fertile"),
+        "Barren",
+        "Bad",
+        "Normal",
+        "Fertile",
+        "Very Fertile",
     )
     fertility = models.CharField(choices=FERTILITY_CHOICES)
     irrigation = models.IntegerField()  # TODO
     fertilizer = models.IntegerField(default=0)  # 0 = None, 1 = Nitrogen, 2 = N/P/K
     pesticide = models.BooleanField(default=False)
     poisoned = models.BooleanField(defaukt=False)  # TODO
-    crop = models.ForeignKey("Crop")
+    crop = models.ForeignKey("Crop", blank=True)
     tilled = models.IntegerField(default=0)  # Increments towards 8, which is tilled
-    planted = models.DateField()
+    planted = models.DateField(blank=True)
     harvest = models.IntegerField(default=0)
+    harvest_per = models.IntegerField(default=0)
     bonus = models.IntegerField(default=0)
-    farm = models.ForeignKey("Worksite")
+    farm = models.ForeignKey("Worksite", blank=True)
+    id = models.CharField(max_length=64)
+    produce = models.IntegerField(default=0)
+    growth_days = models.IntegerField(default=0)
 
 
 class Worksite(models.Model):
@@ -175,6 +179,7 @@ class Employee(models.Model):
     part = models.IntegerField(max_length=16, default=0)
     craft = models.ForeignKey("Craft", blank=True)
     salary = models.IntegerField(default=0)
+    current_activity = models.CharField(default="")
 
 
 class Job(models.Model):
@@ -289,6 +294,7 @@ class Charge(models.Model):
 
 class Crop(models.Model):
     name = models.CharField(max_length=64, unique=True)
+    name_plural = models.CharField(max_length=64)
     temperature_good = models.CharField()  # Not choices because multiple possible
     temperature_tolerate = models.CharField()
     temperature_survive = models.CharField()
@@ -424,3 +430,10 @@ class Building:
     owner = models.ForeignKey("Character")
     capacity = models.IntegerField(default=1)
     storage = models.ForeignKey("Storage")
+
+
+class Tending(models.Model):
+    worksite = models.ForeignKey("Worksite")
+    day = models.IntegerField()
+    roll = models.IntegerField(blank=True)
+    acre = models.ForeignKey("Acre")
