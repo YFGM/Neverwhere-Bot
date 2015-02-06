@@ -142,7 +142,7 @@ class Acre(models.Model):
     pesticide = models.BooleanField(default=False)
     poisoned = models.BooleanField(defaukt=False)  # TODO
     crop = models.ForeignKey("Crop", blank=True)
-    tilled = models.IntegerField(default=0)  # Increments towards 8, which is tilled
+    tilled = models.IntegerField(default=0)  # Increments towards 20, which is tilled
     planted = models.DateField(blank=True)
     harvest = models.IntegerField(default=0)
     harvest_per = models.IntegerField(default=0)
@@ -180,6 +180,7 @@ class Employee(models.Model):
     craft = models.ForeignKey("Craft", blank=True)
     salary = models.IntegerField(default=0)
     current_activity = models.CharField(default="")
+    acre = models.ForeignKey("Acre", blank=True)
 
 
 class Job(models.Model):

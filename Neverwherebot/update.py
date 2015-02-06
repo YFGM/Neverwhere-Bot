@@ -81,16 +81,16 @@ def update():
         update_acre(acre, hour)  # Set growth and such
 
     for storage in storages:
-        storage.update(hour, day)  # Check for spoilage etc
+        update_storage(storage)  # Check for spoilage etc
 
     for item in cyclic_items:
-        item.on_cycle(scripts, hour, day)
+        update_item(item)
 
 
 def enumerate_scripts(scripts_dir):
     # Returns a directory with the directory's path name as key leading to a tuple of scripts
     scripts = {}
-    for dirname, dirnames, filenames in os.walk(dir):
+    for dirname, dirnames, filenames in os.walk(scripts_dir):
         scripts[dirname] = ()
         for subdirname in dirnames:
             if subdirname != "startup":
@@ -127,34 +127,16 @@ def update_jobs(character, scripts, scripts_dir, hour):
     for job in jobs:
         if job.part == 1 and hour in range(8, 12) or job.part == 2 and hour in range(12, 16) or job.part == 0 and hour in range (8, 16):
             worksite = models.Worksite.objects.filter(pk=job.worksite)
-            if not worksite.name:
+            if not worksite.exists():
                 if job.type == "craft":
-                    try:
-                        mod = imp.load_source("craft", os.path.join(scripts_dir, "craft.py"))
-                    except:
-                        print("Failed to load crafting script! This isn't good.")
-                        return False
-                    try:
-                        mod.update(character, job, hour)
-                    except:
-                        print("Failed to execute update in craft.py!")
+                    if not exec_script("", "craft", 'update', character, job, hour):
                         return False
                 else:
                     print("No worksite found for character %s job %s." % (character.name, str(job.part)))
                     return False
             elif os.path.join(scripts_dir, worksite.type) in scripts:
-                job_script = job.name + ".py"
-                if job_script in scripts[os.path.join(scripts_dir, worksite.type)]:
-                    try:
-                        mod = imp.load_source(job_script[:-3], os.path.join(scripts_dir, worksite.name, job_script))
-                    except:
-                        print("Failed to load job script %s, even so it should exist." % job_script)
-                        return False
-                    try:
-                        mod.update(character, job, hour)
-                    except:
-                            print("Failed to execute update method in %s" % job_script)
-                            return False
+                if not exec_script(os.path.join("worksites", worksite.type), job.name, 'update', character, job, hour):
+                    return False
                 else:
                     print("Couldn't find script for %s, assuming it is a service job" % job.name)
                     give_salary(character, job.part, hour)
@@ -282,6 +264,9 @@ def check_for_freezing(character, hour):
 
 def send_message(sender, receiver, content, flags=''):
     # Flags: b = Sent by the Bot w = Work Related i = Important
+    if not content:
+        return False
+
     if sender != '':
         s = models.Player.objects.filter(nick=sender)
     else:
@@ -295,6 +280,7 @@ def send_message(sender, receiver, content, flags=''):
     if r.exists():
         m = models.Message(sender=s.nick, receiver=r.nick, message=content, flags=flags)
         m.save()
+        return True
 
 
 def get_current_day():
@@ -348,6 +334,10 @@ def update_acre(acre, hour):
     else:
         character = None
 
+    if models.Upgrade.objects.filter(acre=acre.pk).exists():
+        for upgrade in models.Upgrade.objects.filter(acre=acre.pk):
+            exec_script(os.path.join("acre", "upgrades"), upgrade.name, 'on_pre_update', acre)
+
     if acre.crop:
         crop = models.Crop.objects.filter(pk=acre.crop)
         if acre.temperature not in crop.temperature_survive:
@@ -388,6 +378,14 @@ def update_acre(acre, hour):
 
             if acre.growth_days == crop.time:
                 acre.produce = crop.gross_yield * (1+(acre.bonus/100))
+                if acre.fertility == "Barren":
+                    acre.produce = int(acre.produce*0.1)
+                elif acre.fertility == "Bad":
+                    acre.produce = int(acre.produce*0.6)
+                elif acre.fertility == "Fertile":
+                    acre.produce = int(acre.produce*1.1)
+                elif acre.fertility == "Very Fertile":
+                    acre.produce = int(acre.prodce*1.3)
                 acre.harvest_per = acre.produce / 5
                 acre.save()
                 if character:
@@ -432,6 +430,9 @@ def update_acre(acre, hour):
                     else:
                         count += 1
                 acre.save()
+    if models.Upgrade.objects.filter(acre=acre.pk).exists():
+        for upgrade in models.Upgrade.objects.filter(acre=acre.pk):
+            exec_script(os.path.join("acre", "upgrades"), upgrade.name, 'on_post_update', acre)
 
 
 def verbose_temperature_tolerance(crop):
@@ -450,3 +451,27 @@ def verbose_humidity_tolerance(crop):
         for s in wordlist:
             result += s + " and"
     return result[:-4]
+
+
+def exec_script(path, name, function, *args):
+    f = os.path.join(os.path.abspath(__file__), 'scripts', path, name + ".py")
+    if os.path.isfile(f):
+        try:
+            mod = imp.load_source(f[:-3], f)
+            try:
+                func = getattr(mod, function)
+                return func(*args)
+            except:
+                print("Failed to execute %s method for module %s." % function, f)
+                return False
+        except:
+            print("Failed to import module %s." % f)
+            return False
+
+
+def update_item(item):
+    pass
+
+
+def update_storage(storage):
+    pass
