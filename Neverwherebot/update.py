@@ -1,3 +1,5 @@
+# TODO use in locals()
+
 import os
 import threading
 import imp
@@ -241,6 +243,25 @@ def add_item(name, storage_name='', storage_id='', amount=1, unit='', value='', 
             item.worn = True
         item.save()
         return True
+
+
+def is_item(name, storage_name='', storage_id='', amount=0):
+    if storage_name != '':
+        storage = models.Storage.objects.filter(name=storage_name)
+
+    if storage_id != '':
+        storage = models.Storage.objects.filter(pk=storage_id)
+
+    if storage_id == '' and storage_name == '':
+        return False
+
+    item_type = models.ItemType.objects.filter(name=name)
+
+    if models.Item.objects.filter(stored=storage.pk).filter(item_type=item_type).exists():
+        if models.Item.objects.filter(stored=storage.pk).filter(item_type=item_type).amount >= amount:
+            return True
+    return False
+
 
 
 def update_food(character):

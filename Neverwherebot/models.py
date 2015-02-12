@@ -143,6 +143,7 @@ class Acre(models.Model):
     poisoned = models.BooleanField(defaukt=False)  # TODO
     crop = models.ForeignKey("Crop", blank=True)
     tilled = models.IntegerField(default=0)  # Increments towards 20, which is tilled
+    planting = models.IntegerField(default=0)  # Increments towards 8 hours
     planted = models.DateField(blank=True)
     harvest = models.IntegerField(default=0)
     harvest_per = models.IntegerField(default=0)
@@ -372,10 +373,23 @@ class Message(models.Model):
 
 class Process(models.Model):
     name = models.CharField(max_length=128, unique=True)
-    base = models.ForeignKey("ItemType")
-    out = models.ForeignKey("ItemType")
-    loss = models.IntegerField()
+    # Input is taken times multiplier to get 1 unit, which produces
+    # 1 unit multiplied by output.
     time = models.IntegerField()
+    required_item = models.ForeignKey("ItemType", null=True)
+    required_building = models.ForeignKey("Building", null=True)
+
+
+class ProcessInput(models.Model):
+    process = models.ForeignKey("Process")
+    item = models.ForeignKey("ItemType")
+    multiplier = models.IntegerField(default=1)
+
+
+class ProcessOutput(models.Model):
+    process = models.ForeignKey("Process")
+    item = models.ForeignKey("ItemType")
+    multiplier = models.IntegerField(default=1)
 
 
 class Item(models.Model):
@@ -426,7 +440,7 @@ class ItemType(models.Model):
     cyclical = models.BooleanField(default=False)
 
 
-class Building:
+class Building(models.Model):
     name = models.CharField(max_length=128, unique=True)
     owner = models.ForeignKey("Character")
     capacity = models.IntegerField(default=1)
