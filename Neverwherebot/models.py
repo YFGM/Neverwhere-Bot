@@ -138,8 +138,8 @@ class Acre(models.Model):
     )
     fertility = models.CharField(choices=FERTILITY_CHOICES)
     irrigation = models.IntegerField()  # TODO
-    fertilizer = models.IntegerField(default=0)  # 0 = None, 1 = Nitrogen, 2 = N/P/K
-    pesticide = models.BooleanField(default=False)
+    pesticide = models.ForeignKey("ItemType", blank=True)
+    intensity = models.IntegerField(default=0)
     poisoned = models.BooleanField(defaukt=False)  # TODO
     crop = models.ForeignKey("Crop", blank=True)
     tilled = models.IntegerField(default=0)  # Increments towards 20, which is tilled
@@ -152,6 +152,21 @@ class Acre(models.Model):
     id = models.CharField(max_length=64)
     produce = models.IntegerField(default=0)
     growth_days = models.IntegerField(default=0)
+
+    def reset(self):
+        self.planted = None
+        self.planting = 0
+        self.crop = None
+        self.harvest_per = 0
+        self.harvest = 0
+        self.bonus = 0
+        self.produce = 0
+        self.pesticide = None
+        self.intensity = 0
+        self.poisoned = False
+        self.tilled = False
+        self.growth_days = 0
+        self.save()
 
 
 class Worksite(models.Model):

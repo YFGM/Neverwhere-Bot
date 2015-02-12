@@ -1,4 +1,4 @@
-# TODO use in locals()
+# TODO use in locals() or just an else
 
 import os
 import threading
@@ -6,6 +6,7 @@ import imp
 import datetime
 import math
 import re
+import time
 import neverwherebot.models as models
 
 threads = []
@@ -31,7 +32,7 @@ def startup_scripts():
                 try:
                     mod.on_start()
                 except:
-                       print("Failed to execute on_start method for module %s." % f)
+                    print("Failed to execute on_start method for module %s." % f)
             except:
                 print("Failed to import module %s." % f)
 
@@ -87,6 +88,8 @@ def update():
 
     for item in cyclic_items:
         update_item(item)
+
+    time.sleep(3600)
 
 
 def enumerate_scripts(scripts_dir):

@@ -149,14 +149,22 @@ def update(character, hour, employment):
                                     message = "Today, you harvested %ikg of %s from acre %s, harvesting the acre completely." % (
                                         acre.produce, crop.product_name, acre.id
                                     )
-                                    acre.produce = 0
-                                    acre.tilled = 0
-                                    acre.crop = None
-                                    acre.harvest_per = 0
-                                    acre.planted = None
-                                    acre.bonus = 0
-                                    acre.growth_days = 0
-                                    acre.save()
+                                    if not crop.perennial:
+                                        acre.produce = 0
+                                        acre.tilled = 0
+                                        acre.crop = None
+                                        acre.harvest_per = 0
+                                        acre.planted = None
+                                        acre.bonus = 0
+                                        acre.growth_days = 0
+                                        acre.planting = 0
+                                        acre.save()
+                                    else:
+                                        acre.produce = 0
+                                        acre.harvest_per = 0
+                                        acre.bonus = 0
+                                        acre.growth_days = 0
+                                        acre.save()
                                     employment.acre = None
                                     employment.save()
                                     done = True
@@ -188,7 +196,7 @@ def update(character, hour, employment):
                         acre.planting += 1
                         acre.save()
                         done = True
-                    if hour == 15 and acre.planing < 8:
+                    if hour == 15 and acre.planting < 8:
                         message = "You spent most of today planting %s on acre %s, but have yet to finish." % (
                             models.Crop.objects.filter(pk=acre.crop), acre.id
                         )
@@ -196,6 +204,8 @@ def update(character, hour, employment):
                         message = "Today, you finished planting %s on acre %s." % (
                             models.Crop.objects.filter(pk=acre.crop), acre.id
                         )
+                        acre.planted = datetime.datetime.now()
+                        acre.save()
 
                 if not acre.planting < 8:
                     message2 = "You finished planting acre %s." % acre.id
@@ -229,8 +239,12 @@ def update(character, hour, employment):
                             message = "Today, you finished planting %s on acre %s." % (
                                 models.Crop.objects.filter(pk=acre.crop), acre.id
                             )
+                            acre.planted = datetime.datetime.now()
+                            acre.save()
                         if not acre.planting < 8 and not failed:
                             message2 = "You finished planting acre %s." % acre.id
+                            acre.planted = datetime.datetime.now()
+                            acre.save()
                     elif models.Acre.objects.filter(pk=employment.acre).planting == 8:
                         message = "Having finished planting acre %s, you could find no other acres to plant on, and" \
                                   " have been set back to idle." % acre.id
@@ -255,6 +269,36 @@ def update(character, hour, employment):
                 Neverwherebot.update.send_message("", character.name, message2, "bw")
             Neverwherebot.update.give_salary(character, employment.part, hour)
             return True
+    if hour in range(8, 16) and "burning" in employment.current_activity and not override:
+        override = check_upgrades("on_burn", employment)
+        if not override:
+            if not employment.acre:  # Shouldn't happen
+                employment.current_activity = ""
+                employment.save()
+                return False
+            else:
+                acre = models.Acre.objects.filter(pk=employment.acre)
+                if acre.crop is not None:
+                    acre.reset()
+                    if acre.fertility == "Barren":
+                        acre.fertility = "Bad"
+                        acre.save()
+                    elif acre.fertility == "Bad":
+                        acre.fertility = "Normal"
+                        acre.save()
+                    message = "You burnt the acre %s to the ground." % acre.id
+                    employment.current_activity = ""
+                    employment.acre = None
+                    employment.save()
+                else:
+                    message = "You wanted to burn the care %s, but there was nothing there worth burning." % acre.id
+                    employment.current_activity = ""
+                    employment.acre = None
+                    employment.save()
+            Neverwherebot.update.send_message("", character.name, message, "bw")
+            Neverwherebot.update.give_salary(character, employment.part, hour)
+            return True
+
     else:
         return True
 
@@ -289,6 +333,5 @@ def start_planting(employment):
         Neverwherebot.update.remove_item(seed.name, storage_id=character.inventory, amount=crop.seed)
         acre.crop = crop.pk
         acre.planting = 1
-        acre.planted = datetime.datetime.now()
         acre.save()
         return False
