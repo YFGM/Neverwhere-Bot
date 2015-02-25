@@ -19,6 +19,7 @@ def test(bot, trigger):
     bot.say("Test!")
 
 
+@willie.module.event('NOTICE')
 @willie.module.rule('(.*)')
 @willie.module.priority('low')
 def listen_nickserv(bot, trigger):
