@@ -7,7 +7,7 @@ import sys
 
 sys.path.append("/home/willie/Neverwhere-Bot")
 sys.path.append("/home/willie/Neverwhere-Bot/Neverwherebot")
-import Neverwherebot.interface
+import Neverwherebot.interface as interface
 
 nicks = {}
 
@@ -23,6 +23,20 @@ def checknick(bot, trigger):
 @willie.module.commands('test')
 def test(bot, trigger):
     bot.say("Test!")
+
+
+@willie.module.commands('register')
+def register(bot, trigger):
+    if not check_nick(bot, str(trigger.nick)):
+        bot.say("Please register your nick with NickServ.")
+        return
+    debug(bot, "User %s ok, registering." % str(trigger.nick))
+    s = interface.register(str(trigger.nick))
+    if isinstance(s, basestring):
+        bot.say(s)
+        return
+    bot.say("User %s succesfully registered." % str(trigger.nick))
+
 
 
 @willie.module.event('NOTICE')
@@ -53,3 +67,7 @@ def check_nick(bot, nick):
             return False
     else:
         return False
+
+
+def debug(bot, text):
+    bot.msg('#neverwhere-debug', text=text)
