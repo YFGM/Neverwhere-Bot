@@ -59,12 +59,17 @@ def deregister(nick):
     pass
 
 
-def create_character(name, sex, str, dex, int, vit):
-    if model.Character.objects.filter(name=name):
+def create_character(player, name, sex, str, dex, int, vit):
+    if model.Character.objects.filter(name=name).exists():
         return "Character with this name already exists."
     if not sex == "m" or not sex == "f":
         return "Invalid sex. Please use 'm' or 'f'."
+    try:
+        pl = model.Player.objects.get(nick=player)
+    except:
+        return "Invalid player."
     new = model.Character()
+    new.player = pl
     new.name = name
     new.sex = sex
     new.str = str
@@ -76,11 +81,11 @@ def create_character(name, sex, str, dex, int, vit):
     new.current_san = 100 + (new.int-10) * 10
     inv = model.Storage()
     inv.name = name + "-Inventory"
-    inv.owner = new.pk
+    inv.owner = new
     inv.size = new.str
     inv.inventory = True
     inv.save()
-    new.inventory = inv.pk
+    new.inventory = inv
     new.save()
     recalculate_char(name)
     return True
@@ -164,13 +169,15 @@ def add_perk(perk, character):
 
 
 def recalculate_char(character):
-    char = model.Character.objects.filter(name=character)
-    if not char:
+    try:
+        char = model.Character.objects.get(name=character)
+    except:
         return "Character not found."
     if char.deleted:
         return "This character has been deleted."
-    inv = model.Storage.objects.filter(name=char.name + "-Inventory")
-    if not inv:
+    try:
+        inv = model.Storage.objects.get(name=char.name + "-Inventory")
+    except:
         return "Inventory not found, ya dun goofd."
     old_hp = char.hp
     old_fp = char.fp
@@ -232,11 +239,16 @@ def remove_item(item, storage, amount, unit=None, weight=None):
     pass
 
 
-def return_character(character):
-    s = recalculate_char(character)
+def get_character(character, player):
+    try:
+        char = model.Character.objects.get(name=character)
+    except:
+        return "Character not found."
+    if char.player != player:
+        return "You do not own this character."
+    s = recalculate_char(char.name)
     if isinstance(s, basestring):
         return s
-    char = model.Character.objects.get(name=character)
     ret = {}
     ret["sex"] = char.sex
     ret["str"] = char.str
@@ -255,6 +267,9 @@ def return_character(character):
     ret["per"] = char.per
     ret["mo"] = char.mo
     ret["bl"] = char.bl
+    ret["current_hp"] = char.current_hp
+    ret["current_fp"] = char.current_fp
+    ret["current_san"] = char.current_san
     perks = {}
     for cp in model.CharacterPerk.filter(character=char.pk):
         perks[cp.slot] = model.Perk.objects.get(pk=cp.perk).name
@@ -263,6 +278,7 @@ def return_character(character):
     for cs in model.CharacterSkill.filter(character=char.pk):
         skills[model.Skill.objects.get(pk=cs.skill).name] = update.get_skill(character, model.Skill.objects.get(pk=cs.skill).name)
     ret["skills"] = skills
+    return ret
 
 
 def apply_job(worksite, job, character, parttime=False):

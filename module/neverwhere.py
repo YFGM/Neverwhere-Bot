@@ -40,7 +40,7 @@ def register(bot, trigger):
 @willie.module.commands("sendmessage")
 @willie.module.commands("sendm")
 def send_message(bot, trigger):
-    if not check_nick(bot, str(trigger.nick) or not check_user(trigger.nick)):
+    if not check_nick(bot, str(trigger.nick)) or not check_user(trigger.nick):
         bot.say("Please register your nick to use this function.")
         return
     if trigger.group(2) is not None:
@@ -93,6 +93,87 @@ def view_message(bot, trigger):
     m = messages[int(trigger.group(2))-1]
     bot.msg(trigger.nick, "Message %i from %s. Sent %s" % (int(trigger.group(2)), m[0], m[2]))
     bot.msg(trigger.nick, m[4])
+
+
+@willie.module.commands("create")
+def create_character(bot, trigger):
+    if not check_nick(bot, str(trigger.nick)) or not check_user(trigger.nick):
+        bot.say("Please register your nick to use this function.")
+        return
+    if trigger.group(2) is not None:
+        args = re.compile('\w+').findall(trigger.group(2))
+    else:
+        bot.say("Usage: !create NAME SEX STR DEX INT VIT")
+        return
+
+    if not isinstance(args[0], basestring) or not isinstance(args[1], basestring) or not isinstance(args[2], int) or not isinstance(args[3], int) or not isinstance(args[4], int) or not isinstance(args[5], int):
+        bot.say("Usage: !create NAME SEX STR DEX INT VIT")
+        return
+    s = interface.create_character(str(trigger.nick), args[0], args[1], args[2], args[3], args[4], args[5])
+    if isinstance(s, basestring):
+        bot.say(s)
+        return
+
+
+@willie.module.commands("show")
+def show_character(bot, trigger):
+    if not check_nick(bot, str(trigger.nick)) or not check_user(trigger.nick):
+        bot.say("Please register your nick to use this function.")
+        return
+    if trigger.group(2) is not None:
+        args = re.compile('\w+').findall(trigger.group(2))
+    else:
+        bot.say("Usage: !show CHARACTER")
+        return
+    char = interface.get_character(str(trigger.group(2)), str(trigger.name))
+    if isinstance(char, basestring):
+        bot.say(char)
+        return
+    desc = []
+    if char["sex"].lower() == "f":
+        gender = "Female"
+    else:
+        gender = "Male"
+    prefixes = {}
+    if char["mab"] >= 0:
+        prefixes["mab"] = "+"
+    else:
+        prefixes["mab"] = ""
+    if char["rab"] >= 0:
+        prefixes["rab"] = "+"
+    else:
+        prefixes["rab"] = ""
+    if char["will"] >= 0:
+        prefixes["rab"] = "+"
+    else:
+        prefixes["rab"] = ""
+    if char["re"] >= 0:
+        prefixes["re"] = "+"
+    else:
+        prefixes["re"] = ""
+    if char["fort"] >= 0:
+        prefixes["fort"] = "+"
+    else:
+        prefixes["fort"] = ""
+    if char["per"] >= 0:
+        prefixes["per"] = "+"
+    else:
+        prefixes["per"] = ""
+    desc[0] = char["name"] + ", " + gender + " Human"
+    desc[1] = "%i Str %i Dex %i Int %i Vit" % (char["str"], char["dex"], char["int"], char["vit"])
+    desc[2] = "%i/%i HP %i/%i FP %i/%i SAN" % (char["hp"], char["current_hp"], char["fp"], char["current_fp"],
+                                                char["san"], char["current_san"])
+    desc[3] = "%s%i MAB %s%i RAB %i AC" % (prefixes["mab"], char["mab"], prefixes["rab"], char["rab"], char["ac"])
+    desc[4] = "%s%i Will %s%i Re %s%i Fort" % (prefixes["will"], char["will"], prefixes["re"], char["re"], prefixes["fort"], char["fort"])
+    desc[5] = "%s%i Per %i Mo %d BL" % (prefixes["per"], char["per"], char["mo"], char["bl"])
+    desc[6] = "Perks: WIP"
+    desc[7] = "Skills: WIP"
+    desc[8] = "Spells: WIP"
+    for i in range(len(desc)):
+        bot.say(desc[i])
+
+
+
 
 
 @willie.module.commands("argshow")
