@@ -6,8 +6,8 @@ import time
 nicks = {}
 
 
-@willie.module.commands('register')
-def register(bot, trigger):
+@willie.module.commands('checknick')
+def checknick(bot, trigger):
     if not check_nick(bot, str(trigger.nick)):
         bot.say("Please register your nick with NickServ.")
     else:
