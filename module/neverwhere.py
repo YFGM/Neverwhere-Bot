@@ -4,8 +4,7 @@ import datetime
 import time
 import os
 
-import sys
-sys.path.append("home/willie/Neverwhere-Bot")
+os.environ["PYTHONPATH"].append("home/willie/Neverwhere-Bot")
 import Neverwherebot.interface
 
 nicks = {}
