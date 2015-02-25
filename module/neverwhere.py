@@ -2,6 +2,9 @@ import willie.module
 import re
 import datetime
 import time
+
+import sys
+sys.path.append("home/willie/Neverwhere-Bot")
 import Neverwherebot.interface
 
 nicks = {}
