@@ -43,7 +43,11 @@ def send_message(bot, trigger):
     if not check_nick(bot, str(trigger.nick) or not check_user(trigger.nick)):
         bot.say("Please register your nick to use this function.")
         return
-    args = re.compile('\w+').findall(trigger.group(2))
+    if trigger.group(2) is not None:
+        args = re.compile('\w+').findall(trigger.group(2))
+    else:
+        bot.say("Usage: !sendmessage RECEIVER MESSAGE")
+        return
     if len(args) < 2:
         bot.say("Usage: !sendmessage RECEIVER MESSAGE")
         return
