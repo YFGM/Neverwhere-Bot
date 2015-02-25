@@ -8,6 +8,7 @@ import math
 import re
 import time
 import Neverwherebot.models as models
+import django.core.exceptions
 
 threads = []
 
@@ -292,22 +293,26 @@ def send_message(sender, receiver, content, flags=''):
         return "No content given."
 
     if sender != '':
-        s = models.Player.objects.get(nick=sender)
+        try:
+            s = models.Player.objects.get(nick=sender)
+        except django.core.exceptions.ObjectDoesNotExist:
+            return "Sender could not be found."
     else:
-        s = models.Player.objects.get(nick="Bot")
-
-    if not s:
-        return "User could not be found."
-
-    r = models.Player.objects.get(nick=receiver)
+        try:
+            s = models.Player.objects.get(nick="Bot")
+        except django.core.exceptions.ObjectDoesNotExist:
+            return "Sender could not be found."
+    try:
+        r = models.Player.objects.get(nick=receiver)
+    except django.core.exceptions.ObjectDoesNotExist:
+        return "Receiver could not be found."
 
     if len(content) >= 10000:
         return "Message too long."
 
-    if r:
-        m = models.Message(sender=s, receiver=r, message=content, flags=flags)
-        m.save()
-        return True
+    m = models.Message(sender=s, receiver=r, message=content, flags=flags)
+    m.save()
+    return True
 
 
 def get_current_day():
