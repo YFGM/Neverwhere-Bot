@@ -25,18 +25,18 @@ def listen_nickserv(bot, trigger):
     if not trigger.sender == "NickServ":
         return
     if trigger.startswith('STATUS'):
-        bot.debug(text="STATUS found", level='always')
+        bot.msg('#neverwhere-debug', text="STATUS found")
         w = re.compile('\w+').findall(trigger)
         if w[2] == 3:
             nicks[w[1]] = datetime.datetime.now()
-            bot.debug(text="STATUS for user %s updated." % nick, level='always')
+            bot.msg('#neverwhere-debug', text="STATUS for user %s updated." % w[1], level='always')
         else:
             return False
 
 
 def check_nick(bot, nick):
     bot.msg('NickServ', "STATUS " + nick)
-    bot.debug(text="STATUS for user %s sent to NickServ." % nick, level='always')
+    bot.msg('#neverwhere-debug', text="STATUS for user %s sent to NickServ." % nick)
     time.sleep(1)
     if (datetime.datetime.now() - nicks[nick]).seconds < 10:
         return True
