@@ -23,7 +23,7 @@ def checknick(bot, trigger):
 def test(bot, trigger):
     bot.say("Test!")
 
-
+# TODO: If user is already registered
 @willie.module.commands('register')
 def register(bot, trigger):
     if not check_nick(bot, str(trigger.nick)):
@@ -64,6 +64,9 @@ def send_message(bot, trigger):
 @willie.module.commands("showm")
 def show_messages(bot, trigger):
     messages = interface.get_messages(str(trigger.nick))
+    if len(messages) < 1:
+        bot.msg(trigger.nick, "You currently have no messages.")
+        return
     unread = 0
     for m in messages:
         if not m[3]:
