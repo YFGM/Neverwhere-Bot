@@ -79,7 +79,8 @@ def create_character(player, name, sex, str, dex, int, vit):
     new.current_HP = new.str
     new.current_FP = new.vit
     new.current_san = 100 + (new.int-10) * 10
-    inv = model.Storage(owner = new)
+    new.save()
+    inv = model.Storage(owner=new)
     inv.name = name + "-Inventory"
     inv.size = new.str
     inv.inventory = True
