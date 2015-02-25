@@ -218,9 +218,9 @@ def recalculate_char(character):
     char = model.Character.objects.get(name=character)
     inv = model.Storage.objects.get(name=char.name + "-Inventory")
     if old_hp != char.hp:
-        char.current_hp += char.current_hp - old_hp
+        char.current_hp += char.current_HP - old_hp
     if old_fp != char.fp:
-        char.current_fp += char.current_fp - old_fp
+        char.current_fp += char.current_FP - old_fp
     if old_san != char.san:
         char.current_san += char.current_san - old_san
     char.save()
@@ -267,8 +267,8 @@ def get_character(character, player):
     ret["per"] = char.per
     ret["mo"] = char.mo
     ret["bl"] = char.bl
-    ret["current_hp"] = char.current_hp
-    ret["current_fp"] = char.current_fp
+    ret["current_hp"] = char.current_HP
+    ret["current_fp"] = char.current_FP
     ret["current_san"] = char.current_san
     perks = {}
     for cp in model.CharacterPerk.objects.filter(character=char.pk):
