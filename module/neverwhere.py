@@ -51,7 +51,7 @@ def send_message(bot, trigger):
     if len(args) < 2:
         bot.say("Usage: !sendmessage RECEIVER MESSAGE")
         return
-    debug("Sending message '%s' from user %s to user %s." % (trigger.group(2)[len(args[0])+1:], str(trigger.nick), args[0]))
+    debug(bot, "Sending message '%s' from user %s to user %s." % (trigger.group(2)[len(args[0])+1:], str(trigger.nick), args[0]))
     s = interface.send_message(str(trigger.nick), args[0], trigger.group(2)[len(args[0])+1:])
     if isinstance(s, basestring):
         bot.say(s)
