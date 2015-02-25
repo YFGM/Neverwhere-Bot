@@ -39,7 +39,7 @@ def listen_nickserv(bot, trigger):
 def check_nick(bot, nick):
     bot.msg('NickServ', "STATUS " + nick)
     bot.msg('#neverwhere-debug', text="STATUS for user %s sent to NickServ." % nick)
-    time.sleep(0.5)
+    time.sleep(2)
     if nick in nicks:
         if (datetime.datetime.now() - nicks[nick]).seconds < 10:
             return True
