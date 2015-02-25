@@ -39,6 +39,9 @@ def create_character(name, sex, str, dex, int, vit):
     new.dex = dex
     new.int = int
     new.vit = vit
+    new.current_HP = new.Str
+    new.current_FP = new.Vit
+    new.current_san = 100 + (new.int-10) * 10
     inv = model.Storage()
     inv.name = name + "-Inventory"
     inv.owner = new.pk

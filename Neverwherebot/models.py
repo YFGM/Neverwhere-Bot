@@ -5,7 +5,7 @@ from django.db import models
 
 class Game(models.Model):
     id = models.IntegerField(primary_key=True, default=0)
-    name = models.CharField()
+    name = models.CharField(max_length=64)
     interval = models.IntegerField(default=30)
     start_date = models.DateField(auto_now_add=True)
     date_modifier = models.IntegerField(default=0)  # Added onto current date to determine time of year
@@ -35,11 +35,11 @@ class Character(models.Model):
     rab = models.IntegerField()
     ac = models.IntegerField()
     will = models.IntegerField()
-    re = models.DecimalField()
+    re = models.DecimalField(decimal_places=2, max_digits=10)
     fort = models.IntegerField()
     per = models.IntegerField()
     mo = models.IntegerField()
-    bl = models.DecimalField()
+    bl = models.DecimalField(decimal_places=2, max_digits=10)
     current_HP = models.IntegerField()
     current_FP = models.IntegerField()
     current_san = models.IntegerField()
@@ -50,19 +50,19 @@ class Character(models.Model):
 
 
 class Skill(models.Model):
-    name = models.CharField(unique=True)
+    name = models.CharField(unique=True, max_length=64)
     DIFFICULTY_CHOICES = (
-        'E',
-        'A',
-        'H',
-        'VH',
+        ('E', 'Easy'),
+        ('A', 'Average'),
+        ('H', 'Hard'),
+        ('VH', 'Very Hard')
     )
     difficulty = models.CharField(max_length=128, choices=DIFFICULTY_CHOICES)
     ATTRIBUTE_CHOICES = (
-        'Str',
-        'Dex',
-        'Int',
-        'Vit',
+        ('Str', 'Strength'),
+        ('Dex', 'Dexterity'),
+        ('Int', 'Intelligence'),
+        ('Vit', 'Vitality'),
     )
     attribute = models.CharField(max_length=128, choices=ATTRIBUTE_CHOICES)
 
@@ -76,8 +76,7 @@ class CharacterSkill(models.Model):
 class Perk(models.Model):
     name = models.CharField(max_length=128, unique=True)
     # Quirk, Flaw, Basic, Combat, Weapon, Skill, Magic, Spellcasting
-    category = models.CharField()
-    prerequisites = models.ForeignKey("Prerequisite")
+    category = models.CharField(max_length=64)
 
 
 class CharacterPerk(models.Model):
@@ -85,21 +84,6 @@ class CharacterPerk(models.Model):
     character = models.ForeignKey("Character")
     slot = models.IntegerField()
 
-
-class Prerequisite(models.Model):
-    str = models.IntegerField()
-    dex = models.IntegerField()
-    int = models.IntegerField()
-    vit = models.IntegerField()
-    mab = models.IntegerField()
-    rab = models.IntegerField()
-    will = models.IntegerField()
-    re = models.DecimalField()
-    fort = models.IntegerField()
-    per = models.IntegerField()
-    mo = models.IntegerField()
-    bl = models.DecimalField()
-    perks = models.ManyToManyField("Perk")
 
 
 class Ability(models.Model):
@@ -109,11 +93,11 @@ class Ability(models.Model):
 
 class Spell(models.Model):
     name = models.CharField(max_length=128, unique=True)
-    school = models.CharField()   # TODO
-    classes = models.CharField()  # TODO
+    school = models.CharField(max_length=64)   # TODO
+    classes = models.CharField(max_length=64)  # TODO
     college = models.ForeignKey("College")
     fp_cost = models.IntegerField(default=1)
-    fp_cost_addendum = models.CharField()
+    fp_cost_addendum = models.CharField(max_length=64)
     description = models.TextField()
 
 
@@ -124,27 +108,27 @@ class College(models.Model):
 class Acre(models.Model):
     owner = models.ForeignKey("Character")
     TEMPERATURE_CHOICES = (
-        "Hot",
-        "Normal",
-        "Chilly",
-        "Cold",
+        ("H", "Hot"),
+        ("N", "Normal"),
+        ("CH", "Chilly"),
+        ("C", "Cold"),
     )
-    temperature = models.CharField(choices=TEMPERATURE_CHOICES)
+    temperature = models.CharField(choices=TEMPERATURE_CHOICES, max_length=128)
     HUMIDITY_CHOICES = (
-        "Humid",
-        "Normal",
-        "Dry",
-        "Arid",
+        ("H", "Humid"),
+        ("N", "Normal"),
+        ("D", "Dry"),
+        ("A", "Arid"),
     )
-    humidity = models.CharField(choices=HUMIDITY_CHOICES)
+    humidity = models.CharField(choices=HUMIDITY_CHOICES, max_length=128)
     FERTILITY_CHOICES = (
-        "Barren",
-        "Bad",
-        "Normal",
-        "Fertile",
-        "Very Fertile",
+        ("BA", "Barren"),
+        ("B", "Bad"),
+        ("N", "Normal"),
+        ("F", "Fertile"),
+        ("VF", "Very Fertile"),
     )
-    fertility = models.CharField(choices=FERTILITY_CHOICES)
+    fertility = models.CharField(choices=FERTILITY_CHOICES, max_length=128)
     irrigation = models.IntegerField()  # TODO
     pesticide = models.ForeignKey("ItemType", blank=True)
     intensity = models.IntegerField(default=0)
@@ -157,7 +141,7 @@ class Acre(models.Model):
     harvest_per = models.IntegerField(default=0)
     bonus = models.IntegerField(default=0)
     farm = models.ForeignKey("Worksite", blank=True)
-    id = models.CharField(max_length=64)
+    id = models.CharField(max_length=64, primary_key=True)
     produce = models.IntegerField(default=0)
     growth_days = models.IntegerField(default=0)
 
@@ -180,7 +164,7 @@ class Acre(models.Model):
 class Worksite(models.Model):
     name = models.CharField(max_length=128, unique=True)
     owner = models.ForeignKey("Character", blank=True)
-    type = models.CharField()
+    type = models.CharField(max_length=128)
     description = models.TextField(max_length=8192, blank=True)
     storage = models.ForeignKey("Storage")
     tree_modifier = models.IntegerField(default=1)
@@ -203,7 +187,7 @@ class Employee(models.Model):
     part = models.IntegerField(max_length=16, default=0)
     craft = models.ForeignKey("Craft", blank=True)
     salary = models.IntegerField(default=0)
-    current_activity = models.CharField(default="")
+    current_activity = models.CharField(default="", max_length=64)
     acre = models.ForeignKey("Acre", blank=True)
 
 
@@ -216,7 +200,7 @@ class Job(models.Model):
         ('U', "Unskilled"),
         ('S', "Service"),
     )
-    type = models.CharField(choices=TYPE_CHOICES)
+    type = models.CharField(choices=TYPE_CHOICES, max_length=64)
     description = models.TextField(max_length=8192)
     process = models.ForeignKey("Process", blank=True)
     default_salary = models.IntegerField()
@@ -235,21 +219,21 @@ class HerbList(models.Model):
     site = models.ForeignKey("Worksite")
     item = models.ForeignKey("ItemType")
     chance = models.IntegerField()
-    nat20 = models.BooleanField()
+    nat20 = models.BooleanField(default=False)
 
 
 class ForageList(models.Model):
     site = models.ForeignKey("Worksite")
     item = models.ForeignKey("ItemType")
     chance = models.IntegerField()
-    nat20 = models.BooleanField()
+    nat20 = models.BooleanField(default=False)
 
 
 class HuntingList(models.Model):
     site = models.ForeignKey("Worksite")
     prey = models.ForeignKey("Prey")
     chance = models.IntegerField()
-    nat20 = models.BooleanField()
+    nat20 = models.BooleanField(default=False)
 
 
 class Prey(models.Model):
@@ -261,7 +245,7 @@ class Prey(models.Model):
 class FishingList(models.Model):
     itemtype = models.ForeignKey("ItemType")
     chance = models.IntegerField()
-    nat20 = models.BooleanField()
+    nat20 = models.BooleanField(default=False)
 
 
 class BaitEffect(models.Model):
@@ -284,7 +268,7 @@ class Tunnel(models.Model):
         ('G', "Good"),
         ('GR', "Great"),
     )
-    quality = models.CharField(choices=QUALITY_CHOICES)
+    quality = models.CharField(choices=QUALITY_CHOICES, max_length=64)
     RICHNESS_CHOICES = (
         ('G', "Gold Rush"),
         ('B', "Bountiful"),
@@ -294,9 +278,9 @@ class Tunnel(models.Model):
         ('RH', "Red Herring"),
         ('D', "Dead"),
     )
-    richness = models.CharField(choices=RICHNESS_CHOICES)
+    richness = models.CharField(choices=RICHNESS_CHOICES, max_length=64)
     ore = models.ForeignKey("Ore")
-    charge = models.ForeignKey("Charge", blank=True)
+    charge = models.ForeignKey("Charge", blank=True, related_name="t")
     blueprint = models.BooleanField(default=False)
 
 
@@ -314,26 +298,26 @@ class Charge(models.Model):
     roll = models.IntegerField()
     final = models.IntegerField()
     character = models.ForeignKey("Character")
-    tunnel = models.ForeignKey("Tunnel")
+    tunnel = models.ForeignKey("Tunnel", related_name="c")
 
 
 class Crop(models.Model):
     name = models.CharField(max_length=64, unique=True)
     name_plural = models.CharField(max_length=64)
-    temperature_good = models.CharField()  # Not choices because multiple possible
-    temperature_tolerate = models.CharField()
-    temperature_survive = models.CharField()
-    humidity_good = models.CharField()
-    humidity_tolerate = models.CharField()
+    temperature_good = models.CharField(max_length=64)  # Not choices because multiple possible
+    temperature_tolerate = models.CharField(max_length=64)
+    temperature_survive = models.CharField(max_length=64)
+    humidity_good = models.CharField(max_length=64)
+    humidity_tolerate = models.CharField(max_length=64)
     difficulty = models.IntegerField()
     gross_yield = models.IntegerField()
     product_name = models.CharField(max_length=128, blank=True)
-    perennial = models.BooleanField()
+    perennial = models.BooleanField(default=False)
     seed = models.IntegerField()
     seed_type = models.ForeignKey("ItemType", blank=True)
     time = models.IntegerField()
-    legume = models.BooleanField()
-    loss = models.BooleanField()
+    legume = models.BooleanField(default=False)
+    loss = models.BooleanField(default=False)
 
 
 class CropDescription(models.Model):
@@ -345,8 +329,8 @@ class CropDescription(models.Model):
 class Ore(models.Model):
     name = models.CharField(max_length=64, unique=True)
     value = models.IntegerField()
-    poison = models.BooleanField()  # TODO
-    native = models.BooleanField()  # TODO
+    poison = models.BooleanField(default=False)  # TODO
+    native = models.BooleanField(default=False)  # TODO
 
 
 class Disaster(models.Model):
@@ -356,7 +340,7 @@ class Disaster(models.Model):
 class Storage(models.Model):
     name = models.CharField(max_length=128, unique=True)
     description = models.TextField(max_length=8192, blank=True)
-    owner = models.ForeignKey("Character")
+    owner = models.ForeignKey("Character", related_name="o")
     size = models.IntegerField()
     allowed = models.ManyToManyField("Character", blank=True)
     inventory = models.BooleanField(default=False)
@@ -373,11 +357,11 @@ class Craft(models.Model):
         ('C', "Complex"),
         ('AM', "Amazing"),
     )
-    difficulty = models.CharField(choices=DIFFICULTY_CHOICES)
+    difficulty = models.CharField(choices=DIFFICULTY_CHOICES, max_length=64)
     wr = models.CharField(max_length=32)
-    blueprint = models.CharField(choices=DIFFICULTY_CHOICES, blank=True)
-    part_time = models.BooleanField()
-    take_10 = models.BooleanField()
+    blueprint = models.CharField(choices=DIFFICULTY_CHOICES, blank=True , max_length=64)
+    part_time = models.BooleanField(default=False)
+    take_10 = models.BooleanField(default=False)
     amount = models.IntegerField(default=1)
     hours = models.IntegerField(default=0)
     resources = models.IntegerField(default=0)
@@ -386,12 +370,12 @@ class Craft(models.Model):
 
 
 class Message(models.Model):
-    sender = models.ForeignKey("Player")
+    sender = models.ForeignKey("Player", related_name="s")
     receiver = models.ForeignKey("Player")
     sent_time = models.DateTimeField(auto_now_add=True)
     message = models.TextField(max_length=10000)
     read = models.BooleanField(default=False)
-    flags = models.CharField()
+    flags = models.CharField(max_length=64)
 
 
 class Process(models.Model):
@@ -418,7 +402,7 @@ class ProcessOutput(models.Model):
 class Item(models.Model):
     type = models.ForeignKey("ItemType")
     amount = models.IntegerField(default=1)
-    unit = models.CharField(blank=True)
+    unit = models.CharField(blank=True, max_length=64)
     value = models.IntegerField(blank=True)
     worn = models.BooleanField(default=False)
     stored = models.ForeignKey("Storage")
@@ -434,7 +418,7 @@ class ItemType(models.Model):
         ('P', "Piercing"),
         ('S', "Slashing"),
     )
-    damage = models.CharField(choices=DAMAGE_TYPES, blank=True)
+    damage = models.CharField(choices=DAMAGE_TYPES, blank=True, max_length=64)
     ac = models.IntegerField(blank=True)
     ap = models.IntegerField(blank=True)
     re = models.IntegerField(blank=True)
@@ -453,7 +437,7 @@ class ItemType(models.Model):
         ('ST', "Slings and Thrown Weapons"),
         ('SP', "Speaks and Lances"),
     )
-    weapon_class = models.CharField(choices=WEAPON_CLASSES, blank=True)
+    weapon_class = models.CharField(choices=WEAPON_CLASSES, blank=True, max_length=64)
     bonus = models.IntegerField(blank=True)
     skill = models.ForeignKey("Skill", blank=True)
     el = models.IntegerField(blank=True)

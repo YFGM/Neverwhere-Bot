@@ -3,7 +3,7 @@ import Neverwherebot.update as update
 
 
 class NeverwhereAppConfig(AppConfig):
-    name = "NeverwhereBot"
+    name = "Neverwherebot"
     verbose_name = "Neverwhere Bot"
 
     def ready(self):
