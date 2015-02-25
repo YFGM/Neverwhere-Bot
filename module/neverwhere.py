@@ -105,8 +105,9 @@ def create_character(bot, trigger):
     else:
         bot.say("Usage: !create NAME SEX STR DEX INT VIT")
         return
-
-    bot.say(str(args))
+    if len(args) != 6:
+        bot.say("Usage: !create NAME SEX STR DEX INT VIT")
+        return
 
     if not isinstance(args[0], basestring) or not isinstance(args[1], basestring) or not args[2].isdigit() or not args[3].isdigit() or not args[4].isdigit() or not args[5].isdigit():
         bot.say("Usage: !create NAME SEX STR DEX INT VIT")
@@ -195,19 +196,15 @@ def listen_nickserv(bot, trigger):
     if not trigger.sender == "NickServ":
         return
     if trigger.startswith('STATUS'):
-        bot.msg('#neverwhere-debug', text="STATUS found")
         w = re.compile('\w+').findall(trigger)
-        bot.msg('#neverwhere-debug', text=str(w))
         if int(w[2]) == 3:
             nicks[str(w[1])] = datetime.datetime.now()
-            bot.msg('#neverwhere-debug', text="STATUS for user %s updated." % w[1])
         else:
             return False
 
 
 def check_nick(bot, nick):
     bot.msg('NickServ', "STATUS " + nick)
-    bot.msg('#neverwhere-debug', text="STATUS for user %s sent to NickServ." % nick)
     time.sleep(1.5)
     if nick in nicks:
         if (datetime.datetime.now() - nicks[nick]).seconds < 10:
