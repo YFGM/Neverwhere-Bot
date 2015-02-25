@@ -31,7 +31,7 @@ def listen_nickserv(bot, trigger):
         bot.msg('#neverwhere-debug', text=str(w))
         if int(w[2]) == 3:
             nicks[w[1]] = datetime.datetime.now()
-            bot.msg('#neverwhere-debug', text="STATUS for user %s updated." % w[1], level='always')
+            bot.msg('#neverwhere-debug', text="STATUS for user %s updated." % w[1])
         else:
             return False
 
