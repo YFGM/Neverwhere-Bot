@@ -4,6 +4,7 @@ from django.db import models
 
 
 class Game(models.Model):
+    id = models.IntegerField(primary_key=True, default=0)
     name = models.CharField()
     interval = models.IntegerField(default=30)
     start_date = models.DateField(auto_now_add=True)
@@ -16,11 +17,13 @@ class Player(models.Model):
     password = models.CharField(max_length=32)
     op = models.BooleanField(default=False)
     over_gm = models.BooleanField(default=False)
+    email = models.CharField(max_length=128)
 
 
 class Character(models.Model):
     player = models.ForeignKey("Player")
     name = models.CharField(max_length=64, unique=True)
+    sex = models.CharField(max_length=1)
     str = models.IntegerField(default=10)
     dex = models.IntegerField(default=10)
     int = models.IntegerField(default=10)
@@ -40,7 +43,6 @@ class Character(models.Model):
     current_HP = models.IntegerField()
     current_FP = models.IntegerField()
     current_san = models.IntegerField()
-    perks = models.ManyToManyField("Perk")
     inventory = models.ForeignKey("Storage")
     description = models.TextField(max_length=8192, blank=True)
     deleted = models.BooleanField(default=False)
@@ -76,6 +78,12 @@ class Perk(models.Model):
     # Quirk, Flaw, Basic, Combat, Weapon, Skill, Magic, Spellcasting
     category = models.CharField()
     prerequisites = models.ForeignKey("Prerequisite")
+
+
+class CharacterPerk(models.Model):
+    perk = models.ForeignKey("Perk")
+    character = models.ForeignKey("Character")
+    slot = models.IntegerField()
 
 
 class Prerequisite(models.Model):
