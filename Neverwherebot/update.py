@@ -7,7 +7,7 @@ import datetime
 import math
 import re
 import time
-import neverwherebot.models as models
+import Neverwherebot.models as models
 
 threads = []
 

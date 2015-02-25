@@ -1,5 +1,5 @@
 from django.apps import AppConfig
-import neverwherebot.update as update
+import Neverwherebot.update as update
 
 
 class NeverwhereAppConfig(AppConfig):

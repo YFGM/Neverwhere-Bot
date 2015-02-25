@@ -148,7 +148,7 @@ class Acre(models.Model):
     irrigation = models.IntegerField()  # TODO
     pesticide = models.ForeignKey("ItemType", blank=True)
     intensity = models.IntegerField(default=0)
-    poisoned = models.BooleanField(defaukt=False)  # TODO
+    poisoned = models.BooleanField(default=False)  # TODO
     crop = models.ForeignKey("Crop", blank=True)
     tilled = models.IntegerField(default=0)  # Increments towards 20, which is tilled
     planting = models.IntegerField(default=0)  # Increments towards 8 hours
