@@ -299,7 +299,7 @@ def send_message(sender, receiver, content, flags=''):
     if not s.exists():
         return "User could not be found."
 
-    r = models.Player.objects.filter(nick=receiver)
+    r = models.Player.objects.filter(nick__exact=receiver)
 
     if len(content) >= 10000:
         return "Message too long."
