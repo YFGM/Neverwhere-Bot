@@ -16,7 +16,7 @@ import Neverwherebot.models as model
 
 
 def is_user(nick):
-    if model.Player.objects.get(nick=nick).exists():
+    if model.Player.objects.filter(nick=nick).exists():
         return True
     return False
 
