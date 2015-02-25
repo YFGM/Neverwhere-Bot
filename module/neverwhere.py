@@ -164,15 +164,15 @@ def show_character(bot, trigger):
     else:
         prefixes["per"] = ""
     desc.append(str(trigger.group(2)) + ", " + gender + " Human")
-    desc[1].append("%i Str %i Dex %i Int %i Vit" % (char["str"], char["dex"], char["int"], char["vit"]))
-    desc[2].append("%i/%i HP %i/%i FP %i/%i SAN" % (char["hp"], char["current_hp"], char["fp"], char["current_fp"],
+    desc.append("%i Str %i Dex %i Int %i Vit" % (char["str"], char["dex"], char["int"], char["vit"]))
+    desc.append("%i/%i HP %i/%i FP %i/%i SAN" % (char["hp"], char["current_hp"], char["fp"], char["current_fp"],
                                                     char["san"], char["current_san"]))
-    desc[3].append("%s%i MAB %s%i RAB %i AC" % (prefixes["mab"], char["mab"], prefixes["rab"], char["rab"], char["ac"]))
-    desc[4].append("%s%i Will %s%i Re %s%i Fort" % (prefixes["will"], char["will"], prefixes["re"], char["re"], prefixes["fort"], char["fort"]))
-    desc[5].append("%s%i Per %i Mo %d BL" % (prefixes["per"], char["per"], char["mo"], char["bl"]))
-    desc[6].append("Perks: WIP")
-    desc[7].append("Skills: WIP")
-    desc[8].append("Spells: WIP")
+    desc.append("%s%i MAB %s%i RAB %i AC" % (prefixes["mab"], char["mab"], prefixes["rab"], char["rab"], char["ac"]))
+    desc.append("%s%i Will %s%i Re %s%i Fort" % (prefixes["will"], char["will"], prefixes["re"], char["re"], prefixes["fort"], char["fort"]))
+    desc.append("%s%i Per %i Mo %d BL" % (prefixes["per"], char["per"], char["mo"], char["bl"]))
+    desc.append("Perks: WIP")
+    desc.append("Skills: WIP")
+    desc.append("Spells: WIP")
     for i in range(len(desc)):
         bot.say(desc[i])
 
