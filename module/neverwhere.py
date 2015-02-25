@@ -106,6 +106,8 @@ def create_character(bot, trigger):
         bot.say("Usage: !create NAME SEX STR DEX INT VIT")
         return
 
+    bot.say(str(args))
+
     if not isinstance(args[0], basestring) or not isinstance(args[1], basestring) or not isinstance(args[2], int) or not isinstance(args[3], int) or not isinstance(args[4], int) or not isinstance(args[5], int):
         bot.say("Usage: !create NAME SEX STR DEX INT VIT")
         return
