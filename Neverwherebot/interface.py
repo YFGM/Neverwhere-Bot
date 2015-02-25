@@ -245,13 +245,11 @@ def remove_item(item, storage, amount, unit=None, weight=None):
     pass
 
 
-def get_character(character, player):
+def get_character(character):
     try:
         char = model.Character.objects.get(name=character)
     except:
         return "Character not found."
-    if char.player != player:
-        return "You do not own this character."
     s = recalculate_char(char.name)
     if isinstance(s, basestring):
         return s

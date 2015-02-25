@@ -129,7 +129,7 @@ def show_character(bot, trigger):
     else:
         bot.say("Usage: !show CHARACTER")
         return
-    char = interface.get_character(str(trigger.group(2)), str(trigger.nick))
+    char = interface.get_character(str(trigger.group(2)))
     if isinstance(char, basestring):
         bot.say(char)
         return
