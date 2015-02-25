@@ -36,10 +36,24 @@ def register(bot, trigger):
         return
     bot.say("User %s succesfully registered." % str(trigger.nick))
 
+
 @willie.module.commands("sendmessage")
 @willie.module.commands("sm")
 def send_message(bot, trigger):
-    pass
+    if not check_nick(bot, str(trigger.nick) or not check_user(trigger.nick)):
+        bot.say("Please register your nick to use this function.")
+        return
+    args = re.compile('\w+').findall(trigger.group(2))
+    if len(args) < 2:
+        bot.say("Usage: !sendmessage RECEIVER MESSAGE")
+        return
+    debug("Sending message '%s' from user %s to user %s." % (trigger.group(2)[len(args[0])+1:], str(trigger.nick), args[0]))
+    s = interface.send_message(str(trigger.nick), args[0], trigger.group(2)[len(args[0])+1:])
+    if isinstance(s, basestring):
+        bot.say(s)
+        return
+    bot.say("Message sent.")
+
 
 @willie.module.commands("argshow")
 def show_args(bot, trigger):
@@ -49,7 +63,6 @@ def show_args(bot, trigger):
     bot.say("Group 1: " + s)
     s = trigger.group(2)
     bot.say("Group 2: " + s)
-
 
 
 @willie.module.event('NOTICE')
@@ -80,6 +93,10 @@ def check_nick(bot, nick):
             return False
     else:
         return False
+
+
+def check_user(nick):
+    return interface.is_user(nick)
 
 
 def debug(bot, text):

@@ -15,8 +15,15 @@ import Neverwherebot.update as update
 import Neverwherebot.models as model
 
 
+def is_user(nick):
+    if model.Player.objects.get(nick=nick).exists():
+        return True
+    return False
+
+
 def send_message(sender, receiver, content, flags=""):
     update.send_message(sender, receiver, content, flags)
+
 
 def register(nick, pw=None, email=None):
     # Registers the given nick
