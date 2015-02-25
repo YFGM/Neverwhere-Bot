@@ -3,8 +3,6 @@ import re
 import datetime
 import time
 import sys
-import django
-django.setup()
 
 sys.path.append("/home/willie/Neverwhere-Bot")
 sys.path.append("/home/willie/Neverwhere-Bot/Neverwherebot")

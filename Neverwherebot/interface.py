@@ -7,6 +7,9 @@ import math
 
 os.environ["DJANGO_SETTINGS_MODULE"] = "Neverwhere.settings"
 
+import django
+django.setup()
+
 from slugify import slugify
 import Neverwherebot.update as update
 import Neverwherebot.models as model
