@@ -7,6 +7,6 @@ class NeverwhereAppConfig(AppConfig):
     verbose_name = "Neverwhere Bot"
 
     def ready(self):
-        update.start()
+        pass
 
 

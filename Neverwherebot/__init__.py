@@ -1,1 +1,1 @@
-default_app_config = "neverwherebot.apps.NeverwhereAppConfig"
+default_app_config = "Neverwherebot.apps.NeverwhereAppConfig"
