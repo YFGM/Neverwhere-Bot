@@ -43,10 +43,10 @@ class Character(models.Model):
     current_HP = models.IntegerField()
     current_FP = models.IntegerField()
     current_san = models.IntegerField()
-    inventory = models.ForeignKey("Storage", blank=True, default=None)
+    inventory = models.ForeignKey("Storage", null=True)
     description = models.TextField(max_length=8192, blank=True)
     deleted = models.BooleanField(default=False)
-    house = models.ForeignKey("Building")
+    house = models.ForeignKey("Building", null=True)
 
 
 class Skill(models.Model):
