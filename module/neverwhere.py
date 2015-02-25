@@ -67,6 +67,9 @@ def show_messages(bot, trigger):
     if len(messages) < 1:
         bot.msg(trigger.nick, "You currently have no messages.")
         return
+    if isinstance(messages, basestring):
+        bot.say(messages)
+        return
     unread = 0
     for m in messages:
         if not m[3]:
