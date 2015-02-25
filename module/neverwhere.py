@@ -21,7 +21,7 @@ def test(bot, trigger):
 
 @willie.module.rule('(.*)')
 @willie.module.priority('low')
-def listen_nickserv(bot, nick):
+def listen_nickserv(bot, trigger):
     if not trigger.sender == "NickServ":
         return
     if trigger.startswith('STATUS'):
