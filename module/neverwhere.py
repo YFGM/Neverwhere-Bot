@@ -108,15 +108,15 @@ def create_character(bot, trigger):
     if len(args) != 6:
         bot.say("Usage: !create NAME SEX STR DEX INT VIT")
         return
-
     if not isinstance(args[0], basestring) or not isinstance(args[1], basestring) or not args[2].isdigit() or not args[3].isdigit() or not args[4].isdigit() or not args[5].isdigit():
         bot.say("Usage: !create NAME SEX STR DEX INT VIT")
         return
-    bot.say(str(args))
+    debug(bot, "Creating character using: " + str(args))
     s = interface.create_character(str(trigger.nick), str(args[0]), str(args[1]), int(args[2]), int(args[3]), int(args[4]), int(args[5]))
     if isinstance(s, basestring):
         bot.say(s)
         return
+    bot.say("Character %s succesfully created." % str(args[0]))
 
 
 @willie.module.commands("show")
@@ -197,15 +197,19 @@ def listen_nickserv(bot, trigger):
     if not trigger.sender == "NickServ":
         return
     if trigger.startswith('STATUS'):
+        debug(bot, "STATUS found")
         w = re.compile('\w+').findall(trigger)
+        debug(bot, w)
         if int(w[2]) == 3:
             nicks[str(w[1])] = datetime.datetime.now()
+            debug(bot, "STATUS for user %s updated." % w[1])
         else:
             return False
 
 
 def check_nick(bot, nick):
     bot.msg('NickServ', "STATUS " + nick)
+    debug(bot, "STATUS request for user %s sent to NickServ." % nick)
     time.sleep(1.5)
     if nick in nicks:
         if (datetime.datetime.now() - nicks[nick]).seconds < 10:
