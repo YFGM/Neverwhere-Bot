@@ -119,7 +119,7 @@ def add_perk(perk, character):
     if not p:
         return "Perk not found."
     perks = update.get_current_day() / game.interval
-    num = len(model.CharacterPerk.objects.filter(character=char.pk))
+    num = len(model.CharacterPerk.objects.filter(character=char))
     if num >= perks:
         return "No free perk slots available."
 
@@ -144,7 +144,7 @@ def add_perk(perk, character):
     if "Tiered" in p.category:
         count = 0
         latest = 0
-        for cp in model.CharacterPerk.objects.filter(character=char.pk):
+        for cp in model.CharacterPerk.objects.filter(character=char):
             if cp.perk == p.pk:
                 count += 1
                 if cp.slot > latest:
@@ -197,11 +197,11 @@ def recalculate_char(character):
     char.save()
     inv.size = 0
     inv.save()
-    for cs in model.CharacterSkill.objects.filter.filter(character=char.pk):
+    for cs in model.CharacterSkill.objects.filter(character=char):
         cs.level = 0
         cs.save()
-    for n in range(len(model.CharacterPerk.objects.filter(character=char.pk))):
-        p = model.Perk.filter(pk=model.CharacterPerk.objects.filter(character=char.pk).filter(slot=n).perk)
+    for n in range(len(model.CharacterPerk.objects.filter(character=char))):
+        p = model.Perk.filter(pk=model.CharacterPerk.objects.filter(character=char).filter(slot=n).perk)
         f = os.path.join(os.path.abspath(__file__), 'scripts', 'perks', slugify(p.name) + ".py")
         if os.path.isfile(f):
             try:
