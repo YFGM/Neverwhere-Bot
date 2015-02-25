@@ -151,6 +151,10 @@ def show_character(bot, trigger):
         prefixes["rab"] = "+"
     else:
         prefixes["rab"] = ""
+    if char["will"] >= 0:
+        prefixes["will"] = "+"
+    else:
+        prefixes["will"] = ""
     if char["re"] >= 0:
         prefixes["re"] = "+"
     else:
