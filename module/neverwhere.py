@@ -163,7 +163,7 @@ def show_character(bot, trigger):
         prefixes["per"] = "+"
     else:
         prefixes["per"] = ""
-    desc[0] = char["name"] + ", " + gender + " Human"
+    desc[0] = str(trigger.group(2)) + ", " + gender + " Human"
     desc[1] = "%i Str %i Dex %i Int %i Vit" % (char["str"], char["dex"], char["int"], char["vit"])
     desc[2] = "%i/%i HP %i/%i FP %i/%i SAN" % (char["hp"], char["current_hp"], char["fp"], char["current_fp"],
                                                 char["san"], char["current_san"])
