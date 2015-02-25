@@ -81,7 +81,7 @@ def show_messages(bot, trigger):
         bot.msg(trigger.nick, res)
         count += 1
 
-
+# TODO: Set message as read.
 @willie.module.commands("viewmessage")
 @willie.module.commands("viewm")
 def view_message(bot, trigger):
