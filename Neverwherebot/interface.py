@@ -62,7 +62,7 @@ def deregister(nick):
 def create_character(player, name, sex, str, dex, int, vit):
     if model.Character.objects.filter(name=name).exists():
         return "Character with this name already exists."
-    if not sex == "m" or not sex == "f":
+    if not sex == "m" and not sex == "f":
         return "Invalid sex. Please use 'm' or 'f'."
     try:
         pl = model.Player.objects.get(nick=player)
