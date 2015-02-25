@@ -101,10 +101,23 @@ def add_perk(perk, character):
     else:
         return False
 
-    # Tiered
-
     if not can_take:
         return "Character does not fulfill the prerequisites for this perk."
+
+    if "Tiered" in p.category:
+        count = 0
+        latest = 0
+        for cp in model.CharacterPerk.objects.filter(character=char.pk):
+            if cp.perk == p.pk:
+                count += 1
+                if cp.slot > latest:
+                    latest = cp.slot
+        if num + 1 > latest + count or count == 0:
+            pass
+        else:
+            return "Character cannot take this perk at this moment due to Tiered restriction. The earliest they can take" \
+                   " it is in %i perks." % (latest + count + 1) - (num + 1)
+
     if not mod.Perk.on_add(character):
         return "Error in 'on_add' function."
     new = model.CharacterPerk()
