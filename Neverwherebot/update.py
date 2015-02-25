@@ -289,6 +289,7 @@ def check_for_freezing(character, hour):
 
 def send_message(sender, receiver, content, flags=''):
     # Flags: b = Sent by the Bot w = Work Related i = Important
+    print("Reached update.")
     if not content:
         return "No content given."
 
@@ -297,6 +298,7 @@ def send_message(sender, receiver, content, flags=''):
             s = models.Player.objects.get(nick=sender)
         except django.core.exceptions.ObjectDoesNotExist:
             return "Sender could not be found."
+        print("Sender found.")
     else:
         try:
             s = models.Player.objects.get(nick="Bot")

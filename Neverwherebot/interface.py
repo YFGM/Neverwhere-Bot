@@ -22,7 +22,7 @@ def is_user(nick):
 
 
 def send_message(sender, receiver, content, flags=""):
-    update.send_message(sender, receiver, content, flags)
+    return update.send_message(sender, receiver, content, flags)
 
 
 def register(nick, pw=None, email=None):
