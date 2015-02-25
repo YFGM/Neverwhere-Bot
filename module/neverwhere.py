@@ -13,8 +13,8 @@ def register(bot, trigger):
     else:
         bot.say("Nick ok!")
 
-@rule('(.*)')
-@priority('low')
+@willie.module.rule('(.*)')
+@willie.module.priority('low')
 def listen_nickserv(bot, nick):
     if not trigger.sender == "NickServ":
         return
