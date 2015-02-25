@@ -217,12 +217,18 @@ def recalculate_char(character):
             return "Could not find perk script ." % f
     char = model.Character.objects.get(name=character)
     inv = model.Storage.objects.get(name=char.name + "-Inventory")
-    if old_hp != char.hp:
+    if old_hp != char.hp and old_hp is not None:
         char.current_HP += char.current_HP - old_hp
-    if old_fp != char.fp:
+    if old_fp != char.fp and old_fp is not None:
         char.current_FP += char.current_FP - old_fp
-    if old_san != char.san:
+    if old_san != char.san and old_san is not None:
         char.current_san += char.current_san - old_san
+    if old_hp is None:
+        char.current_HP = char.hp
+    if old_fp is None:
+        char.current_FP = char.fp
+    if old_san is None:
+        char.current_san = char.san
     char.save()
     inv.size += math.ceil(char.bl)
     inv.save()
