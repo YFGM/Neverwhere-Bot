@@ -218,9 +218,9 @@ def recalculate_char(character):
     char = model.Character.objects.get(name=character)
     inv = model.Storage.objects.get(name=char.name + "-Inventory")
     if old_hp != char.hp:
-        char.current_hp += char.current_HP - old_hp
+        char.current_HP += char.current_HP - old_hp
     if old_fp != char.fp:
-        char.current_fp += char.current_FP - old_fp
+        char.current_FP += char.current_FP - old_fp
     if old_san != char.san:
         char.current_san += char.current_san - old_san
     char.save()
