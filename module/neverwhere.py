@@ -3,12 +3,11 @@ import re
 import datetime
 import time
 import sys
-import imp
 
 
 sys.path.append("/home/willie/Neverwhere-Bot")
 sys.path.append("/home/willie/Neverwhere-Bot/Neverwherebot")
-interface = imp.load_source("interface", "/home/willie/Neverwhere-Bot/Neverwherebot/interface.py")
+import Neverwherebot.interface
 
 nicks = {}
 
