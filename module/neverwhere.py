@@ -8,7 +8,7 @@ nicks = {}
 
 @willie.module.commands('register')
 def register(bot, trigger):
-    if not check_nick:
+    if not check_nick(bot, trigger.nick):
         bot.say("Please register your nick with NickServ.")
     else:
         bot.say("Nick ok!")
