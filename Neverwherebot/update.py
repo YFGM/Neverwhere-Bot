@@ -296,7 +296,7 @@ def send_message(sender, receiver, content, flags=''):
     else:
         s = models.Player.objects.get(nick="Bot")
 
-    if not s.exists():
+    if not s:
         return "User could not be found."
 
     r = models.Player.objects.get(nick=receiver)
@@ -304,7 +304,7 @@ def send_message(sender, receiver, content, flags=''):
     if len(content) >= 10000:
         return "Message too long."
 
-    if r.exists():
+    if r:
         m = models.Message(sender=s, receiver=r, message=content, flags=flags)
         m.save()
         return True
