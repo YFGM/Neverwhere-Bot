@@ -113,7 +113,7 @@ def create_character(bot, trigger):
         bot.say("Usage: !create NAME SEX STR DEX INT VIT")
         return
     bot.say(str(args))
-    s = interface.create_character(str(trigger.nick), args[0], args[1], int(args[2]), int(args[3]), int(args[4]), int(args[5]))
+    s = interface.create_character(str(trigger.nick), str(args[0]), str(args[1]), int(args[2]), int(args[3]), int(args[4]), int(args[5]))
     if isinstance(s, basestring):
         bot.say(s)
         return
