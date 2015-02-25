@@ -38,7 +38,7 @@ def register(bot, trigger):
 
 
 @willie.module.commands("sendmessage")
-@willie.module.commands("sm")
+@willie.module.commands("sendm")
 def send_message(bot, trigger):
     if not check_nick(bot, str(trigger.nick) or not check_user(trigger.nick)):
         bot.say("Please register your nick to use this function.")
@@ -57,6 +57,42 @@ def send_message(bot, trigger):
         bot.say(s)
         return
     bot.say("Message sent.")
+
+
+# TODO: Add a unique ID to messages to make it less stupid, add telling you if it's read or not
+@willie.module.commands("showmessages")
+@willie.module.commands("showm")
+def show_messages(bot, trigger):
+    messages = interface.get_messages(str(trigger.nick))
+    unread = 0
+    for m in messages:
+        if not m[3]:
+            unread += 1
+    bot.msg(trigger.nick, "You have %i messages, %i unread. To view a complete message, use !viewm MESSAGE_ID. To "
+                          "delete a message, use !deletem MESSAGE_ID." % (
+        len(messages),
+        unread,
+    ))
+    count = 1
+    for m in messages:
+        res = ("Message %i " % count) + ("from '" + m[0] + "':") + m.message[:100]
+        if len(m.message) > 100:
+            res += "..."
+        bot.msg(trigger.nick, res)
+        count += 1
+
+
+@willie.module.commands("viewmessage")
+@willie.module.commands("viewm")
+def view_message(bot, trigger):
+    if not trigger.group(2).isdigit():
+        bot.msg(trigger.nick, "Message ID must be a number.")
+    messages = interface.get_messages(str(trigger.nick))
+    if not int(trigger.group(2)) <= len(messages):
+        bot.msg(trigger.nick, "No message with that ID.")
+    m = messages[trigger.group(2)]
+    bot.msg(trigger.nick, "Message %i from %s. Sent %s" % (trigger.group(2), m[0], m[2]))
+    bot.msg(trigger.nick, m[4])
 
 
 @willie.module.commands("argshow")

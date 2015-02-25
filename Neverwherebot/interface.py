@@ -25,6 +25,22 @@ def send_message(sender, receiver, content, flags=""):
     return update.send_message(sender, receiver, content, flags)
 
 
+def get_messages(nick):
+    ret = []
+    try:
+        p = model.Player.objects.get(nick=nick)
+    except:
+        return "Invalid player."
+
+    me = model.Message.objects.filter(receiver=p)
+    if not me.exists():
+        return "No messages for user %s." % nick
+    else:
+        for m in me:
+            ret.append((m.sender.nick, m.flags, str(m.sent_time), m.read, m.message))
+    return ret
+
+
 def register(nick, pw=None, email=None):
     # Registers the given nick
     if model.Player.objects.filter(nick=nick):
