@@ -289,7 +289,7 @@ def check_for_freezing(character, hour):
 def send_message(sender, receiver, content, flags=''):
     # Flags: b = Sent by the Bot w = Work Related i = Important
     if not content:
-        return False
+        return "No content given."
 
     if sender != '':
         s = models.Player.objects.filter(nick=sender)
@@ -302,7 +302,7 @@ def send_message(sender, receiver, content, flags=''):
     r = models.Player.objects.filter(nick=receiver)
 
     if len(content) >= 10000:
-        return "Message to long."
+        return "Message too long."
 
     if r.exists():
         m = models.Message(sender=s.nick, receiver=r.nick, message=content, flags=flags)
