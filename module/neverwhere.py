@@ -112,6 +112,7 @@ def create_character(bot, trigger):
     if not isinstance(args[0], basestring) or not isinstance(args[1], basestring) or not args[2].isdigit() or not args[3].isdigit() or not args[4].isdigit() or not args[5].isdigit():
         bot.say("Usage: !create NAME SEX STR DEX INT VIT")
         return
+    bot.say(str(args))
     s = interface.create_character(str(trigger.nick), args[0], args[1], int(args[2]), int(args[3]), int(args[4]), int(args[5]))
     if isinstance(s, basestring):
         bot.say(s)
