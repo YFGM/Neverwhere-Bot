@@ -86,7 +86,7 @@ def add_perk(perk, character):
     if num >= perks:
         return "No free perk slots available."
 
-    f = os.path.join(os.path.abspath(__file__), 'Neverwherebot', 'scripts', 'perks', slugify(p.name) + ".py")
+    f = os.path.join(os.path.abspath(__file__), 'scripts', 'perks', slugify(p.name) + ".py")
     if os.path.isfile(f):
         try:
             mod = imp.load_source(f[:-3], f)
@@ -163,7 +163,7 @@ def recalculate_char(character):
         cs.save()
     for n in range(len(model.CharacterPerk.objects.filter(character=char.pk))):
         p = model.Perk.filter(pk=model.CharacterPerk.objects.filter(character=char.pk).filter(slot=n).perk)
-        f = os.path.join(os.path.abspath(__file__), 'Neverwherebot', 'scripts', 'perks', slugify(p.name) + ".py")
+        f = os.path.join(os.path.abspath(__file__), 'scripts', 'perks', slugify(p.name) + ".py")
         if os.path.isfile(f):
             try:
                 mod = imp.load_source(f[:-3], f)
