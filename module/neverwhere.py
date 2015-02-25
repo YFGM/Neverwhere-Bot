@@ -6,7 +6,6 @@ import os
 
 import sys
 sys.path.append("home/willie/Neverwhere-Bot")
-os.environ["DJANGO_SETTINGS_MODULE"] = "Neverwhere.settings"
 import Neverwherebot.interface
 
 nicks = {}
