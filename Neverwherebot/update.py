@@ -292,9 +292,9 @@ def send_message(sender, receiver, content, flags=''):
         return "No content given."
 
     if sender != '':
-        s = models.Player.objects.filter(nick=sender)
+        s = models.Player.objects.filter(nick__exact=sender)
     else:
-        s = models.Player.objects.filter(nick="Bot")
+        s = models.Player.objects.filter(nick__exact="Bot")
 
     if not s.exists():
         return "User could not be found."
