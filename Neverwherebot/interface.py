@@ -197,7 +197,7 @@ def recalculate_char(character):
     char.save()
     inv.size = 0
     inv.save()
-    for cs in model.CharacterSkill.filter.filter(character=char.pk):
+    for cs in model.CharacterSkill.objects.filter.filter(character=char.pk):
         cs.level = 0
         cs.save()
     for n in range(len(model.CharacterPerk.objects.filter(character=char.pk))):
