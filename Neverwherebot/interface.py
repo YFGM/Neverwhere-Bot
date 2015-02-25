@@ -188,7 +188,7 @@ def recalculate_char(character):
     char.san = 100 + (char.will * 10)
     char.mab = char.str - 10
     char.rab = char.dex - 10
-    char.re = float((char.dex + char.vit) / 2)
+    char.re = float(((char.dex - 10) + (char.vit - 10)) / 2)
     char.ac = 10 + math.ceil(char.re)
     char.fort = char.vit - 10
     char.per = char.int - 10
