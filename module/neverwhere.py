@@ -199,7 +199,7 @@ def listen_nickserv(bot, trigger):
     if trigger.startswith('STATUS'):
         debug(bot, "STATUS found")
         w = re.compile('\w+').findall(trigger)
-        debug(bot, w)
+        debug(bot, str(w))
         if int(w[2]) == 3:
             nicks[str(w[1])] = datetime.datetime.now()
             debug(bot, "STATUS for user %s updated." % w[1])
