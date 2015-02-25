@@ -2,7 +2,6 @@ import willie.module
 import re
 import datetime
 import time
-import Neverwherebot.interface as interface
 
 nicks = {}
 
