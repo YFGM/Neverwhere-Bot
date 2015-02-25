@@ -6,12 +6,19 @@ import Neverwherebot.interface as interface
 
 nicks = {}
 
+
 @willie.module.commands('register')
 def register(bot, trigger):
     if not check_nick:
         bot.say("Please register your nick with NickServ.")
     else:
         bot.say("Nick ok!")
+
+
+@willie.module.commands('test')
+def test(bot, trigger):
+    bot.say("Test!")
+
 
 @willie.module.rule('(.*)')
 @willie.module.priority('low')
