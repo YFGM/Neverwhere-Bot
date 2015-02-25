@@ -36,6 +36,18 @@ def register(bot, trigger):
         return
     bot.say("User %s succesfully registered." % str(trigger.nick))
 
+@willie.module.commands("sendmessage")
+@willie.module.commands("sm")
+def send_message(bot, trigger):
+    pass
+
+@willie.module.commands("argshow")
+def show_args(bot, trigger):
+    s = ""
+    for i in range(len(trigger)):
+        s += ", " + trigger[i]
+    bot.say("Args: " + s)
+
 
 
 @willie.module.event('NOTICE')
