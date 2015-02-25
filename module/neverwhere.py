@@ -43,10 +43,12 @@ def send_message(bot, trigger):
 
 @willie.module.commands("argshow")
 def show_args(bot, trigger):
-    s = ""
-    for i in range(len(trigger)):
-        s += ", " + trigger[i]
-    bot.say("Args: " + s)
+    s = trigger.group(0)
+    bot.say("Group 0: " + s)
+    s = trigger.group(1)
+    bot.say("Group 1: " + s)
+    s = trigger.group(2)
+    bot.say("Group 2: " + s)
 
 
 
