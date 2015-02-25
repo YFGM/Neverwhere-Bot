@@ -7,6 +7,7 @@ import math
 from slugify import slugify
 import Neverwherebot.update as update
 import Neverwherebot.models as model
+import django.settings
 
 
 def register(nick, pw=None, email=None):

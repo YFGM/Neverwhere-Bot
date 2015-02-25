@@ -2,9 +2,11 @@ import willie.module
 import re
 import datetime
 import time
+import os
 
 import sys
 sys.path.append("home/willie/Neverwhere-Bot")
+os.environ["DJANGO_SETTINGS_MODULE"] = "Neverwhere.settings"
 import Neverwherebot.interface
 
 nicks = {}
