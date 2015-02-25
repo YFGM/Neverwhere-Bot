@@ -91,11 +91,16 @@ def show_messages(bot, trigger):
 @willie.module.commands("viewmessage")
 @willie.module.commands("viewm")
 def view_message(bot, trigger):
+    if trigger.group(2) is None:
+        bot.msg(trigger.nick, "Message ID must be a number.")
+        return
     if not trigger.group(2).isdigit():
         bot.msg(trigger.nick, "Message ID must be a number.")
+        return
     messages = interface.get_messages(str(trigger.nick))
     if not int(trigger.group(2)) <= len(messages):
         bot.msg(trigger.nick, "No message with that ID.")
+        return
     m = messages[int(trigger.group(2))-1]
     bot.msg(trigger.nick, "Message %i from %s. Sent %s" % (int(trigger.group(2)), m[0], m[2]))
     bot.msg(trigger.nick, m[4])
