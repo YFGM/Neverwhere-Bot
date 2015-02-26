@@ -255,9 +255,18 @@ def show_character(bot, trigger):
             perks += ", "
     desc.append("Perks: %s" % perks)
     skills = ""
+    count = 1
     for k in (char["skills"]):
-        pass
-    desc.append("Skills: WIP")
+        s = interface.get_perk_name(k)
+        s += " "
+        if not char["skills"][k] < 0:
+            s += "+"
+        s += str(char["skills"][k])
+        if not count == len(char["skills"]):
+            s += ", "
+        count += 1
+        skills += s
+    desc.append("Skills: %s" % skills)
     desc.append("Spells: WIP")
     for i in range(len(desc)):
         bot.say(desc[i])
