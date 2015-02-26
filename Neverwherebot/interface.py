@@ -274,11 +274,11 @@ def recalculate_char(character):
     char = model.Character.objects.get(name=character)
     inv = model.Storage.objects.get(name=char.name + "-Inventory")
     if old_hp != char.hp and old_hp is not None:
-        char.current_HP += char.current_HP - old_hp
+        char.current_HP += char.hp - old_hp
     if old_fp != char.fp and old_fp is not None:
-        char.current_FP += char.current_FP - old_fp
+        char.current_FP += char.fp - old_fp
     if old_san != char.san and old_san is not None:
-        char.current_san += char.current_san - old_san
+        char.current_san += char.san - old_san
     if old_hp is None:
         char.current_HP = char.hp
     if old_fp is None:
