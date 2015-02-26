@@ -153,7 +153,7 @@ def add_perk(perk, character):
         return s
 
     try:
-        game = model.Game.objects.get(id=1)
+        game = model.Game.objects.get(id=0)
     except:
         return "Game rules not found. This is a severe misconfiguration, please inform the Over GM of this bug."
     try:
