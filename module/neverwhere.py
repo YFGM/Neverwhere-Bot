@@ -262,6 +262,7 @@ def add_perk(bot, trigger):
     for i in range(1, len(args)):
         s += args[i]
     s = slugify(s)
+    debug(bot, "Slug: " + s)
     r = interface.add_perk(s, args[0])
     if isinstance(r, basestring):
         bot.say(r)
