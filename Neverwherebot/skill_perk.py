@@ -9,7 +9,7 @@ class Perk(Perk):
     def on_add(self, character):
         char = models.Character.objects.get(name=character)
         skill = models.Skill.objects.get(name=self.name)
-        if not models.CharacterSkill.filter(skill=skill).filter(character=char).exists:
+        if not models.CharacterSkill.objects.filter(skill=skill).filter(character=char).exists:
             new = models.CharacterSkill()
             new.skill = skill
             new.character = char
