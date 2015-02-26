@@ -3,7 +3,7 @@ from Neverwherebot.models import Character, CharacterPerk, Perk
 from slugify import slugify
 
 class Perk(Neverwherebot.perk.Perk):
-    name = "Improved Perception"
+    name = "Improved Basic Lift"
     description = "Your senses are especially canny, giving you +1 to Per."
     category = "Basic Tiered"
 
