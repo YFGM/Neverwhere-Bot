@@ -280,7 +280,6 @@ def add_perk(bot, trigger):
         return
     if trigger.group(2) is not None:
         args = re.compile('\w+').findall(str(trigger.group(2)))
-        debug(bot, str(args))
     else:
         bot.say("Usage: !addperk CHARACTER PERK")
         return
@@ -320,7 +319,6 @@ def listen_nickserv(bot, trigger):
         return
     if trigger.startswith('STATUS'):
         w = re.compile('\w+').findall(trigger)
-        debug(bot, str(w))
         if int(w[2]) == 3:
             nicks[str(w[1])] = datetime.datetime.now()
         else:
