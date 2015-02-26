@@ -325,32 +325,35 @@ def get_current_day():
 
 
 def get_skill(character, skill):
-    if models.CharacterSkill.objects.filter(character=character.pk).filter(skill=models.Skill.objects.filter(name=skill).pk).exists:
-        characterskill = models.CharacterSkill.objects.filter(character=character.pk).filter(skill=models.Skill.objects.filter(name=skill).pk).level
-    else:
+    try:
+        char = models.Character.objects.get(name=character)
+    except:
+        return False
+    try:
+        cs = models.CharacterSkill.objects.filter(character=char).get(skill=models.Skill.objects.get(name=skill))
+        characterskill = cs.level
+    except:
         characterskill = 0
-
-    if characterskill == 1:
-        characterskill = 2
-    elif characterskill > 1:
-        characterskill += 2
-
-    if models.Skill.objects.filter(name=skill).attribute == "Str":
+    try:
+        sk = models.Skill.objects.get(name=skill)
+    except:
+        return False
+    if sk.attribute == "Str":
         att = characterskill + (character.str-10)
-    elif models.Skill.objects.filter(name=skill).attribute == "Dex":
+    elif sk.attribute == "Dex":
         att = characterskill + (character.dex-10)
-    elif models.Skill.objects.filter(name=skill).attribute == "Int":
+    elif sk.attribute == "Int":
         att = characterskill + (character.int-10)
-    elif models.Skill.objects.filter(name=skill).attribute == "Vit":
+    elif sk.attribute == "Vit":
         att = characterskill + (character.vit-10)
 
-    if models.Skill.objects.filter(name=skill).difficulty == "E":
+    if sk.difficulty == "E":
         final = att - 2
-    elif models.Skill.objects.filter(name=skill).difficulty == "A":
+    elif sk.difficulty == "A":
         final = att -4
-    elif models.Skill.objects.filter(name=skill).difficulty == "H":
+    elif sk.difficulty == "H":
         final = att - 6
-    elif models.Skill.objects.filter(name=skill).difficulty == "VH":
+    elif sk.difficulty == "VH":
         final = att - 8
 
     return final

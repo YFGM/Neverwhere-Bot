@@ -336,11 +336,11 @@ def get_character(character):
     ret["current_san"] = char.current_san
     perks = {}
     for cp in model.CharacterPerk.objects.filter(character=char.pk):
-        perks[cp.slot] = model.Perk.objects.get(pk=cp.perk).name
+        perks[cp.slot] = pk=cp.perk.name
     ret["perks"] = perks
     skills = {}
     for cs in model.CharacterSkill.objects.filter(character=char.pk):
-        skills[model.Skill.objects.get(pk=cs.skill).name] = update.get_skill(character, model.Skill.objects.get(pk=cs.skill).name)
+        skills[cs.skill.name] = update.get_skill(character, cs.skill.name)
     ret["skills"] = skills
     return ret
 
