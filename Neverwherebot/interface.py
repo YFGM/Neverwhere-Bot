@@ -176,7 +176,7 @@ def add_perk(perk, character):
     if num >= perks:
         return "No free perk slots available. %i perks available, %i taken." % (perks, num)
 
-    f = os.path.join(os.path.realpath(__file__), 'scripts', 'perks', slugify(p.name) + ".py")
+    f = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'scripts', 'perks', slugify(p.name) + ".py")
     if os.path.isfile(f):
         try:
             mod = imp.load_source(f[:-3], f)
