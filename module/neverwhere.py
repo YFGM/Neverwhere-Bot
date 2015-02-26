@@ -79,13 +79,11 @@ def show_messages(bot, trigger):
         len(messages),
         unread,
     ))
-    count = 1
     for m in messages:
-        res = ("Message %i " % count) + ("from '" + m[0] + "':") + m[4][:100]
+        res = ("Message %i " % m[5]) + ("from '" + m[0] + "':") + m[4][:100]
         if len(m[4]) > 100:
             res += "..."
         bot.msg(trigger.nick, res)
-        count += 1
 
 # TODO: Set message as read.
 @willie.module.commands("viewmessage")
@@ -101,9 +99,12 @@ def view_message(bot, trigger):
     if not int(trigger.group(2)) <= len(messages):
         bot.msg(trigger.nick, "No message with that ID.")
         return
-    m = messages[int(trigger.group(2))-1]
-    bot.msg(trigger.nick, "Message %i from %s. Sent %s" % (int(trigger.group(2)), m[0], m[2]))
-    bot.msg(trigger.nick, m[4])
+    for m in messages:
+        if m[5] == int(trigger.group(2)):
+            bot.msg(trigger.nick, "Message %i from %s. Sent %s" % (int(trigger.group(2)), m[0], m[2]))
+            bot.msg(trigger.nick, m[4])
+            return
+    bot.msg(trigger.nick, "No message with that ID.")
 
 
 @willie.module.commands("create")
