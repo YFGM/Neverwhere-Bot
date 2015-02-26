@@ -22,8 +22,14 @@ class Perk(Neverwherebot.perk.Perk):
 
     def prerequisites(self, character):
         print "Reached Prerequisites"
-        char = Character.objects.get(name=character)
-        p = Perk.objects.get(name=slugify(self.name))
+        try:
+            char = Character.objects.get(name=character)
+        except:
+            print "Character not found."
+        try:
+            p = Perk.objects.get(name=slugify(self.name))
+        except:
+            print "Perk not found."
         count = 0
         for cp in CharacterPerk.objects.filter(character=char):
             if cp.perk == p:
