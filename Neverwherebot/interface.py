@@ -185,13 +185,10 @@ def add_perk(perk, character):
                 P = mod.Perk()
                 can_take = P.prerequisites(character)
             except:
-                print("Failed to find module for perk %s." % p.name)
                 return "Failed to execute prerequisites module for perk %s." % p.name
         except:
-            print("Failed to import module %s." % str(f))
             return "Failed to import module %s." % str(f)
     else:
-        print("File %s not found." % str(f))
         return "File %s not found." % str(f)
 
     if not can_take:
@@ -235,13 +232,13 @@ def recalculate_char(character):
         inv = model.Storage.objects.get(name=char.name + "-Inventory")
     except:
         return "Inventory not found, ya dun goofd."
-    old_hp = char.hp
-    old_fp = char.fp
-    old_san = char.san
     char.hp = char.str
     char.fp = char.vit
     char.will = char.int - 10
     char.san = 100 + (char.will * 10)
+    old_hp = char.hp
+    old_fp = char.fp
+    old_san = char.san
     char.mab = char.str - 10
     char.rab = char.dex - 10
     char.re = float(((char.dex - 10) + (char.vit - 10)) / 2)
@@ -309,7 +306,6 @@ def get_character(character):
         char = model.Character.objects.get(name=character)
     except:
         return "Character not found."
-    print "Character %s found." % character
     s = recalculate_char(char.name)
     if isinstance(s, basestring):
         return s
@@ -336,7 +332,7 @@ def get_character(character):
     ret["current_san"] = char.current_san
     perks = {}
     for cp in model.CharacterPerk.objects.filter(character=char.pk):
-        perks[cp.slot] = pk=cp.perk.name
+        perks[cp.slot] = cp.perk.name
     ret["perks"] = perks
     skills = {}
     for cs in model.CharacterSkill.objects.filter(character=char.pk):
