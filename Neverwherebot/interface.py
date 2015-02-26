@@ -271,9 +271,9 @@ def recalculate_char(character):
     for cs in model.CharacterSkill.objects.filter(character=char):
         cs.level = 0
         cs.save()
-    for n in range(len(model.CharacterPerk.objects.filter(character=char))):
+    for n in range(1, len(model.CharacterPerk.objects.filter(character=char))+1):
         try:
-            p = model.CharacterPerk.objects.filter(character=char).get(slot=n+1).perk
+            p = model.CharacterPerk.objects.filter(character=char).get(slot=n).perk
         except:
             continue
         f = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'scripts', 'perks', slugify(p.name) + ".py")
