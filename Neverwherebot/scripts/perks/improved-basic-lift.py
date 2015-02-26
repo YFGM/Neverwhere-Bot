@@ -27,7 +27,7 @@ class Perk(Neverwherebot.perk.Perk):
         except:
             print "Character not found."
         try:
-            p = Perk.objects.get(name=slugify(self.name))
+            p = Neverwherebot.models.Perk.objects.get(name=slugify(self.name))
         except Exception, e:
             print str(e)
         count = 0
