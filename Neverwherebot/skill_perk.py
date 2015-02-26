@@ -4,7 +4,7 @@ import Neverwherebot.models as models
 
 
 class Perk(Perk):
-    category = ("Skill")
+    category = ("Skill Tiered")
 
     def on_add(self, character):
         char = models.Character.objects.get(name=character)
@@ -27,3 +27,4 @@ class Perk(Perk):
             charskill.level += 1
 
         charskill.save()
+        return True
