@@ -9,16 +9,16 @@ class Perk(Perk):
     def on_add(self, character):
         char = models.Character.objects.get(name=character)
         skill = models.Skill.objects.get(name=self.name)
-        if not models.CharacterSkill.filter(skill=skill.pk).filter(character=char.pk):
+        if not models.CharacterSkill.filter(skill=skill).filter(character=char).exists:
             new = models.CharacterSkill()
-            new.skill = skill.pk
-            new.character = char.pk
+            new.skill = skill
+            new.character = char
             new.save()
 
     def on_recalc(self, character):
         char = models.Character.objects.get(name=character)
         skill = models.Skill.objects.get(name=self.name)
-        charskill = models.CharacterSkill.filter(skill=skill.pk).filter(character=char.pk)
+        charskill = models.CharacterSkill.objects.filter(skill=skill).get(character=char)
         if charskill.level == 0 or charskill.level == 2:
             charskill.level += 2
         else:
