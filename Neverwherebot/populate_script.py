@@ -21,12 +21,11 @@ def cs(name, difficulty, attribute):
 
 def cp(name, category):
     print "Attempting to create Perk %s." % name
+    new = models.Perk(name=name, category=category)
     try:
-        new = models.Perk(name=name, category=category)
+        new.save()
     except:
-        return False
-    print "Failed."
-    new.save()
+        print "Failed."
     print "Success."
     return True
 
