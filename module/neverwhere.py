@@ -96,9 +96,6 @@ def view_message(bot, trigger):
         bot.msg(trigger.nick, "Message ID must be a number.")
         return
     messages = interface.get_messages(str(trigger.nick))
-    if not int(trigger.group(2)) <= len(messages):
-        bot.msg(trigger.nick, "No message with that ID.")
-        return
     for m in messages:
         if m[5] == int(trigger.group(2)):
             bot.msg(trigger.nick, "Message %i from %s. Sent %s" % (int(trigger.group(2)), m[0], m[2]))
