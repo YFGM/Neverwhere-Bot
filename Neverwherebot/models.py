@@ -75,7 +75,7 @@ class Skill(models.Model):
         ('Vit', 'Vitality'),
     )
     attribute = models.CharField(max_length=128, choices=ATTRIBUTE_CHOICES)
-    slug = models.CharField(max_length=128, unique=True)
+    slug = models.CharField(max_length=128, unique=True, default="FIX ME")
 
     def __str__(self):
         return self.name
@@ -293,7 +293,7 @@ class HuntingList(models.Model):
 
 
 class Prey(models.Model):
-    name = models.CharField(max_length=128)
+    name = models.CharField(max_length=128, default="Thingy", unique=True)
     hp = models.IntegerField(default=1)
     ac = models.IntegerField(default=10)
     escape = models.IntegerField(default=5)
