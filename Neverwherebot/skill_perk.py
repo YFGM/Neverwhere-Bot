@@ -17,13 +17,11 @@ class Perk(Perk):
         except:
             print "Skill not found."
             return
-        if not models.CharacterSkill.objects.filter(skill=skill).filter(character=char).exists:
-            print "Char skill not present, creating."
+        if not models.CharacterSkill.objects.filter(skill=skill).filter(character=char).exists():
             new = models.CharacterSkill()
             new.skill = skill
             new.character = char
             new.save()
-            print "Char skill created."
             return True
 
     def on_recalc(self, character):
