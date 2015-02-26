@@ -199,6 +199,7 @@ def add_perk(perk, character):
         return "Character does not fulfill the prerequisites for this perk."
 
     if "Tiered" in P.category:
+        print "Tiered found."
         count = 0
         latest = 0
         for cp in model.CharacterPerk.objects.filter(character=char):
