@@ -319,19 +319,16 @@ def listen_nickserv(bot, trigger):
     if not trigger.sender == "NickServ":
         return
     if trigger.startswith('STATUS'):
-        debug(bot, "STATUS found")
         w = re.compile('\w+').findall(trigger)
         debug(bot, str(w))
         if int(w[2]) == 3:
             nicks[str(w[1])] = datetime.datetime.now()
-            debug(bot, "STATUS for user %s updated." % w[1])
         else:
             return False
 
 
 def check_nick(bot, nick):
     bot.msg('NickServ', "STATUS " + nick)
-    debug(bot, "STATUS request for user %s sent to NickServ." % nick)
     time.sleep(1.5)
     if nick in nicks:
         if (datetime.datetime.now() - nicks[nick]).seconds < 10:
