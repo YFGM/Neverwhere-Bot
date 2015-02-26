@@ -85,11 +85,26 @@ def show_messages(bot, trigger):
         len(messages),
         unread,
     ))
+    unread = []
+    read = []
     for m in messages:
         res = ("Message %i " % m[5]) + ("from '" + m[0] + "': ") + m[4][:100]
         if len(m[4]) > 100:
             res += "..."
-        bot.msg(trigger.nick, res)
+        else:
+            interface.set_message_read(m[5])
+        if m[3]:
+            read.append(res)
+        else:
+            unread.append(res)
+    if len(read) > 0:
+        bot.msg(trigger.nick, "Unread: ")
+        for s in unread:
+            bot.msg(trigger.nick, s)
+    if len(read) > 0:
+        bot.msg(trigger.nick, "Read :")
+        for s in read:
+            bot.msg(trigger.nick, s)
 
 
 @willie.module.commands("viewmessage")
