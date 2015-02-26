@@ -261,15 +261,15 @@ def recalculate_char(character):
             p = model.CharacterPerk.objects.filter(character=char).get(slot=n).perk
         except:
             continue
-        f = os.path.join(os.path.abspath(__file__), 'scripts', 'perks', slugify(p.name) + ".py")
+        f = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'scripts', 'perks', slugify(p.name) + ".py")
         if os.path.isfile(f):
             try:
                 mod = imp.load_source(f[:-3], f)
                 try:
-                    if not mod.Perk.on_recalc(character):
-                        return "Error in on_recalc()."
+                    P = mod.Perk()
+                    P.on_recalc(character)
                 except:
-                    return "Failed to find module for perk %s." % p.name
+                    return "Failed to execute on_recalc for perk %s." % p.name
             except:
                 return "Failed to import module %s." % str(f)
         else:
