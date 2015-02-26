@@ -309,6 +309,7 @@ def get_character(character):
         char = model.Character.objects.get(name=character)
     except:
         return "Character not found."
+    print "Character %s found." % character
     s = recalculate_char(char.name)
     if isinstance(s, basestring):
         return s
