@@ -24,11 +24,14 @@ def checknick(bot, trigger):
 def test(bot, trigger):
     bot.say("Test!")
 
-# TODO: If user is already registered
+
 @willie.module.commands('register')
 def register(bot, trigger):
     if not check_nick(bot, str(trigger.nick)):
         bot.say("Please register your nick with NickServ.")
+        return
+    if check_user(str(trigger.nick)):
+        bot.say("You are already registered.")
         return
     debug(bot, "User %s ok, registering." % str(trigger.nick))
     s = interface.register(str(trigger.nick))
@@ -64,6 +67,9 @@ def send_message(bot, trigger):
 @willie.module.commands("showmessages")
 @willie.module.commands("showm")
 def show_messages(bot, trigger):
+    if not check_nick(bot, str(trigger.nick)) or not check_user(trigger.nick):
+        bot.say("Please register your nick to use this function.")
+        return
     messages = interface.get_messages(str(trigger.nick))
     if len(messages) < 1:
         bot.msg(trigger.nick, "You currently have no messages.")
@@ -90,6 +96,9 @@ def show_messages(bot, trigger):
 @willie.module.commands("viewmessage")
 @willie.module.commands("viewm")
 def view_message(bot, trigger):
+    if not check_nick(bot, str(trigger.nick)) or not check_user(trigger.nick):
+        bot.say("Please register your nick to use this function.")
+        return
     if trigger.group(2) is None:
         bot.msg(trigger.nick, "Message ID must be a number.")
         return
@@ -103,6 +112,29 @@ def view_message(bot, trigger):
             bot.msg(trigger.nick, m[4])
             return
     bot.msg(trigger.nick, "No message with that ID.")
+
+
+@willie.module.commands("deletemessage")
+@willie.module.commands("delm")
+@willie.module.commands("deletem")
+def delete_message(bot, trigger):
+    if not check_nick(bot, str(trigger.nick)) or not check_user(trigger.nick):
+        bot.say("Please register your nick to use this function.")
+        return
+    if trigger.group(2) is None:
+        bot.msg(trigger.nick, "Message ID must be a number.")
+        return
+    if not trigger.group(2).isdigit():
+        bot.msg(trigger.nick, "Message ID must be a number.")
+        return
+    m = interface.get_message(int(trigger.group(2)))
+    if isinstance(m, basestring):
+        bot.say(m)
+        return
+    if not m[6] == str(trigger.nick):
+        bot.say("You don't own this message.")
+        return
+    interface.delete_message(int(trigger.group(2)))
 
 
 @willie.module.commands("create")

@@ -41,6 +41,25 @@ def get_messages(nick):
     return ret
 
 
+def get_message(message):
+    try:
+        m = model.Message.objects.get(pk=message)
+    except:
+        return "Message not found."
+
+    ret = [m.sender.nick, m.flags, m.sent_time.replace(tzinfo=None), m.read, m.message, m.pk, m.receiver.nick]
+
+    return ret
+
+def delete_message(message):
+    try:
+        m = model.Message.objects.get(pk=message)
+    except:
+        return "Message could not be found."
+    m.delete()
+    return True
+
+
 def register(nick, pw=None, email=None):
     # Registers the given nick
     if model.Player.objects.filter(nick=nick):
