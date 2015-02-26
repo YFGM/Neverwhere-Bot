@@ -240,9 +240,7 @@ def show_character(bot, trigger):
         bot.say(desc[i])
 
 
-@willie.module.commands("addPerk")
 @willie.module.commands("addperk")
-@willie.module.commands("addP")
 @willie.module.commands("addp")
 def add_perk(bot, trigger):
     if not check_nick(bot, str(trigger.nick)) or not check_user(trigger.nick):
