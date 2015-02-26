@@ -339,13 +339,13 @@ def get_skill(character, skill):
     except:
         return False
     if sk.attribute == "Str":
-        att = characterskill + (character.str-10)
+        att = characterskill + (char.str-10)
     elif sk.attribute == "Dex":
-        att = characterskill + (character.dex-10)
+        att = characterskill + (char.dex-10)
     elif sk.attribute == "Int":
-        att = characterskill + (character.int-10)
+        att = characterskill + (char.int-10)
     elif sk.attribute == "Vit":
-        att = characterskill + (character.vit-10)
+        att = characterskill + (char.vit-10)
 
     if sk.difficulty == "E":
         final = att - 2
