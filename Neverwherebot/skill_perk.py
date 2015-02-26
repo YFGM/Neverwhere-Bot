@@ -7,8 +7,16 @@ class Perk(Perk):
     category = ("Skill Tiered")
 
     def on_add(self, character):
-        char = models.Character.objects.get(name=character)
-        skill = models.Skill.objects.get(name=self.name)
+        try:
+            char = models.Character.objects.get(name=character)
+        except:
+            print "Character not found."
+            return
+        try:
+            skill = models.Skill.objects.get(name=self.name)
+        except:
+            print "Skill not found."
+            return
         if not models.CharacterSkill.objects.filter(skill=skill).filter(character=char).exists:
             print "Char skill not present, creating."
             new = models.CharacterSkill()
