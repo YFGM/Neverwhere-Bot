@@ -197,13 +197,12 @@ def add_perk(perk, character):
 
     if not can_take:
         return "Character does not fulfill the prerequisites for this perk."
-
+    count = 0
+    latest = 0
     if "Tiered" in P.category:
         print "Tiered found."
-        count = 0
-        latest = 0
         for cp in model.CharacterPerk.objects.filter(character=char):
-            if cp.perk == P:
+            if cp.perk == p:
                 count += 1
                 if cp.slot > latest:
                     latest = cp.slot
