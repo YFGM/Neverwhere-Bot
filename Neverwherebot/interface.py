@@ -273,7 +273,7 @@ def recalculate_char(character):
             except:
                 return "Failed to import module %s." % str(f)
         else:
-            return "Could not find perk script ." % str(f)
+            return "Could not find perk script %s." % str(f)
     char = model.Character.objects.get(name=character)
     inv = model.Storage.objects.get(name=char.name + "-Inventory")
     if old_hp != char.hp and old_hp is not None:
