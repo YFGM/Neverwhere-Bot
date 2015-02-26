@@ -178,6 +178,21 @@ def create_character(bot, trigger):
     bot.say("Character %s succesfully created." % str(args[0]))
 
 
+@willie.module.commands("getc")
+def get_character(bot, trigger):
+    if not check_nick(bot, str(trigger.nick)) or not check_user(trigger.nick):
+        bot.say("Please register your nick to use this function.")
+        return
+    if trigger.group(2) is None:
+        bot.say("Usage: !getc CHARACTER")
+        return
+    char = interface.get_character(str(trigger.group(2)))
+    if isinstance(char, basestring):
+        bot.say(char)
+        return
+    debug(bot, str(char))
+
+
 @willie.module.commands("show")
 def show_character(bot, trigger):
     if not check_nick(bot, str(trigger.nick)) or not check_user(trigger.nick):
