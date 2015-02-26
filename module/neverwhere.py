@@ -248,6 +248,7 @@ def add_perk(bot, trigger):
         return
     if trigger.group(2) is not None:
         args = re.compile('\w+').findall(str(trigger.group(2)))
+        debug(bot, str(args))
     else:
         bot.say("Usage: !addperk CHARACTER PERK")
         return
