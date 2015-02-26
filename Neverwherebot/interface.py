@@ -51,6 +51,7 @@ def get_message(message):
 
     return ret
 
+
 def delete_message(message):
     try:
         m = model.Message.objects.get(pk=message)
@@ -59,6 +60,16 @@ def delete_message(message):
     m.delete()
     return True
 
+
+def set_message_read(message):
+    try:
+        m = model.Message.objects.get(pk=message)
+    except:
+        return "Message could not be found."
+
+    m.read = True
+    m.save()
+    return True
 
 def register(nick, pw=None, email=None):
     # Registers the given nick

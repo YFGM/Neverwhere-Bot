@@ -63,7 +63,6 @@ def send_message(bot, trigger):
     bot.say("Message sent.")
 
 
-# TODO: Add a unique ID to messages to make it less stupid, add telling you if it's read or not
 @willie.module.commands("showmessages")
 @willie.module.commands("showm")
 def show_messages(bot, trigger):
@@ -92,7 +91,7 @@ def show_messages(bot, trigger):
             res += "..."
         bot.msg(trigger.nick, res)
 
-# TODO: Set message as read.
+
 @willie.module.commands("viewmessage")
 @willie.module.commands("viewm")
 def view_message(bot, trigger):
@@ -110,6 +109,7 @@ def view_message(bot, trigger):
         if m[5] == int(trigger.group(2)):
             bot.msg(trigger.nick, "Message %i from %s. Sent %s" % (int(trigger.group(2)), m[0], humanize.naturaltime(datetime.datetime.now()-m[2])))
             bot.msg(trigger.nick, m[4])
+            interface.set_message_read(m[5])
             return
     bot.msg(trigger.nick, "No message with that ID.")
 
