@@ -8,7 +8,7 @@ class Perk(Perk):
     category = ("Basic", "Tiered")
 
     def on_add(self, character):
-        self.on_recalc(self, character)
+        self.on_recalc(character)
         return True
 
     def on_recalc(self, character):
