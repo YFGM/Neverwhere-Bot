@@ -182,7 +182,7 @@ def add_perk(perk, character):
         try:
             mod = imp.load_source(f[:-3], f)
             try:
-                p = mod.Perk()
+                P = mod.Perk()
                 can_take = p.prerequisites(character)
             except:
                 print("Failed to find module for perk %s." % p.name)
@@ -211,7 +211,7 @@ def add_perk(perk, character):
             return "Character cannot take this perk at this moment due to Tiered restriction. The earliest they can take" \
                    " it is in %i perks." % (latest + count + 1) - (num + 1)
 
-    if not mod.Perk.on_add(character):
+    if not P.on_add(character):
         return "Error in 'on_add' function."
     new = model.CharacterPerk()
     new.character = char
