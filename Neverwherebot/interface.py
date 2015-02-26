@@ -380,6 +380,8 @@ def get_perk_name(perk):
         s = model.Skill.objects.get(slug=name)
         return s.name
 
+    
+
 def apply_job(worksite, job, character, parttime=False):
     pass
 

@@ -257,7 +257,7 @@ def show_character(bot, trigger):
     skills = ""
     count = 1
     for k in (char["skills"]):
-        s = interface.get_perk_name(k)
+        s = k
         s += " "
         if not char["skills"][k] < 0:
             s += "+"
