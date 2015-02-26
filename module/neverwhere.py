@@ -242,8 +242,8 @@ def show_character(bot, trigger):
 
 @willie.module.commands("addPerk")
 @willie.module.commands("addperk")
-@willie.moduke.commands("addP")
-@willie.moduke.commands("addp")
+@willie.module.commands("addP")
+@willie.module.commands("addp")
 def add_perk(bot, trigger):
     if not check_nick(bot, str(trigger.nick)) or not check_user(trigger.nick):
         bot.say("Please register your nick to use this function.")
