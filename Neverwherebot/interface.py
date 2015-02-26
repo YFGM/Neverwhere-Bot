@@ -357,24 +357,28 @@ def get_character(character):
 
 
 def get_perk_name(perk):
-    name = slugify(perk)
+    name = perk
     try:
             p = model.Perk.objects.get(name=name)
     except:
         return "Could not find Perk %s." % name
-    f = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'scripts', 'perks', name + ".py")
-    if os.path.isfile(f):
-        try:
-            mod = imp.load_source(f[:-3], f)
+    if "Skill" not in p.category:
+        f = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'scripts', 'perks', name + ".py")
+        if os.path.isfile(f):
             try:
-                P = mod.Perk()
-                return P.name
+                mod = imp.load_source(f[:-3], f)
+                try:
+                    P = mod.Perk()
+                    return P.name
+                except:
+                    return "Failed to find name for perk %s." % name
             except:
-                return "Failed to find name for perk %s." % name
-        except:
-            return "Failed to import module %s." % str(f)
+                return "Failed to import module %s." % str(f)
+        else:
+            return "Could not find perk script %s." % str(f)
     else:
-        return "Could not find perk script %s." % str(f)
+        s = model.Skill.objects.get(slug=name)
+        return s.name
 
 def apply_job(worksite, job, character, parttime=False):
     pass
