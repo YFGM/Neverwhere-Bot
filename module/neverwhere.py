@@ -97,12 +97,12 @@ def show_messages(bot, trigger):
             read.append(res)
         else:
             unread.append(res)
-    if len(read) > 0:
-        bot.msg(trigger.nick, "Unread: ")
+    if len(unread) > 0:
+        bot.msg(trigger.nick, "Unread:")
         for s in unread:
             bot.msg(trigger.nick, s)
     if len(read) > 0:
-        bot.msg(trigger.nick, "Read :")
+        bot.msg(trigger.nick, "Read:")
         for s in read:
             bot.msg(trigger.nick, s)
 
