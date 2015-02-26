@@ -16,7 +16,7 @@ class Perk(Neverwherebot.perk.Perk):
             char = Character.objects.get(name=character)
         except:
             return False
-        char.bl += char.str**2 / 100
+        char.bl += float(char.str)**2 / 100
         char.save()
         return True
 
