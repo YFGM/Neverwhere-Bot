@@ -257,7 +257,7 @@ def recalculate_char(character):
         cs.level = 0
         cs.save()
     for n in range(len(model.CharacterPerk.objects.filter(character=char))):
-        p = model.CharacterPerk.objects.filter(character=char).filter(slot=n).perk
+        p = model.CharacterPerk.objects.filter(character=char).get(slot=n).perk
         f = os.path.join(os.path.abspath(__file__), 'scripts', 'perks', slugify(p.name) + ".py")
         if os.path.isfile(f):
             try:
