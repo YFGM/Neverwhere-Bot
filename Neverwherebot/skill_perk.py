@@ -18,9 +18,20 @@ class Perk(Perk):
         return True
 
     def on_recalc(self, character):
-        char = models.Character.objects.get(name=character)
-        skill = models.Skill.objects.get(name=self.name)
-        charskill = models.CharacterSkill.objects.filter(skill=skill).get(character=char)
+        try:
+            char = models.Character.objects.get(name=character)
+        except:
+            print "Character not found."
+
+        try:
+            skill = models.Skill.objects.get(name=self.name)
+        except:
+            print "Skill not found."
+
+        try:
+            charskill = models.CharacterSkill.objects.filter(skill=skill).get(character=char)
+        except:
+            print "Charskill not found."
         if charskill.level == 0 or charskill.level == 2:
             charskill.level += 2
         else:
