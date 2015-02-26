@@ -12,8 +12,9 @@ class Perk(Perk):
         return True
 
     def on_recalc(self, character):
-        char = Character.objects.filter(name=character)
-        if not char:
+        try:
+            char = Character.objects.get(name=character)
+        except:
             return False
         char.hp += 2
         char.save()
