@@ -135,6 +135,7 @@ def delete_message(bot, trigger):
         bot.say("You don't own this message.")
         return
     interface.delete_message(int(trigger.group(2)))
+    bot.say("Message %i deleted." % int(trigger.group(2)))
 
 
 @willie.module.commands("create")
