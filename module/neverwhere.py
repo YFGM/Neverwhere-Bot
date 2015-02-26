@@ -189,8 +189,6 @@ def show_character(bot, trigger):
         bot.say("Usage: !show CHARACTER")
         return
     char = interface.get_character(str(trigger.group(2)))
-    debug(bot, "Got character %s:" % str(trigger.group(2)))
-    debug(bot, str(char))
     if isinstance(char, basestring):
         bot.say(char)
         return
@@ -235,7 +233,12 @@ def show_character(bot, trigger):
     desc.append("%s%i MAB %s%i RAB %i AC" % (prefixes["mab"], char["mab"], prefixes["rab"], char["rab"], char["ac"]))
     desc.append("%s%i Will %s%i Re %s%i Fort" % (prefixes["will"], char["will"], prefixes["re"], char["re"], prefixes["fort"], char["fort"]))
     desc.append("%s%i Per %i Mo %d BL" % (prefixes["per"], char["per"], char["mo"], char["bl"]))
-    desc.append("Perks: WIP")
+    perks = ""
+    for n in range(1, len(char["perks"])+1):
+        perks += interface.get_perk_name(char["perks"][n])
+        if n != len(char["perks"])+1:
+            perks += ", "
+    desc.append("Perks: %s" % perks)
     desc.append("Skills: WIP")
     desc.append("Spells: WIP")
     for i in range(len(desc)):
