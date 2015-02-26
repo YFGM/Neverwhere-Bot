@@ -162,6 +162,10 @@ def add_perk(perk, character):
     except:
         return "Character not found."
 
+    old_hp = char.hp
+    old_fp = char.fp
+    old_san = char.san
+
     if perk.isdigit():
         try:
             p = model.Perk.objects.get(pk=perk)
@@ -218,6 +222,23 @@ def add_perk(perk, character):
     s = recalculate_char(character)
     if isinstance(s, basestring):
         return s
+    char = model.Character.objects.get(name=character)
+    inv = model.Storage.objects.get(name=char.name + "-Inventory")
+    if old_hp != char.hp and old_hp is not None:
+        char.current_HP += char.hp - old_hp
+    if old_fp != char.fp and old_fp is not None:
+        char.current_FP += char.fp - old_fp
+    if old_san != char.san and old_san is not None:
+        char.current_san += char.san - old_san
+    if old_hp is None:
+        char.current_HP = char.hp
+    if old_fp is None:
+        char.current_FP = char.fp
+    if old_san is None:
+        char.current_san = char.san
+    char.save()
+    inv.size += math.ceil(char.bl)
+    inv.save()
     return True
 
 
@@ -232,10 +253,6 @@ def recalculate_char(character):
         inv = model.Storage.objects.get(name=char.name + "-Inventory")
     except:
         return "Inventory not found, ya dun goofd."
-    old_hp = char.hp
-    print "Old HP: %i" % old_hp
-    old_fp = char.fp
-    old_san = char.san
     char.hp = char.str
     char.fp = char.vit
     char.will = char.int - 10
@@ -272,24 +289,6 @@ def recalculate_char(character):
                 return "Failed to import module %s." % str(f)
         else:
             return "Could not find perk script %s." % str(f)
-    char = model.Character.objects.get(name=character)
-    inv = model.Storage.objects.get(name=char.name + "-Inventory")
-    print "Char HP: %i" % char.hp
-    if old_hp != char.hp and old_hp is not None:
-        char.current_HP += char.hp - old_hp
-    if old_fp != char.fp and old_fp is not None:
-        char.current_FP += char.fp - old_fp
-    if old_san != char.san and old_san is not None:
-        char.current_san += char.san - old_san
-    if old_hp is None:
-        char.current_HP = char.hp
-    if old_fp is None:
-        char.current_FP = char.fp
-    if old_san is None:
-        char.current_san = char.san
-    char.save()
-    inv.size += math.ceil(char.bl)
-    inv.save()
     return True
 
 
