@@ -14,6 +14,8 @@ class Perk(Perk):
             new.skill = skill
             new.character = char
             new.save()
+            return True
+        return True
 
     def on_recalc(self, character):
         char = models.Character.objects.get(name=character)
