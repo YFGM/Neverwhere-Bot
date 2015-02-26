@@ -202,7 +202,7 @@ def add_perk(perk, character):
         count = 0
         latest = 0
         for cp in model.CharacterPerk.objects.filter(character=char):
-            if cp.perk == p.pk:
+            if cp.perk == P:
                 count += 1
                 if cp.slot > latest:
                     latest = cp.slot
