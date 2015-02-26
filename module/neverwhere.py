@@ -87,7 +87,7 @@ def show_messages(bot, trigger):
         unread,
     ))
     for m in messages:
-        res = ("Message %i " % m[5]) + ("from '" + m[0] + "':") + m[4][:100]
+        res = ("Message %i " % m[5]) + ("from '" + m[0] + "': ") + m[4][:100]
         if len(m[4]) > 100:
             res += "..."
         bot.msg(trigger.nick, res)
