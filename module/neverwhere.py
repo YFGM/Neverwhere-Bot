@@ -3,6 +3,7 @@ import re
 import datetime
 import time
 import sys
+import humanize
 
 sys.path.append("/home/willie/Neverwhere-Bot")
 sys.path.append("/home/willie/Neverwhere-Bot/Neverwherebot")
@@ -98,7 +99,7 @@ def view_message(bot, trigger):
     messages = interface.get_messages(str(trigger.nick))
     for m in messages:
         if m[5] == int(trigger.group(2)):
-            bot.msg(trigger.nick, "Message %i from %s. Sent %s" % (int(trigger.group(2)), m[0], m[2]))
+            bot.msg(trigger.nick, "Message %i from %s. Sent %s" % (int(trigger.group(2)), m[0], humanize.naturaltime(datetime.datetime.now()-m[2])))
             bot.msg(trigger.nick, m[4])
             return
     bot.msg(trigger.nick, "No message with that ID.")

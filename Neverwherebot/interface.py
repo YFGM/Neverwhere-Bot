@@ -37,7 +37,7 @@ def get_messages(nick):
         return "No messages for user %s." % nick
     else:
         for m in me:
-            ret.append([m.sender.nick, m.flags, str(m.sent_time), m.read, m.message, m.pk])
+            ret.append([m.sender.nick, m.flags, m.sent_time, m.read, m.message, m.pk])
     return ret
 
 
