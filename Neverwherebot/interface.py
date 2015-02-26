@@ -288,6 +288,7 @@ def recalculate_char(character):
                 return "Failed to import module %s." % str(f)
         else:
             return "Could not find perk script %s." % str(f)
+    char = model.Character.objects.get(name=character)
     char.san = 100 + (char.will * 10)
     char.save()
     return True
