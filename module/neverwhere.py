@@ -4,6 +4,7 @@ import datetime
 import time
 import sys
 import humanize
+from slugify import slugify
 
 sys.path.append("/home/willie/Neverwhere-Bot")
 sys.path.append("/home/willie/Neverwhere-Bot/Neverwherebot")
@@ -239,7 +240,34 @@ def show_character(bot, trigger):
         bot.say(desc[i])
 
 
-
+@willie.module.commands("addPerk")
+@willie.module.commands("addperk")
+@willie.moduke.commands("addP")
+@willie.moduke.commands("addp")
+def add_perk(bot, trigger):
+    if not check_nick(bot, str(trigger.nick)) or not check_user(trigger.nick):
+        bot.say("Please register your nick to use this function.")
+        return
+    if trigger.group(2) is not None:
+        args = re.compile('\w+').findall(str(trigger.group(2)))
+    else:
+        bot.say("Usage: !addperk CHARACTER PERK")
+        return
+    if len(args) == 1:
+        bot.say("Usage: !addperk CHARACTER PERK")
+        return
+    if not interface.is_owner(str(trigger.nick), args[0]):
+        bot.say("You do not own that character.")
+        return
+    s = ""
+    for i in range(1, len(args)):
+        s += args[i]
+    s = slugify(s)
+    r = interface.add_perk(s, args[0])
+    if isinstance(r, basestring):
+        bot.say(r)
+        return
+    bot.say("Perk succesfully added.")
 
 
 @willie.module.commands("argshow")
@@ -254,7 +282,7 @@ def show_args(bot, trigger):
 
 @willie.module.event('NOTICE')
 @willie.module.rule('(.*)')
-@willie.module.priority('low')
+@willie.module.priority('high')
 def listen_nickserv(bot, trigger):
     if not trigger.sender == "NickServ":
         return

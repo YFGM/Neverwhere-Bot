@@ -71,6 +71,7 @@ def set_message_read(message):
     m.save()
     return True
 
+
 def register(nick, pw=None, email=None):
     # Registers the given nick
     if model.Player.objects.filter(nick=nick):
@@ -131,23 +132,45 @@ def delete_character(name):
     character.save()
 
 
+def is_owner(player, character):
+    try:
+        p = model.Player.objects.get(nick=player)
+    except:
+        return "Invalid player."
+    try:
+        char = model.Character.objects.get(name=character)
+    except:
+        return "Character not found."
+
+    if char.player == p:
+        return True
+    else:
+        return False
+
 def add_perk(perk, character):
     s = recalculate_char(character)
     if isinstance(s, basestring):
         return s
 
-    game = model.Game.objects.filter(id=0)
-    char = model.Character.objects.filter(name=character)
-    if not char:
-        return "Character not found."
-    if not game:
+    try:
+        game = model.Game.objects.get(id=1)
+    except:
         return "Game rules not found. This is a severe misconfiguration, please inform the Over GM of this bug."
-    if perk.isdigits:
-        p = model.Perk.objects.filter(pk=perk)
+    try:
+        char = model.Character.objects.get(name=character)
+    except:
+        return "Character not found."
+
+    if perk.isdigits():
+        try:
+            p = model.Perk.objects.get(pk=perk)
+        except:
+            return "Perk not found."
     else:
-        p = model.Perk.objects.filter(name=perk)
-    if not p:
-        return "Perk not found."
+        try:
+            p = model.Perk.objects.get(name=perk)
+        except:
+            return "Perk not found."
     perks = update.get_current_day() / game.interval
     num = len(model.CharacterPerk.objects.filter(character=char))
     if num >= perks:
@@ -163,9 +186,10 @@ def add_perk(perk, character):
                 print("Failed to find module for perk %s." % p.name)
                 return False
         except:
-            print("Failed to import module %s." % f)
+            print("Failed to import module %s." % str(f))
             return False
     else:
+        print("File %s not found." % str(f))
         return False
 
     if not can_take:
@@ -188,8 +212,8 @@ def add_perk(perk, character):
     if not mod.Perk.on_add(character):
         return "Error in 'on_add' function."
     new = model.CharacterPerk()
-    new.character = char.pk
-    new.perk = p.pk
+    new.character = char
+    new.perk = p
     new.slot = num + 1
     new.save()
     s = recalculate_char(character)
