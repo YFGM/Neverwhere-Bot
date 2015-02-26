@@ -241,7 +241,7 @@ def show_character(bot, trigger):
     desc.append("Perks: %s" % perks)
     skills = ""
     for k in (char["skills"]):
-
+        pass
     desc.append("Skills: WIP")
     desc.append("Spells: WIP")
     for i in range(len(desc)):
