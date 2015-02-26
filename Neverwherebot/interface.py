@@ -205,7 +205,7 @@ def add_perk(perk, character):
             if cp.perk == p:
                 count += 1
                 if cp.slot > latest:
-                    latest = cp.slot
+                    latest = int(cp.slot)
         if num + 1 > latest + count or count == 0:
             pass
         else:
