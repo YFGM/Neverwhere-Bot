@@ -188,10 +188,7 @@ def show_character(bot, trigger):
     else:
         bot.say("Usage: !show CHARACTER")
         return
-    debug(bot, "Nick and args ok.")
     char = interface.get_character(str(trigger.group(2)))
-    debug(bot, "Char received:")
-    debug(bot, str(char))
     if isinstance(char, basestring):
         bot.say(char)
         return

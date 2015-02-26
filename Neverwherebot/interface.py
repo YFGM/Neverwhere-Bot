@@ -232,13 +232,13 @@ def recalculate_char(character):
         inv = model.Storage.objects.get(name=char.name + "-Inventory")
     except:
         return "Inventory not found, ya dun goofd."
+    old_hp = char.hp
+    old_fp = char.fp
+    old_san = char.san
     char.hp = char.str
     char.fp = char.vit
     char.will = char.int - 10
     char.san = 100 + (char.will * 10)
-    old_hp = char.hp
-    old_fp = char.fp
-    old_san = char.san
     char.mab = char.str - 10
     char.rab = char.dex - 10
     char.re = float(((char.dex - 10) + (char.vit - 10)) / 2)
