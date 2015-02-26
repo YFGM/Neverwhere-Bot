@@ -183,7 +183,7 @@ def add_perk(perk, character):
             mod = imp.load_source(f[:-3], f)
             try:
                 P = mod.Perk()
-                can_take = p.prerequisites(character)
+                can_take = P.prerequisites(character)
             except:
                 print("Failed to find module for perk %s." % p.name)
                 return "Failed to execute prerequisites module for perk %s." % p.name
