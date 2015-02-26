@@ -11,6 +11,9 @@ class Game(models.Model):
     date_modifier = models.IntegerField(default=0)  # Added onto current date to determine time of year
     winter_severity = models.IntegerField(default=1)
 
+    def __str__(self):
+        return self.name
+
 
 class Player(models.Model):
     nick = models.CharField(max_length=128, unique=True)
@@ -18,6 +21,9 @@ class Player(models.Model):
     op = models.BooleanField(default=False)
     over_gm = models.BooleanField(default=False)
     email = models.CharField(max_length=128)
+
+    def __str__(self):
+        return self.nick
 
 
 class Character(models.Model):
@@ -48,7 +54,11 @@ class Character(models.Model):
     deleted = models.BooleanField(default=False)
     house = models.ForeignKey("Building", null=True)
 
+    def __str__(self):
+        return self.name
 
+
+# TODO: Optional specialties
 class Skill(models.Model):
     name = models.CharField(unique=True, max_length=64)
     DIFFICULTY_CHOICES = (
@@ -65,6 +75,10 @@ class Skill(models.Model):
         ('Vit', 'Vitality'),
     )
     attribute = models.CharField(max_length=128, choices=ATTRIBUTE_CHOICES)
+    slug = models.CharField(max_length=128, unique=True)
+
+    def __str__(self):
+        return self.name
 
 
 class CharacterSkill(models.Model):
@@ -72,17 +86,26 @@ class CharacterSkill(models.Model):
     skill = models.ForeignKey("Skill")
     level = models.IntegerField(default=0)
 
+    def __str__(self):
+        return self.character.name + ":" + self.skill.name
+
 
 class Perk(models.Model):
     name = models.CharField(max_length=128, unique=True)
     # Quirk, Flaw, Basic, Combat, Weapon, Skill, Magic, Spellcasting
     category = models.CharField(max_length=64)
 
+    def __str__(self):
+        return self.name
+
 
 class CharacterPerk(models.Model):
     perk = models.ForeignKey("Perk")
     character = models.ForeignKey("Character")
     slot = models.IntegerField()
+
+    def __str__(self):
+        return self.character.name + ":" + self.perk.name + ":" + str(self.slot)
 
 
 
@@ -100,9 +123,15 @@ class Spell(models.Model):
     fp_cost_addendum = models.CharField(max_length=64)
     description = models.TextField()
 
+    def __str__(self):
+        return self.name
+
 
 class College(models.Model):
     name = models.CharField(max_length=128, unique=True)
+
+    def __str__(self):
+        return self.name
 
 
 class Acre(models.Model):
@@ -145,6 +174,9 @@ class Acre(models.Model):
     produce = models.IntegerField(default=0)
     growth_days = models.IntegerField(default=0)
 
+    def __str__(self):
+        return str(self.id)
+
     def reset(self):
         self.planted = None
         self.planting = 0
@@ -170,12 +202,18 @@ class Worksite(models.Model):
     tree_modifier = models.IntegerField(default=1)
     depth_dug = models.IntegerField(default=0)
 
+    def __str__(self):
+        return self.name
+
 
 class Application(models.Model):
     character = models.ForeignKey("Character")
     worksite = models.ForeignKey("Worksite")
     job = models.ForeignKey("Job")
     part_time = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.character.name + ":" + self.worksite.name
 
 
 class Employee(models.Model):
@@ -189,6 +227,9 @@ class Employee(models.Model):
     salary = models.IntegerField(default=0)
     current_activity = models.CharField(default="", max_length=64)
     acre = models.ForeignKey("Acre", blank=True)
+
+    def __str__(self):
+        return self.character.name + ":" + self.worksite.name
 
 
 class Job(models.Model):
@@ -205,6 +246,9 @@ class Job(models.Model):
     process = models.ForeignKey("Process", blank=True)
     default_salary = models.IntegerField()
 
+    def __str__(self):
+        return self.name
+
 
 class Upgrade(models.Model):
     name = models.CharField(max_length=128)
@@ -214,12 +258,18 @@ class Upgrade(models.Model):
     storage = models.ForeignKey("Storage", blank=True)
     building = models.ForeignKey("Building", blank=True)
 
+    def __str__(self):
+        return self.name
+
 
 class HerbList(models.Model):
     site = models.ForeignKey("Worksite")
     item = models.ForeignKey("ItemType")
     chance = models.IntegerField()
     nat20 = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.site.name + ":" + self.item.name
 
 
 class ForageList(models.Model):
@@ -228,6 +278,9 @@ class ForageList(models.Model):
     chance = models.IntegerField()
     nat20 = models.BooleanField(default=False)
 
+    def __str__(self):
+        return self.site.name + ":" + self.item.name
+
 
 class HuntingList(models.Model):
     site = models.ForeignKey("Worksite")
@@ -235,11 +288,18 @@ class HuntingList(models.Model):
     chance = models.IntegerField()
     nat20 = models.BooleanField(default=False)
 
+    def __str__(self):
+        return self.site.name + ":" + prey.item.name
+
 
 class Prey(models.Model):
+    name = models.CharField(max_length=128)
     hp = models.IntegerField(default=1)
     ac = models.IntegerField(default=10)
     escape = models.IntegerField(default=5)
+
+    def __str__(self):
+        return self.name
 
 
 class FishingList(models.Model):
@@ -253,11 +313,17 @@ class BaitEffect(models.Model):
     name = models.CharField(max_length=64)
     effect = models.IntegerField()
 
+    def __str__(self):
+        return self.name
+
 
 class MiningSite(models.Model):
     name = models.CharField(max_length=128, unique=True)
     depth = models.IntegerField()
     description = models.TextField(max_length=8192, blank=True)
+
+    def __str__(self):
+        return self.name
 
 
 class Tunnel(models.Model):
@@ -283,6 +349,9 @@ class Tunnel(models.Model):
     charge = models.ForeignKey("Charge", blank=True, related_name="t")
     blueprint = models.BooleanField(default=False)
 
+    def __str__(self):
+        return self.worksite.name
+
 
 class OreList(models.Model):
     ore = models.ForeignKey("Ore")
@@ -299,6 +368,9 @@ class Charge(models.Model):
     final = models.IntegerField()
     character = models.ForeignKey("Character")
     tunnel = models.ForeignKey("Tunnel", related_name="c")
+
+    def __str__(self):
+        return self.tunnel.worksite.name
 
 
 class Crop(models.Model):
@@ -319,11 +391,17 @@ class Crop(models.Model):
     legume = models.BooleanField(default=False)
     loss = models.BooleanField(default=False)
 
+    def __str__(self):
+        return self.name
+
 
 class CropDescription(models.Model):
     day = models.IntegerField(default=0)
     crop = models.ForeignKey("Crop")
     description = models.TextField(max_length=8192)
+
+    def __str__(self):
+        return self.crop.name
 
 
 class Ore(models.Model):
@@ -332,9 +410,15 @@ class Ore(models.Model):
     poison = models.BooleanField(default=False)  # TODO
     native = models.BooleanField(default=False)  # TODO
 
+    def __str__(self):
+        return self.name
+
 
 class Disaster(models.Model):
     name = models.CharField(max_length=128)
+
+    def __str__(self):
+        return self.name
 
 
 class Storage(models.Model):
@@ -344,6 +428,9 @@ class Storage(models.Model):
     size = models.IntegerField()
     allowed = models.ManyToManyField("Character", blank=True)
     inventory = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.name
 
 
 class Craft(models.Model):
@@ -368,6 +455,9 @@ class Craft(models.Model):
     worksite = models.ForeignKey("Worksite", blank=True)
     started = models.DateTimeField(auto_now_add=True)
 
+    def __str__(self):
+        return self.character.name + ":" + self.item.name
+
 
 class Message(models.Model):
     sender = models.ForeignKey("Player", related_name="s")
@@ -376,6 +466,9 @@ class Message(models.Model):
     message = models.TextField(max_length=10000)
     read = models.BooleanField(default=False)
     flags = models.CharField(max_length=64)
+
+    def __str__(self):
+        return self.sender.name + ":" + self.receiver.name
 
 
 class Process(models.Model):
@@ -386,17 +479,26 @@ class Process(models.Model):
     required_item = models.ForeignKey("ItemType", null=True)
     required_building = models.ForeignKey("Building", null=True)
 
+    def __str__(self):
+        return self.name
+
 
 class ProcessInput(models.Model):
     process = models.ForeignKey("Process")
     item = models.ForeignKey("ItemType")
     multiplier = models.IntegerField(default=1)
 
+    def __str__(self):
+        return self.process.name + ":" + self.item.name
+
 
 class ProcessOutput(models.Model):
     process = models.ForeignKey("Process")
     item = models.ForeignKey("ItemType")
     multiplier = models.IntegerField(default=1)
+
+    def __str__(self):
+        return self.process.name + ":" + self.item.name
 
 
 class Item(models.Model):
@@ -406,6 +508,9 @@ class Item(models.Model):
     value = models.IntegerField(blank=True)
     worn = models.BooleanField(default=False)
     stored = models.ForeignKey("Storage")
+
+    def __str__(self):
+        return self.stored.name + ":" + self.type.name
 
 
 class ItemType(models.Model):
@@ -446,6 +551,9 @@ class ItemType(models.Model):
     herbal_uses = models.CharField(blank=True, max_length=64)
     cyclical = models.BooleanField(default=False)
 
+    def __str__(self):
+        return self.name
+
 
 class Building(models.Model):
     name = models.CharField(max_length=128, unique=True)
@@ -453,9 +561,15 @@ class Building(models.Model):
     capacity = models.IntegerField(default=1)
     storage = models.ForeignKey("Storage")
 
+    def __str__(self):
+        return self.name
+
 
 class Tending(models.Model):
     worksite = models.ForeignKey("Worksite")
     day = models.IntegerField()
     roll = models.IntegerField(blank=True)
     acre = models.ForeignKey("Acre")
+
+    def __str__(self):
+        return self.worksite.name + ":" + acre.id

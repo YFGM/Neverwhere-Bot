@@ -13,7 +13,7 @@ class Perk(Perk):
             print "Character not found."
             return
         try:
-            skill = models.Skill.objects.get(name=self.name)
+            skill = models.Skill.objects.get(slug=self.name)
         except:
             print "Skill not found."
             return
@@ -33,7 +33,7 @@ class Perk(Perk):
             return
 
         try:
-            skill = models.Skill.objects.get(name=self.name)
+            skill = models.Skill.objects.get(slug=self.name)
         except:
             print "Skill not found."
             return

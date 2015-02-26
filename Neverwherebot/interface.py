@@ -13,6 +13,7 @@ django.setup()
 from slugify import slugify
 import Neverwherebot.update as update
 import Neverwherebot.models as model
+import Neverwherebot.skill_perk as skill
 
 
 def is_user(nick):
@@ -181,25 +182,26 @@ def add_perk(perk, character):
     if num >= perks:
         return "No free perk slots available. %i perks available, %i taken." % (perks, num)
 
-    f = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'scripts', 'perks', slugify(p.name) + ".py")
-    if os.path.isfile(f):
-        try:
-            mod = imp.load_source(f[:-3], f)
+    if not "Skill" in p.category:
+        f = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'scripts', 'perks', slugify(p.name) + ".py")
+        if os.path.isfile(f):
             try:
-                P = mod.Perk()
-                can_take = P.prerequisites(character)
+                mod = imp.load_source(f[:-3], f)
+                try:
+                    P = mod.Perk()
+                    can_take = P.prerequisites(character)
+                except:
+                    return "Failed to execute prerequisites module for perk %s." % p.name
             except:
-                return "Failed to execute prerequisites module for perk %s." % p.name
-        except:
-            return "Failed to import module %s." % str(f)
-    else:
-        return "File %s not found." % str(f)
+                return "Failed to import module %s." % str(f)
+        else:
+            return "File %s not found." % str(f)
 
-    if not can_take:
-        return "Character does not fulfill the prerequisites for this perk."
+        if not can_take:
+            return "Character does not fulfill the prerequisites for this perk."
     count = 0
     latest = 0
-    if "Tiered" in P.category:
+    if "Tiered" in p.category:
         for cp in model.CharacterPerk.objects.filter(character=char):
             if cp.perk == p:
                 count += 1
@@ -210,9 +212,14 @@ def add_perk(perk, character):
         else:
             return "Character cannot take this perk at this moment due to Tiered restriction. The earliest they can take" \
                    " it is in %i perks." % ((latest + count + 1) - (num + 1))
-
-    if not P.on_add(character):
-        return "Error in 'on_add' function."
+    if not "Skill" in p.category:
+        if not P.on_add(character):
+            return "Error in 'on_add' function."
+    else:
+        s = skill.Perk()
+        s.name = p.name
+        if not s.on_add(character):
+            return "Error in 'on_add' function."
     new = model.CharacterPerk()
     new.character = char
     new.perk = p
@@ -275,19 +282,24 @@ def recalculate_char(character):
             p = model.CharacterPerk.objects.filter(character=char).get(slot=n).perk
         except:
             continue
-        f = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'scripts', 'perks', slugify(p.name) + ".py")
-        if os.path.isfile(f):
-            try:
-                mod = imp.load_source(f[:-3], f)
+        if not "Skill" in p.category:
+            f = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'scripts', 'perks', slugify(p.name) + ".py")
+            if os.path.isfile(f):
                 try:
-                    P = mod.Perk()
-                    P.on_recalc(character)
+                    mod = imp.load_source(f[:-3], f)
+                    try:
+                        P = mod.Perk()
+                        P.on_recalc(character)
+                    except:
+                        return "Failed to execute on_recalc for perk %s." % p.name
                 except:
-                    return "Failed to execute on_recalc for perk %s." % p.name
-            except:
-                return "Failed to import module %s." % str(f)
+                    return "Failed to import module %s." % str(f)
+            else:
+                return "Could not find perk script %s." % str(f)
         else:
-            return "Could not find perk script %s." % str(f)
+            s = skill.Perk()
+            s.name = p.name
+            s.on_recalc(character)
     char = model.Character.objects.get(name=character)
     char.san = 100 + (char.will * 10)
     char.save()
