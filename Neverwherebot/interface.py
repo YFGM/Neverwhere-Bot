@@ -176,7 +176,7 @@ def add_perk(perk, character):
     if num >= perks:
         return "No free perk slots available. %i perks available, %i taken." % (perks, num)
 
-    f = os.path.join(os.path.abspath(__file__), 'scripts', 'perks', slugify(p.name) + ".py")
+    f = os.path.join(os.path.realpath(__file__), 'scripts', 'perks', slugify(p.name) + ".py")
     if os.path.isfile(f):
         try:
             mod = imp.load_source(f[:-3], f)
@@ -184,13 +184,13 @@ def add_perk(perk, character):
                 can_take = mod.Perk.prerequisites()
             except:
                 print("Failed to find module for perk %s." % p.name)
-                return False
+                return "Failed to find module for perk %s." % p.name
         except:
             print("Failed to import module %s." % str(f))
-            return False
+            return "Failed to import module %s." % str(f)
     else:
         print("File %s not found." % str(f))
-        return False
+        return "File %s not found." % str(f)
 
     if not can_take:
         return "Character does not fulfill the prerequisites for this perk."
