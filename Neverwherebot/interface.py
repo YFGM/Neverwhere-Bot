@@ -205,12 +205,12 @@ def add_perk(perk, character):
             if cp.perk == p:
                 count += 1
                 if cp.slot > latest:
-                    latest = int(cp.slot)
+                    latest = cp.slot
         if num + 1 > latest + count or count == 0:
             pass
         else:
             return "Character cannot take this perk at this moment due to Tiered restriction. The earliest they can take" \
-                   " it is in %i perks." % (latest + count + 1) - (num + 1)
+                   " it is in %i perks." % ((latest + count + 1) - (num + 1))
 
     if not P.on_add(character):
         return "Error in 'on_add' function."
