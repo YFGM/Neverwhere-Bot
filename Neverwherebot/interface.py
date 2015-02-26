@@ -200,7 +200,6 @@ def add_perk(perk, character):
     count = 0
     latest = 0
     if "Tiered" in P.category:
-        print "Tiered found."
         for cp in model.CharacterPerk.objects.filter(character=char):
             if cp.perk == p:
                 count += 1
