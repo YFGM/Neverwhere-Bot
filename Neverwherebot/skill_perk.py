@@ -15,7 +15,6 @@ class Perk(Perk):
             new.character = char
             new.save()
             return True
-        return True
 
     def on_recalc(self, character):
         try:
