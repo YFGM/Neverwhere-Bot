@@ -321,7 +321,7 @@ def get_current_day():
     now = datetime.date.today()
     start_date = models.Game.objects.get(id=0).start_date
     diff = start_date - now
-    return diff.days - models.Game.objects.get(id=0).date_modifier
+    return diff.days + models.Game.objects.get(id=0).date_modifier
 
 
 def get_skill(character, skill):

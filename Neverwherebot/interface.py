@@ -174,7 +174,7 @@ def add_perk(perk, character):
     perks = update.get_current_day() / game.interval
     num = len(model.CharacterPerk.objects.filter(character=char))
     if num >= perks:
-        return "No free perk slots available. %i perks avaliable, %i taken." % (perks, num)
+        return "No free perk slots available. %i perks available, %i taken." % (perks, num)
 
     f = os.path.join(os.path.abspath(__file__), 'scripts', 'perks', slugify(p.name) + ".py")
     if os.path.isfile(f):
