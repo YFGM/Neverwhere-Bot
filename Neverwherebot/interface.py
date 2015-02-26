@@ -233,6 +233,7 @@ def recalculate_char(character):
     except:
         return "Inventory not found, ya dun goofd."
     old_hp = char.hp
+    print "Old HP: %i" % old_hp
     old_fp = char.fp
     old_san = char.san
     char.hp = char.str
@@ -273,6 +274,7 @@ def recalculate_char(character):
             return "Could not find perk script %s." % str(f)
     char = model.Character.objects.get(name=character)
     inv = model.Storage.objects.get(name=char.name + "-Inventory")
+    print "Char HP: %i" % char.hp
     if old_hp != char.hp and old_hp is not None:
         char.current_HP += char.hp - old_hp
     if old_fp != char.fp and old_fp is not None:
