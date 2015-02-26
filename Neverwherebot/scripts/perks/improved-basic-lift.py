@@ -21,7 +21,6 @@ class Perk(Neverwherebot.perk.Perk):
         return True
 
     def prerequisites(self, character):
-        print "Reached Prerequisites"
         try:
             char = Character.objects.get(name=character)
         except:
