@@ -161,7 +161,7 @@ def add_perk(perk, character):
     except:
         return "Character not found."
 
-    if perk.isdigits():
+    if perk.isdigit():
         try:
             p = model.Perk.objects.get(pk=perk)
         except:
