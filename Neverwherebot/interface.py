@@ -147,6 +147,7 @@ def is_owner(player, character):
     else:
         return False
 
+
 def add_perk(perk, character):
     s = recalculate_char(character)
     if isinstance(s, basestring):
@@ -181,10 +182,11 @@ def add_perk(perk, character):
         try:
             mod = imp.load_source(f[:-3], f)
             try:
-                can_take = mod.Perk.prerequisites(character)
+                p = mod.Perk()
+                can_take = p.prerequisites(character)
             except:
                 print("Failed to find module for perk %s." % p.name)
-                return "Failed to find module for perk %s." % p.name
+                return "Failed to execute prerequisites module for perk %s." % p.name
         except:
             print("Failed to import module %s." % str(f))
             return "Failed to import module %s." % str(f)
