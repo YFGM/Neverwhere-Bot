@@ -329,7 +329,7 @@ def on_join(bot, trigger):
     for m in messages:
         if not m[3]:
             unread += 1
-    bot.msg(trigger.nick, "You have %i messages, %i unread. To view a all messages, use !showm." % (
+    bot.msg(trigger.nick, "You have %i messages, %i unread. To view all messages, use !showm." % (
         len(messages),
         unread,
     ))
