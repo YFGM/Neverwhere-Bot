@@ -92,8 +92,15 @@ def deregister(nick):
 
 
 def create_character(player, name, sex, str, dex, int, vit):
+    sex = sex.lower()
+    if sex == "female":
+        sex = "f"
+    elif sex == "male":
+        sex = "m"
     if model.Character.objects.filter(name=name).exists():
         return "Character with this name already exists."
+    if sex == "mayonnaise":
+        return "No Patrick, mayonnaise is not a gender."
     if not sex == "m" and not sex == "f":
         return "Invalid sex. Please use 'm' or 'f'."
     try:

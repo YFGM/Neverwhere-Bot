@@ -34,7 +34,6 @@ def register(bot, trigger):
     if check_user(str(trigger.nick)):
         bot.say("You are already registered.")
         return
-    debug(bot, "User %s ok, registering." % str(trigger.nick))
     s = interface.register(str(trigger.nick))
     if isinstance(s, basestring):
         bot.say(s)
@@ -56,7 +55,6 @@ def send_message(bot, trigger):
     if len(args) < 2:
         bot.say("Usage: !sendmessage RECEIVER MESSAGE")
         return
-    debug(bot, "Sending message '%s' from user %s to user %s." % (trigger.group(2)[len(args[0])+1:], str(trigger.nick), args[0]))
     s = interface.send_message(str(trigger.nick), args[0], trigger.group(2)[len(args[0])+1:])
     if isinstance(s, basestring):
         bot.say(s)
