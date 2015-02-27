@@ -311,6 +311,29 @@ def show_args(bot, trigger):
     bot.say("Group 2: " + s)
 
 
+@willie.module.event('JOIN')
+@willie.module.rule('.*')
+@willie.module.priority('low')
+def on_join(bot, trigger):
+    if not check_nick(bot, str(trigger.nick)) or not check_user(trigger.nick):
+        return
+    bot.msg(trigger.nick, "Welcome back %s!" % str(trigger.nick))
+    messages = interface.get_messages(str(trigger.nick))
+    if len(messages) < 1:
+        bot.msg(trigger.nick, "You currently have no messages.")
+        return
+    if isinstance(messages, basestring):
+        bot.msg(trigger.nick, messages)
+        return
+    unread = 0
+    for m in messages:
+        if not m[3]:
+            unread += 1
+    bot.msg(trigger.nick, "You have %i messages, %i unread. To view a all messages, use !showm." % (
+        len(messages),
+        unread,
+    ))
+
 @willie.module.event('NOTICE')
 @willie.module.rule('(.*)')
 @willie.module.priority('high')
