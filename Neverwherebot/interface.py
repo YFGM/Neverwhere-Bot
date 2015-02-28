@@ -466,7 +466,7 @@ def get_storage_contents(name):
         return "Storage not found."
     ret = {}
     for i in model.Item.objects.filter(stored=s):
-        ret[i.name] = (i.amount, i.unit)
+        ret[i.name] = (i.amount, i.type.unit)
     return ret
 
 
