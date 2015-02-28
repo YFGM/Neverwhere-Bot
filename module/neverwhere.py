@@ -515,7 +515,7 @@ def remove_item(bot, trigger):
         if isinstance(s, basestring):
             bot.say(s)
             return
-    bot.reply("Removed %g%s of %s from storage %s successfully." % (amount, interface.get_item_type(args[1])["unit"], 
+    bot.reply("Removed %g%s of %s from storage %s successfully." % (s, interface.get_item_type(args[1])["unit"], 
                                                                     args[1], args[0]))
 
 
