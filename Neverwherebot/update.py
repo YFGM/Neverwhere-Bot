@@ -211,7 +211,7 @@ def remove_item(name, storage_name='', storage_id='', amount=1.0):
         return -1
     
     try:
-        item = models.Item.objects.filter(stored=storage.pk).filter(name=name)
+        item = models.Item.objects.filter(stored=storage).get(type=models.ItemType.objects.get(name=name))
     except:
         item = False
     if not not item:
@@ -255,8 +255,8 @@ def add_item(name, storage_name='', storage_id='', amount=1.0, value='', worn=Fa
     except:
         return "Invalid ItemType."
     
-    if not models.Item.objects.filter(stored=storage).filter(item_type=item_type).exists():
-        item = models.Item.objects.filter(stored=storage).get(item_type=item_type)
+    if not models.Item.objects.filter(stored=storage).filter(type=item_type).exists():
+        item = models.Item.objects.filter(stored=storage).get(type=item_type)
         item.amount += amount
         item.save()
         return True
@@ -297,8 +297,8 @@ def is_item(name, storage_name='', storage_id='', amount=0):
     except:
         return "Invalid ItemType."
 
-    if models.Item.objects.filter(stored=storage).filter(item_type=item_type).exists():
-        if models.Item.objects.filter(stored=storage).get(item_type=item_type).amount >= amount:
+    if models.Item.objects.filter(stored=storage).filter(type=item_type).exists():
+        if models.Item.objects.filter(stored=storage).get(type=item_type).amount >= amount:
             return True
     return False
 
