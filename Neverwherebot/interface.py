@@ -429,7 +429,19 @@ def get_job(character):
 
 
 def create_storage(character, name, size):
-    pass
+    try:
+        char = model.Character.objects.get(name=character)
+    except:
+        return "Character not found."
+    s = model.Storage()
+    s.name = name
+    s.size = size
+    s.owner = char
+    try:
+        s.save()
+    except:
+        return "Failed to create storage."
+    return True
 
 
 def get_storage(name):

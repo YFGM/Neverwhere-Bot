@@ -326,6 +326,28 @@ def add_perk(bot, trigger):
         bot.say(r)
         return
     bot.reply("Perk succesfully added.")
+    
+    
+@willie.module.commands("storage")
+def storage(bot, trigger):
+    if not check_nick(bot, str(trigger.nick)) or not check_user(trigger.nick):
+        bot.reply("Please register your nick to use this function.")
+        return
+    if trigger.group(2) is not None:
+        args = re.compile('\w+').findall(str(trigger.group(2)))
+    else:
+        bot.reply("Usage: !storage COMMAND ARGUMENTS")
+        return
+    
+    if args[0] == "create":
+        if args[1] is not None and args[2] is not None and args[2].isdigit():
+            s = interface.create_storage(interface.get_current_character(str(trigger.nick)), str(args[1]), int(args[2]))
+            if isinstance(s, basestring):
+                bot.say(s)
+                return
+            bot.reply("Storage %s succesfully created!" % str(args[1]))
+        else:
+            bot.reply("Usage: !storage create NAME SIZE")
 
 
 @willie.module.commands("argshow")
