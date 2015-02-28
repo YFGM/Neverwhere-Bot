@@ -291,7 +291,7 @@ def show_character(bot, trigger):
     desc.append("Skills: %s" % skills)
     desc.append("Spells: WIP")
     s = ""
-    for i in range(len(desc))-3:
+    for i in range(len(desc), len(desc)-3):
         s += desc[i] + ", "
     bot.say(s[:-2])
     bot.say(desc[len(desc)-2])
