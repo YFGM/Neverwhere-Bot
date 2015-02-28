@@ -500,7 +500,22 @@ def storage_allow(character, storage):
 
 
 def storage_disallow(character, storage):
-    pass
+    try:
+        s = model.Storage.objects.get(name=storage)
+    except:
+        return "Storage not found."
+    
+    try:
+        char = model.Character.objects.get(name=character)
+    except:
+        return "Character not found."
+    if not char in s.allowed.all():
+        return "Character not on allowed list."
+    s.allowed.remove(char)
+    try:
+        s.save()
+    except:
+        return "Error removing allowed character."
 
 
 def storage_steal(character, storage):
