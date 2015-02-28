@@ -445,7 +445,19 @@ def create_storage(character, name, size):
 
 
 def get_storage(name):
-    pass
+    try:
+        s = model.Storage.objects.get(name=name)
+    except:
+        return "Storage not found."
+    ret = {}
+    ret["name"] = s.name
+    ret["size"] = s.size
+    ret["description"] = s.description
+    ret["inventory"] = s.inventory
+    ret["owner"] = s.owner.name
+    ret["allowed"] = []
+    for c in s.allowed.all():
+        ret["allowed"].append(c.name)
 
 
 def set_storage_description(name, description):

@@ -348,6 +348,10 @@ def storage(bot, trigger):
             bot.reply("Storage %s succesfully created!" % str(args[1]))
         else:
             bot.reply("Usage: !storage create NAME SIZE")
+            
+    else:
+        d = interface.get_storage(args[0])
+        debug(bot, str(d))
 
 
 @willie.module.commands("argshow")
