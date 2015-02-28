@@ -458,6 +458,7 @@ def get_storage(name):
     ret["allowed"] = []
     for c in s.allowed.all():
         ret["allowed"].append(c.name)
+    return ret
 
 
 def set_storage_description(name, description):
