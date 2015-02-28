@@ -380,7 +380,7 @@ def storage(bot, trigger):
             if isinstance(storage, basestring):
                 bot.say(storage)
                 return
-            if not str(trigger.nick) == storage["owner"]:
+            if not interface.get_current_character(str(trigger.nick)) == storage["owner"]:
                 bot.reply("You don't own this storage.")
                 return
             s = interface.storage_allow(args[2], args[1])
