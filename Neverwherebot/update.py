@@ -196,73 +196,111 @@ def workday():
 def remove_item(name, storage_name='', storage_id='', amount=1):
     # Returns how much, if any, was removed
     if storage_name != '':
-        storage = models.Storage.objects.filter(name=storage_name)
-
+        try:
+            storage = models.Storage.objects.get(name=storage_name)
+        except:
+            return "Storage not found."
+    
     if storage_id != '':
-        storage = models.Storage.objects.filter(pk=storage_id)
+        try:
+            storage = models.Storage.objects.get(pk=storage_id)
+        except:
+            return "Storage not found."
 
     if storage_id == '' and storage_name == '':
         return -1
-
-    item = models.Item.objects.filter(stored=storage.pk).filter(name=name)
-
-    if item.exists():
+    
+    try:
+        item = models.Item.objects.filter(stored=storage.pk).filter(name=name)
+    except:
+        item = False
+    if not not item:
         if item.amount - amount <= 0:
             deleted = item.amount
-            item.delete()
+            try:
+                item.delete()
+            except:
+                return "Failed to delete item."
             return deleted
         else:
             item.amount -= amount
-            item.save()
+            try:
+                item.save()
+            except:
+                return "Failed to remove amount of item."
             return amount
     else:
-        return -1
+        return "No item of that type in storage."
 
 
 def add_item(name, storage_name='', storage_id='', amount=1, unit='', value='', worn=False):
 
     if storage_name != '':
-        storage = models.Storage.objects.filter(name=storage_name)
+        try:
+            storage = models.Storage.objects.get(name=storage_name)
+        except:
+            return "Storage not found."
 
     if storage_id != '':
-        storage = models.Storage.objects.filter(pk=storage_id)
+        try:
+            storage = models.Storage.objects.get(pk=storage_id)
+        except:
+            return "Storage not found."
 
     if storage_id == '' and storage_name == '':
         return False
-
-    item_type = models.ItemType.objects.filter(name=name)
-
-    if not models.Item.objects.filter(stored=storage.pk).filter(item_type=item_type).exists():
-        item = models.Item.objects.filter(stored=storage.pk).filter(item_type=item_type)
+    
+    try:
+        item_type = models.ItemType.objects.get(name=name)
+    except:
+        return "Invalid ItemType."
+    
+    if not models.Item.objects.filter(stored=storage).filter(item_type=item_type).exists():
+        item = models.Item.objects.filter(stored=storage).get(item_type=item_type)
         item.amount += amount
         item.save()
         return True
     else:
-        item = models.Item(type=item_type.pk, amount=amount, stored=storage.pk)
+        item = models.Item
+        item.type = item_type
+        item.amount = amount
+        item.stored = storage
         if unit != '':
             item.unit = unit
         if value != '':
             item.value = value
         if worn:
             item.worn = True
-        item.save()
+        try:
+            item.save()
+        except:
+            return "Failed to create item."
         return True
 
 
 def is_item(name, storage_name='', storage_id='', amount=0):
     if storage_name != '':
-        storage = models.Storage.objects.filter(name=storage_name)
+        try:
+            storage = models.Storage.objects.get(name=storage_name)
+        except:
+            return "Storage not found."
 
     if storage_id != '':
-        storage = models.Storage.objects.filter(pk=storage_id)
+        try:
+            storage = models.Storage.objects.get(pk=storage_id)
+        except:
+            return "Storage not found."
 
     if storage_id == '' and storage_name == '':
         return False
+    
+    try:
+        item_type = models.ItemType.objects.get(name=name)
+    except:
+        return "Invalid ItemType."
 
-    item_type = models.ItemType.objects.filter(name=name)
-
-    if models.Item.objects.filter(stored=storage.pk).filter(item_type=item_type).exists():
-        if models.Item.objects.filter(stored=storage.pk).filter(item_type=item_type).amount >= amount:
+    if models.Item.objects.filter(stored=storage).filter(item_type=item_type).exists():
+        if models.Item.objects.filter(stored=storage).get(item_type=item_type).amount >= amount:
             return True
     return False
 
