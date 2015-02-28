@@ -377,6 +377,9 @@ def storage(bot, trigger):
     elif args[0] == "allow":
         if len(args) == 3:
             storage = interface.get_storage(args[1])
+            if isinstance(storage, basestring):
+                bot.say(storage)
+                return
             if not str(trigger.nick) == storage["owner"]:
                 bot.reply("You don't own this storage.")
                 return
