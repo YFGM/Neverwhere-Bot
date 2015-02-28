@@ -265,17 +265,17 @@ def show_character(bot, trigger):
         prefixes["per"] = ""
     desc.append("\x02" + str(trigger.group(2)) + "\x0F" + ", " + gender + " Human")
     desc.append("%i \x02Str\x0F %i \x02Dex\x0F %i \x02Int\x0F %i \x02Vit\x0F" % (char["str"], char["dex"], char["int"], char["vit"]))
-    desc.append("%i/%i HP %i/%i FP %i/%i SAN" % (char["current_hp"], char["hp"], char["current_fp"], char["fp"],
+    desc.append("%i/%i \x02HP\x0F %i/%i \x02FP\x0F %i/%i \x02SAN\x0F" % (char["current_hp"], char["hp"], char["current_fp"], char["fp"],
                                                     char["current_san"], char["san"]))
-    desc.append("%s%i MAB %s%i RAB %i AC" % (prefixes["mab"], char["mab"], prefixes["rab"], char["rab"], char["ac"]))
-    desc.append("%s%i Will %s%g Re %s%i Fort" % (prefixes["will"], char["will"], prefixes["re"], char["re"], prefixes["fort"], char["fort"]))
-    desc.append("%s%i Per %i Mo %g BL" % (prefixes["per"], char["per"], char["mo"], char["bl"]))
+    desc.append("%s%i \x02MAB\x0F %s%i \x02RAB\x0F %i \x02AC\x0F" % (prefixes["mab"], char["mab"], prefixes["rab"], char["rab"], char["ac"]))
+    desc.append("%s%i \x02Will\x0F %s%g \x02Re\x0F %s%i \x02Fort\x0F" % (prefixes["will"], char["will"], prefixes["re"], char["re"], prefixes["fort"], char["fort"]))
+    desc.append("%s%i \x02Per\x0F %i \x02Mo\x0F %g \x02BL\x0F" % (prefixes["per"], char["per"], char["mo"], char["bl"]))
     perks = ""
     for n in range(1, len(char["perks"])+1):
         perks += interface.get_perk_name(char["perks"][n])
         if n != len(char["perks"]):
             perks += ", "
-    desc.append("Perks: %s" % perks)
+    desc.append("\x02Perks\x0F: %s" % perks)
     skills = ""
     count = 1
     for k in (char["skills"]):
@@ -288,8 +288,8 @@ def show_character(bot, trigger):
             s += ", "
         count += 1
         skills += s
-    desc.append("Skills: %s" % skills)
-    desc.append("Spells: WIP")
+    desc.append("\x02Skills\x0F: %s" % skills)
+    desc.append("\x02Spells\x0F: WIP")
     s = ""
     for i in range(0, len(desc)-3):
         s += desc[i] + ", "
