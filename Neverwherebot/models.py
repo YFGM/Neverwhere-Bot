@@ -545,7 +545,7 @@ class ItemType(models.Model):
     )
     weapon_class = models.CharField(choices=WEAPON_CLASSES, blank=True, max_length=64)
     bonus = models.IntegerField(blank=True)
-    skill = models.ForeignKey("Skill", null=True)
+    skill = models.ForeignKey("Skill", null=True, blank=True)
     el = models.IntegerField(blank=True)
     kcal = models.IntegerField(blank=True)
     spoils = models.IntegerField(blank=True)
