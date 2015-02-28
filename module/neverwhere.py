@@ -264,7 +264,7 @@ def show_character(bot, trigger):
     else:
         prefixes["per"] = ""
     desc.append(str(trigger.group(2)) + ", " + gender + " Human")
-    desc.append("%i Str %i Dex %i Int %i Vit" % (char["str"], char["dex"], char["int"], char["vit"]))
+    desc.append("%i \x02Str\x0F %i Dex %i Int %i Vit" % (char["str"], char["dex"], char["int"], char["vit"]))
     desc.append("%i/%i HP %i/%i FP %i/%i SAN" % (char["current_hp"], char["hp"], char["current_fp"], char["fp"],
                                                     char["current_san"], char["san"]))
     desc.append("%s%i MAB %s%i RAB %i AC" % (prefixes["mab"], char["mab"], prefixes["rab"], char["rab"], char["ac"]))
