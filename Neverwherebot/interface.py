@@ -314,10 +314,8 @@ def recalculate_char(character):
     return True
 
 
-
-
-def add_item(item, storage, amount, description=None, unit=None, weight=None):
-    pass
+def add_item(item, storage, amount, unit='', weight='', value=0):
+    return update.add_item(item, storage_name=storage, amount=amount, unit=unit, weight=weight, value=value)
 
 
 def remove_item(item, storage, amount, unit=None, weight=None):
@@ -458,6 +456,17 @@ def get_storage(name):
     ret["allowed"] = []
     for c in s.allowed.all():
         ret["allowed"].append(c.name)
+    return ret
+
+
+def get_storage_contents(name):
+    try:
+        s = model.Storage.objects.get(name=name)
+    except:
+        return "Storage not found."
+    ret = {}
+    for i in model.Item.objects.filter(stored=s):
+        ret[i.name] = (i.amount, i.unit)
     return ret
 
 

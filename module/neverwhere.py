@@ -343,7 +343,7 @@ def storage(bot, trigger):
     if args[0] == "create":
         if len(args) == 3 and args[1] is not None and args[2] is not None and args[2].isdigit():
             if args[1] in ["create", "allow", "description", "store", "move", "disallow", "steal", "delete", "remove",
-                           "resize", "transfer", "upgrade"]:
+                           "resize", "transfer", "upgrade", "self"]:
                 bot.reply("Invalid name.")
                 return
             s = interface.create_storage(interface.get_current_character(str(trigger.nick)), str(args[1]), int(args[2]))
@@ -441,8 +441,43 @@ def storage(bot, trigger):
     
     else:
         d = interface.get_storage(args[0])
+        c = interface.get_storage_contents(args[0])
         debug(bot, str(d))
+        debug(bot, str(c))
 
+
+@willie.module.commands("additem")
+@willie.module.commands("addi")
+def add_item(bot, trigger):
+    if not check_nick(bot, str(trigger.nick)) or not check_user(trigger.nick):
+        bot.reply("Please register your nick to use this function.")
+        return
+    if trigger.group(2) is not None:
+        args = re.compile('\w+').findall(str(trigger.group(2)))
+    else:
+        bot.reply("Usage: !addi STORAGE ITEM [AMOUNT]")
+        return
+    if len(args) < 2:
+        bot.reply("Usage: !addi STORAGE ITEM [AMOUNT]")
+        return
+    storage = interface.get_storage(args[0])
+    if not interface.get_current_character(str(trigger.nick)) == storage["owner"]:
+        bot.reply("You don't own this storage.")
+        return
+    if len(args) == 2:
+        s = interface.add_item(args[1], args[0], 1.0)
+        amount = 1.0
+    else:
+        try:
+            amount = float(args[2])
+        except:
+            bot.reply("Amount must be a number.")
+        s = interface.add_item(args[1], args[0], amount)
+        
+    if isinstance(s, basestring):
+        bot.say(s)
+        return
+    bot.reply("Successfully added %g %s to storage %s." % (amount, args[1], args[0]))
 
 @willie.module.commands("argshow")
 def show_args(bot, trigger):

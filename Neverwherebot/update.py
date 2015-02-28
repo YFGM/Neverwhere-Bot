@@ -193,7 +193,7 @@ def workday():
         return False
 
 
-def remove_item(name, storage_name='', storage_id='', amount=1):
+def remove_item(name, storage_name='', storage_id='', amount=1.0):
     # Returns how much, if any, was removed
     if storage_name != '':
         try:
@@ -233,7 +233,7 @@ def remove_item(name, storage_name='', storage_id='', amount=1):
         return "No item of that type in storage."
 
 
-def add_item(name, storage_name='', storage_id='', amount=1, unit='', value='', worn=False):
+def add_item(name, storage_name='', storage_id='', amount=1.0, unit='', value='', worn=False):
 
     if storage_name != '':
         try:

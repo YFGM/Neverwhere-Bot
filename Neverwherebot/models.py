@@ -504,12 +504,12 @@ class ProcessOutput(models.Model):
 
 class Item(models.Model):
     type = models.ForeignKey("ItemType")
-    amount = models.IntegerField(default=1)
+    amount = models.FloatField(default=1.0)
     unit = models.CharField(blank=True, max_length=64)
     value = models.IntegerField(blank=True)
     worn = models.BooleanField(default=False)
     stored = models.ForeignKey("Storage")
-
+    
     def __str__(self):
         return self.stored.name + ":" + self.type.name
 
