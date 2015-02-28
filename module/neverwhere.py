@@ -12,6 +12,7 @@ import Neverwherebot.interface as interface
 
 nicks = {}
 
+# TODO: Make a better RegEx that can handle - and _
 
 @willie.module.commands('checknick')
 def checknick(bot, trigger):
@@ -349,7 +350,7 @@ def storage(bot, trigger):
             if isinstance(s, basestring):
                 bot.say(s)
                 return
-            bot.reply("Storage %s succesfully created!" % str(args[1]))
+            bot.reply("Storage %s successfully created!" % str(args[1]))
             return
         else:
             bot.reply("Usage: !storage create NAME SIZE")
@@ -360,6 +361,9 @@ def storage(bot, trigger):
             storage = interface.get_storage(args[1])
             if not str(trigger.nick) == storage["owner"]:
                 bot.reply("You don't own this storage.")
+                return
+            if storage["inventory"]:
+                bot.reply("This storage is an inventory and cannot be edited.")
                 return
             s = ""
             for i in range(2, len(args)):
@@ -383,6 +387,9 @@ def storage(bot, trigger):
             if not interface.get_current_character(str(trigger.nick)) == storage["owner"]:
                 bot.reply("You don't own this storage.")
                 return
+            if storage["inventory"]:
+                bot.reply("This storage is an inventory and cannot be edited.")
+                return
             s = interface.storage_allow(args[2], args[1])
             if isinstance(s, basestring):
                 bot.say(s)
@@ -401,6 +408,9 @@ def storage(bot, trigger):
             if not interface.get_current_character(str(trigger.nick)) == storage["owner"]:
                 bot.reply("You don't own this storage.")
                 return
+            if storage["inventory"]:
+                bot.reply("This storage is an inventory and cannot be edited.")
+                return
             s = interface.storage_disallow(args[2], args[1])
             if isinstance(s, basestring):
                 bot.say(s)
@@ -417,6 +427,9 @@ def storage(bot, trigger):
                 return
             if not interface.get_current_character(str(trigger.nick)) == storage["owner"]:
                 bot.reply("You don't own this storage.")
+                return
+            if storage["inventory"]:
+                bot.reply("This storage is an inventory and cannot be edited.")
                 return
             s = interface.storage_resize(args[1], int(args[2]))
             if isinstance(s, basestring):
