@@ -233,7 +233,7 @@ def remove_item(name, storage_name='', storage_id='', amount=1.0):
         return "No item of that type in storage."
 
 
-def add_item(name, storage_name='', storage_id='', amount=1.0, unit='', value='', worn=False):
+def add_item(name, storage_name='', storage_id='', amount=1.0, value='', worn=False):
 
     if storage_name != '':
         try:
@@ -265,8 +265,6 @@ def add_item(name, storage_name='', storage_id='', amount=1.0, unit='', value=''
         item.type = item_type
         item.amount = amount
         item.stored = storage
-        if unit != '':
-            item.unit = unit
         if value != '':
             item.value = value
         if worn:

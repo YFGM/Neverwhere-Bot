@@ -505,7 +505,6 @@ class ProcessOutput(models.Model):
 class Item(models.Model):
     type = models.ForeignKey("ItemType")
     amount = models.FloatField(default=1.0)
-    unit = models.CharField(blank=True, max_length=64)
     value = models.IntegerField(blank=True)
     worn = models.BooleanField(default=False)
     stored = models.ForeignKey("Storage")
@@ -518,6 +517,7 @@ class ItemType(models.Model):
     name = models.CharField(max_length=128, unique=True)
     weight = models.IntegerField()
     value = models.IntegerField()
+    unit = models.CharField(blank=True, max_length=64)
     flags = models.CharField(max_length=64, blank=True)
     DAMAGE_TYPES = (
         ('B', "Bludgeoning"),

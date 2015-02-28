@@ -314,8 +314,8 @@ def recalculate_char(character):
     return True
 
 
-def add_item(item, storage, amount, unit='', weight='', value=0):
-    return update.add_item(item, storage_name=storage, amount=amount, unit=unit, weight=weight, value=value)
+def add_item(item, storage, amount, value=0):
+    return update.add_item(item, storage_name=storage, amount=amount, value=value)
 
 
 def remove_item(item, storage, amount, unit=None, weight=None):
