@@ -357,6 +357,10 @@ def storage(bot, trigger):
             
     elif args[0] == "description":
         if len(args) > 2 and args[1] is not None and args[2] is not None:
+            storage = interface.get_storage(args[1])
+            if not str(trigger.nick) == storage["owner"]:
+                bot.reply("You don't own this storage.")
+                return
             s = ""
             for i in range(2, len(args)):
                 s += args[i] + " "
@@ -369,7 +373,19 @@ def storage(bot, trigger):
         else:
             bot.reply("Usage: !storage description NAME DESCRIPTION")
             return
-            
+        
+    elif args[0] == "allow":
+        if len(args) == 3:
+            storage = interface.get_storage(args[1])
+            if not str(trigger.nick) == storage["owner"]:
+                bot.reply("You don't own this storage.")
+                return
+            s = interface.storage_allow(args[2], args[1])
+            if isinstance(s, basestring):
+                bot.say(s)
+                return
+            bot.reply("Character succesfully added to allowed list.")
+            return
     else:
         d = interface.get_storage(args[0])
         debug(bot, str(d))

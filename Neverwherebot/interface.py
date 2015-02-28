@@ -482,7 +482,21 @@ def move(character, storage, item, amount, destination):
 
 
 def storage_allow(character, storage):
-    pass
+    try:
+        s = model.Storage.objects.get(name=storage)
+    except:
+        return "Storage not found."
+    
+    try:
+        char = model.Character.objects.get(name=character)
+    except:
+        return "Character not found."
+    
+    s.allowed.add(char)
+    try:
+        s.save()
+    except:
+        return "Error adding allowed character."
 
 
 def storage_disallow(character, storage):
