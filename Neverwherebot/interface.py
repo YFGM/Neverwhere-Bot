@@ -462,7 +462,15 @@ def get_storage(name):
 
 
 def set_storage_description(name, description):
-    pass
+    try:
+        s = model.Storage.objects.get(name=name)
+    except:
+        return "Storage not found."
+    if len(description) > 8192:
+        return "Description too long."
+    s.description = description
+    s.save()
+    return True
 
 
 def store(character, storage, item, amount):

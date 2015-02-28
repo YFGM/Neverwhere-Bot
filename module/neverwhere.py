@@ -350,8 +350,25 @@ def storage(bot, trigger):
                 bot.say(s)
                 return
             bot.reply("Storage %s succesfully created!" % str(args[1]))
+            return
         else:
             bot.reply("Usage: !storage create NAME SIZE")
+            return
+            
+    elif args[0] == "description":
+        if len(args) > 2 and args[1] is not None and args[2] is not None:
+            s = ""
+            for i in range(2, len(args)):
+                s += args[i] + " "
+            d = interface.set_storage_description(args[1], s[:-1])
+            if isinstance(d, basestring):
+                bot.say(d)
+                return
+            bot.reply("Description successfully set!")
+            return
+        else:
+            bot.reply("Usage: !storage description NAME DESCRIPTION")
+            return
             
     else:
         d = interface.get_storage(args[0])
