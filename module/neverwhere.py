@@ -340,7 +340,7 @@ def storage(bot, trigger):
         return
     
     if args[0] == "create":
-        if args[1] is not None and args[2] is not None and args[2].isdigit():
+        if len(args) == 3 and args[1] is not None and args[2] is not None and args[2].isdigit():
             s = interface.create_storage(interface.get_current_character(str(trigger.nick)), str(args[1]), int(args[2]))
             if isinstance(s, basestring):
                 bot.say(s)
