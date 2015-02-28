@@ -16,23 +16,23 @@ nicks = {}
 @willie.module.commands('checknick')
 def checknick(bot, trigger):
     if not check_nick(bot, str(trigger.nick)):
-        bot.say("Please register your nick with NickServ.")
+        bot.reply("Please register your nick with NickServ.")
     else:
-        bot.say("Nick ok!")
+        bot.reply("Nick ok!")
 
 
 @willie.module.commands('test')
 def test(bot, trigger):
-    bot.say("Test!")
+    bot.reply("Test!")
 
 
 @willie.module.commands('register')
 def register(bot, trigger):
     if not check_nick(bot, str(trigger.nick)):
-        bot.say("Please register your nick with NickServ.")
+        bot.reply("Please register your nick with NickServ.")
         return
     if check_user(str(trigger.nick)):
-        bot.say("You are already registered.")
+        bot.reply("You are already registered.")
         return
     s = interface.register(str(trigger.nick))
     if isinstance(s, basestring):
@@ -45,28 +45,28 @@ def register(bot, trigger):
 @willie.module.commands("sendm")
 def send_message(bot, trigger):
     if not check_nick(bot, str(trigger.nick)) or not check_user(trigger.nick):
-        bot.say("Please register your nick to use this function.")
+        bot.reply("Please register your nick to use this function.")
         return
     if trigger.group(2) is not None:
         args = re.compile('\w+').findall(trigger.group(2))
     else:
-        bot.say("Usage: !sendmessage RECEIVER MESSAGE")
+        bot.reply("Usage: !sendmessage RECEIVER MESSAGE")
         return
     if len(args) < 2:
-        bot.say("Usage: !sendmessage RECEIVER MESSAGE")
+        bot.reply("Usage: !sendmessage RECEIVER MESSAGE")
         return
     s = interface.send_message(str(trigger.nick), args[0], trigger.group(2)[len(args[0])+1:])
     if isinstance(s, basestring):
         bot.say(s)
         return
-    bot.say("Message sent.")
+    bot.reply("Message sent.")
 
 
 @willie.module.commands("showmessages")
 @willie.module.commands("showm")
 def show_messages(bot, trigger):
     if not check_nick(bot, str(trigger.nick)) or not check_user(trigger.nick):
-        bot.say("Please register your nick to use this function.")
+        bot.reply("Please register your nick to use this function.")
         return
     messages = interface.get_messages(str(trigger.nick))
     if len(messages) < 1:
@@ -110,7 +110,7 @@ def show_messages(bot, trigger):
 @willie.module.commands("viewm")
 def view_message(bot, trigger):
     if not check_nick(bot, str(trigger.nick)) or not check_user(trigger.nick):
-        bot.say("Please register your nick to use this function.")
+        bot.reply("Please register your nick to use this function.")
         return
     if trigger.group(2) is None:
         bot.msg(trigger.nick, "Message ID must be a number.")
@@ -133,7 +133,7 @@ def view_message(bot, trigger):
 @willie.module.commands("deletem")
 def delete_message(bot, trigger):
     if not check_nick(bot, str(trigger.nick)) or not check_user(trigger.nick):
-        bot.say("Please register your nick to use this function.")
+        bot.reply("Please register your nick to use this function.")
         return
     if trigger.group(2) is None:
         bot.msg(trigger.nick, "Message ID must be a number.")
@@ -146,43 +146,47 @@ def delete_message(bot, trigger):
         bot.say(m)
         return
     if not m[6] == str(trigger.nick):
-        bot.say("You don't own this message.")
+        bot.reply("You don't own this message.")
         return
     interface.delete_message(int(trigger.group(2)))
-    bot.say("Message %i deleted." % int(trigger.group(2)))
+    bot.msg(trigger.nick, "Message %i deleted." % int(trigger.group(2)))
 
 
 @willie.module.commands("create")
 def create_character(bot, trigger):
     if not check_nick(bot, str(trigger.nick)) or not check_user(trigger.nick):
-        bot.say("Please register your nick to use this function.")
+        bot.reply("Please register your nick to use this function.")
         return
     if trigger.group(2) is not None:
         args = re.compile('\w+').findall(trigger.group(2))
     else:
-        bot.say("Usage: !create NAME SEX STR DEX INT VIT")
+        bot.reply("Usage: !create NAME SEX STR DEX INT VIT")
         return
     if len(args) != 6:
-        bot.say("Usage: !create NAME SEX STR DEX INT VIT")
+        bot.reply("Usage: !create NAME SEX STR DEX INT VIT")
         return
     if not isinstance(args[0], basestring) or not isinstance(args[1], basestring) or not args[2].isdigit() or not args[3].isdigit() or not args[4].isdigit() or not args[5].isdigit():
-        bot.say("Usage: !create NAME SEX STR DEX INT VIT")
+        bot.reply("Usage: !create NAME SEX STR DEX INT VIT")
         return
-    debug(bot, "Creating character using: " + str(args))
     s = interface.create_character(str(trigger.nick), str(args[0]), str(args[1]), int(args[2]), int(args[3]), int(args[4]), int(args[5]))
     if isinstance(s, basestring):
         bot.say(s)
         return
-    bot.say("Character %s succesfully created." % str(args[0]))
+    bot.reply("Character %s succesfully created." % str(args[0]))
+    if interface.get_current_character(str(trigger.nick)) is None:
+        d = interface.set_current_character(str(trigger.nick), str(args[0]))
+        if isinstance(d, basestring):
+            bot.reply(d)
+            return
 
 
 @willie.module.commands("getc")
 def get_character(bot, trigger):
     if not check_nick(bot, str(trigger.nick)) or not check_user(trigger.nick):
-        bot.say("Please register your nick to use this function.")
+        bot.reply("Please register your nick to use this function.")
         return
     if trigger.group(2) is None:
-        bot.say("Usage: !getc CHARACTER")
+        bot.reply("Usage: !getc CHARACTER")
         return
     char = interface.get_character(str(trigger.group(2)))
     if isinstance(char, basestring):
@@ -191,15 +195,35 @@ def get_character(bot, trigger):
     debug(bot, str(char))
 
 
+@willie.module.commands("setcharacter")
+@willie.module.commands("setc")
+def set_current_character(bot, trigger):
+    if not check_nick(bot, str(trigger.nick)) or not check_user(trigger.nick):
+        bot.reply("Please register your nick to use this function.")
+        return
+    if trigger.group(2) is None:
+        bot.reply("Usage: !getc CHARACTER")
+        return
+    args = re.compile('\w+').findall(trigger.group(2))
+    if not interface.is_owner(str(trigger.nick), args[0]):
+        bot.reply("You do not own that character.")
+        return
+    s = interface.set_current_character(str(trigger.nick), args[0])
+    if isinstance(s, basestring):
+        bot.say(s)
+        return
+    bot.reply("Current character succesfully set.")
+
+
 @willie.module.commands("show")
 def show_character(bot, trigger):
     if not check_nick(bot, str(trigger.nick)) or not check_user(trigger.nick):
-        bot.say("Please register your nick to use this function.")
+        bot.reply("Please register your nick to use this function.")
         return
     if trigger.group(2) is not None:
         args = re.compile('\w+').findall(trigger.group(2))
     else:
-        bot.say("Usage: !show CHARACTER")
+        bot.reply("Usage: !show CHARACTER")
         return
     char = interface.get_character(str(trigger.group(2)))
     if isinstance(char, basestring):
@@ -266,26 +290,28 @@ def show_character(bot, trigger):
         skills += s
     desc.append("Skills: %s" % skills)
     desc.append("Spells: WIP")
+    s = ""
     for i in range(len(desc)):
-        bot.say(desc[i])
+        s += desc[i] + "\n"
+    bot.say(s)
 
 
 @willie.module.commands("addperk")
 @willie.module.commands("addp")
 def add_perk(bot, trigger):
     if not check_nick(bot, str(trigger.nick)) or not check_user(trigger.nick):
-        bot.say("Please register your nick to use this function.")
+        bot.reply("Please register your nick to use this function.")
         return
     if trigger.group(2) is not None:
         args = re.compile('\w+').findall(str(trigger.group(2)))
     else:
-        bot.say("Usage: !addperk CHARACTER PERK")
+        bot.reply("Usage: !addperk CHARACTER PERK")
         return
     if len(args) == 1:
-        bot.say("Usage: !addperk CHARACTER PERK")
+        bot.reply("Usage: !addperk CHARACTER PERK")
         return
     if not interface.is_owner(str(trigger.nick), args[0]):
-        bot.say("You do not own that character.")
+        bot.reply("You do not own that character.")
         return
     s = ""
     for i in range(1, len(args)):
@@ -296,7 +322,7 @@ def add_perk(bot, trigger):
     if isinstance(r, basestring):
         bot.say(r)
         return
-    bot.say("Perk succesfully added.")
+    bot.reply("Perk succesfully added.")
 
 
 @willie.module.commands("argshow")
