@@ -512,7 +512,7 @@ class Item(models.Model):
     def __str__(self):
         return self.stored.name + ":" + self.type.name
 
-
+# TODO: Move everything but flags to script class
 class ItemType(models.Model):
     name = models.CharField(max_length=128, unique=True)
     weight = models.IntegerField()

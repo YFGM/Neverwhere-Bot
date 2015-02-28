@@ -318,8 +318,22 @@ def add_item(item, storage, amount, value=0):
     return update.add_item(item, storage_name=storage, amount=amount, value=value)
 
 
-def remove_item(item, storage, amount, unit=None, weight=None):
-    pass
+def remove_item(item, storage, amount):
+    return update.remove_item(item, storage_name=storage, amount=amount)
+
+
+def get_item_type(item):
+    try:
+        i = model.ItemType.objects.get(name=item)
+    except:
+        return "ItemType not found."
+    ret = {}
+    ret["name"] = i.name
+    ret["weight"] = i.weight
+    ret["value"] = i.value
+    ret["unit"] = i.unit
+    ret["flags"] = i.flags
+    return ret
 
 
 def get_character(character):
@@ -483,7 +497,15 @@ def set_storage_description(name, description):
 
 
 def store(character, storage, item, amount):
-    pass
+    s = update.remove_item(item, character + "-Inventory", amount)
+    if isinstance(s, basestring):
+        return s
+    if s < 0:
+        return "The amount must be a positive number."
+    d = update.add_item(item, storage, amount=s)
+    if isinstance(d, basestring):
+        return d
+    return s
 
 
 def move(character, storage, item, amount, destination):

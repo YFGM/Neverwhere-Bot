@@ -472,12 +472,52 @@ def add_item(bot, trigger):
             amount = float(args[2])
         except:
             bot.reply("Amount must be a number.")
+            return
         s = interface.add_item(args[1], args[0], amount)
         
     if isinstance(s, basestring):
         bot.say(s)
         return
     bot.reply("Successfully added %g %s to storage %s." % (amount, args[1], args[0]))
+    
+    
+@willie.module.commands("removeitem")
+@willie.module.commands("remi")
+def remove_item(bot, trigger):
+    if not check_nick(bot, str(trigger.nick)) or not check_user(trigger.nick):
+        bot.reply("Please register your nick to use this function.")
+        return
+    if trigger.group(2) is not None:
+        args = re.compile('\w+').findall(str(trigger.group(2)))
+    else:
+        bot.reply("Usage: !remi STORAGE ITEM [AMOUNT]")
+        return
+    if len(args) < 2:
+        bot.reply("Usage: !remi STORAGE ITEM [AMOUNT]")
+        return
+    storage = interface.get_storage(args[0])
+    if not interface.get_current_character(str(trigger.nick)) == storage["owner"]:
+        bot.reply("You don't own this storage.")
+        return
+    if len(args) == 2:
+        s = interface.remove_item(args[1], args[0], 1.0)
+        amount = 1.0
+        if isinstance(s, basestring):
+            bot.say(s)
+            return
+    else:
+        try:
+            amount = float(args[2])
+        except:
+            bot.reply("Amount must be a number.")
+            return
+        s = interface.remove_item(args[1], args[0], amount)
+        if isinstance(s, basestring):
+            bot.say(s)
+            return
+    bot.reply("Removed %g%s of %s from storage %s successfully." % (amount, interface.get_item_type(args[1])["unit"], 
+                                                                    args[1], args[0]))
+
 
 @willie.module.commands("argshow")
 def show_args(bot, trigger):
