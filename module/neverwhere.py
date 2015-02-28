@@ -263,8 +263,8 @@ def show_character(bot, trigger):
         prefixes["per"] = "+"
     else:
         prefixes["per"] = ""
-    desc.append(str(trigger.group(2)) + ", " + gender + " Human")
-    desc.append("%i \x02Str\x0F %i Dex %i Int %i Vit" % (char["str"], char["dex"], char["int"], char["vit"]))
+    desc.append("\x02" + str(trigger.group(2)) + "\x0F" + ", " + gender + " Human")
+    desc.append("%i \x02Str\x0F %i \x02Dex\x0F %i \x02Int\x0F %i \x02Vit\x0F" % (char["str"], char["dex"], char["int"], char["vit"]))
     desc.append("%i/%i HP %i/%i FP %i/%i SAN" % (char["current_hp"], char["hp"], char["current_fp"], char["fp"],
                                                     char["current_san"], char["san"]))
     desc.append("%s%i MAB %s%i RAB %i AC" % (prefixes["mab"], char["mab"], prefixes["rab"], char["rab"], char["ac"]))
