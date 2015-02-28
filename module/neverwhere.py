@@ -291,9 +291,12 @@ def show_character(bot, trigger):
     desc.append("Skills: %s" % skills)
     desc.append("Spells: WIP")
     s = ""
-    for i in range(len(desc)):
-        s += desc[i] + "\n"
-    bot.say(s)
+    for i in range(len(desc))-3:
+        s += desc[i] + ", "
+    bot.say(s[:-2])
+    bot.say(desc[len(desc)-2])
+    bot.say(desc[len(desc)-1])
+    bot.say(desc[len(desc)])
 
 
 @willie.module.commands("addperk")
