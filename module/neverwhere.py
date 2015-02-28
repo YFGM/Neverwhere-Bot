@@ -535,7 +535,12 @@ def show_args(bot, trigger):
 def on_join(bot, trigger):
     if not check_nick(bot, str(trigger.nick)) or not check_user(trigger.nick):
         return
+    s = "Welcome to the Neverwherebot Testing Channels. Why don't you try our latest functions (be sure to set your character by using !setc): " \
+        "!storage, !storage create, !storage description, !storage resize, !storage allow, !storage disallow, !additem and !removeitem. " \
+        "Note that currently the only supported type of item is 'Sword'. If you find any bugs or have feedback, please use '!sendm YFGM' to keep the " \
+        "developer up to date. Thank you!"
     bot.msg(trigger.nick, "Welcome back %s!" % str(trigger.nick))
+    bot.msg(trigger.nick, s)
     messages = interface.get_messages(str(trigger.nick))
     if len(messages) < 1:
         bot.msg(trigger.nick, "You currently have no messages.")
@@ -551,6 +556,15 @@ def on_join(bot, trigger):
         len(messages),
         unread,
     ))
+    
+
+@willie.module.commands("news")
+def news(bot, trigger):
+    s = "Welcome to the Neverwherebot Testing Channels. Why don't you try our latest functions (be sure to set your character by using !setc): " \
+        "!storage, !storage create, !storage description, !storage resize, !storage allow, !storage disallow, !additem and !removeitem. " \
+        "Note that currently the only supported type of item is 'Sword'. If you find any bugs or have feedback, please use '!sendm YFGM' to keep the " \
+        "developer up to date. Thank you!"
+    bot.say(s)
 
 @willie.module.event('NOTICE')
 @willie.module.rule('(.*)')
