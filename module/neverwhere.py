@@ -386,6 +386,8 @@ def storage(bot, trigger):
                 return
             bot.reply("Character succesfully added to allowed list.")
             return
+        else:
+            bot.reply("Usage: !storage allow STORAGE CHARACTER")
     else:
         d = interface.get_storage(args[0])
         debug(bot, str(d))
