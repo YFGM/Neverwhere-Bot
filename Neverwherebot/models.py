@@ -21,6 +21,7 @@ class Player(models.Model):
     op = models.BooleanField(default=False)
     over_gm = models.BooleanField(default=False)
     email = models.CharField(max_length=128)
+    current_character = models.ForeignKey("Character", related_name="p", null=True)
 
     def __str__(self):
         return self.nick
