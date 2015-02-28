@@ -531,7 +531,17 @@ def storage_remove(storage, item, amount):
 
 
 def storage_resize(storage, size):
-    pass
+    try:
+        s = model.Storage.objects.get(name=storage)
+    except:
+        return "Storage not found."
+    if size < 0 or not isinstance(size, int):
+        return "Size must be a positive integer."
+    s.size = size
+    try:
+        s.save()
+    except:
+        return "Error resizing storage."
 
 
 def storage_transfer(storage, recipient):

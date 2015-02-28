@@ -405,9 +405,26 @@ def storage(bot, trigger):
             if isinstance(s, basestring):
                 bot.say(s)
                 return
-            bot.say("Character successfully removed from allowed list.")
+            bot.reply("Character successfully removed from allowed list.")
         else:
             bot.reply("Usage: !storage disallow STORAGE CHARACTER")
+            
+    elif args[0] == "resize":
+        if len(args) == 3:
+            storage = interface.get_storage(args[1])
+            if isinstance(storage, basestring):
+                bot.say(storage)
+                return
+            if not interface.get_current_character(str(trigger.nick)) == storage["owner"]:
+                bot.reply("You don't own this storage.")
+                return
+            s = interface.storage_resize(args[1], int(args[2]))
+            if isinstance(s, basestring):
+                bot.say(s)
+                return
+            bot.reply("Storage successfully resized.")
+        else:
+            bot.reply("Usage: !storage resize STORAGE SIZE")
     
     else:
         d = interface.get_storage(args[0])
