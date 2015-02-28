@@ -517,17 +517,17 @@ class ItemType(models.Model):
     name = models.CharField(max_length=128, unique=True)
     weight = models.IntegerField()
     value = models.IntegerField()
-    unit = models.CharField(blank=True, max_length=64)
-    flags = models.CharField(max_length=64, blank=True)
+    unit = models.CharField(blank=True, max_length=64, null=True)
+    flags = models.CharField(max_length=64, blank=True, null=True)
     DAMAGE_TYPES = (
         ('B', "Bludgeoning"),
         ('P', "Piercing"),
         ('S', "Slashing"),
     )
-    damage = models.CharField(choices=DAMAGE_TYPES, blank=True, max_length=64)
-    ac = models.IntegerField(blank=True)
-    ap = models.IntegerField(blank=True)
-    re = models.IntegerField(blank=True)
+    damage = models.CharField(choices=DAMAGE_TYPES, blank=True, max_length=64, null=True)
+    ac = models.IntegerField(blank=True, null=True)
+    ap = models.IntegerField(blank=True, null=True)
+    re = models.IntegerField(blank=True, null=True)
     wearable = models.BooleanField(default=False)
     WEAPON_CLASSES = (
         ('S', "Simple"),
@@ -543,13 +543,13 @@ class ItemType(models.Model):
         ('ST', "Slings and Thrown Weapons"),
         ('SP', "Speaks and Lances"),
     )
-    weapon_class = models.CharField(choices=WEAPON_CLASSES, blank=True, max_length=64)
-    bonus = models.IntegerField(blank=True)
+    weapon_class = models.CharField(choices=WEAPON_CLASSES, blank=True, max_length=64, null=True)
+    bonus = models.IntegerField(blank=True, null=True)
     skill = models.ForeignKey("Skill", null=True, blank=True)
-    el = models.IntegerField(blank=True)
-    kcal = models.IntegerField(blank=True)
-    spoils = models.IntegerField(blank=True)
-    herbal_uses = models.CharField(blank=True, max_length=64)
+    el = models.IntegerField(blank=True, null=True)
+    kcal = models.IntegerField(blank=True, null=True)
+    spoils = models.IntegerField(blank=True, null=True)
+    herbal_uses = models.CharField(blank=True, max_length=64, null=True)
     cyclical = models.BooleanField(default=False)
 
     def __str__(self):
