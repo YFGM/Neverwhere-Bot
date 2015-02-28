@@ -341,6 +341,10 @@ def storage(bot, trigger):
     
     if args[0] == "create":
         if len(args) == 3 and args[1] is not None and args[2] is not None and args[2].isdigit():
+            if args[1] in ["create", "allow", "description", "store", "move", "disallow", "steal", "delete", "remove",
+                           "resize", "transfer", "upgrade"]:
+                bot.reply("Invalid name.")
+                return
             s = interface.create_storage(interface.get_current_character(str(trigger.nick)), str(args[1]), int(args[2]))
             if isinstance(s, basestring):
                 bot.say(s)
