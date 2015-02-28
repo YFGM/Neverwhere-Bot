@@ -255,13 +255,13 @@ def add_item(name, storage_name='', storage_id='', amount=1.0, value='', worn=Fa
     except:
         return "Invalid ItemType."
     
-    if not models.Item.objects.filter(stored=storage).filter(type=item_type).exists():
+    try:
         item = models.Item.objects.filter(stored=storage).get(type=item_type)
         item.amount += amount
         item.save()
         return True
-    else:
-        item = models.Item
+    except:
+        item = models.Item()
         item.type = item_type
         item.amount = amount
         item.stored = storage
