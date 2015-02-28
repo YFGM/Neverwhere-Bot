@@ -188,24 +188,25 @@ def add_perk(perk, character):
     num = len(model.CharacterPerk.objects.filter(character=char))
     if num >= perks:
         return "No free perk slots available. %i perks available, %i taken." % (perks, num)
-
-    if not "Skill" in p.category:
-        f = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'scripts', 'perks', slugify(p.name) + ".py")
-        if os.path.isfile(f):
+    
+    can_take = True
+    f = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'scripts', 'perks', slugify(p.name) + ".py")
+    if os.path.isfile(f):
+        try:
+            mod = imp.load_source(f[:-3], f)
             try:
-                mod = imp.load_source(f[:-3], f)
-                try:
-                    P = mod.Perk()
-                    can_take = P.prerequisites(character)
-                except:
-                    return "Failed to execute prerequisites module for perk %s." % p.name
+                P = mod.Perk()
+                can_take = P.prerequisites(character)
             except:
-                return "Failed to import module %s." % str(f)
-        else:
+                return "Failed to execute prerequisites module for perk %s." % p.name
+        except:
+            return "Failed to import module %s." % str(f)
+    else:
+        if not "Skill" in p.name:
             return "File %s not found." % str(f)
 
-        if not can_take:
-            return "Character does not fulfill the prerequisites for this perk."
+    if not can_take:
+        return "Character does not fulfill the prerequisites for this perk."
     count = 0
     latest = 0
     if "Tiered" in p.category:
