@@ -389,6 +389,29 @@ def get_perk_name(perk):
         return s.name
 
 
+def get_current_character(player):
+    try:
+        p = model.Player.objects.get(nick=player)
+    except:
+        return "Player not found."
+    return p.current_character.name
+
+
+def set_current_character(player, character):
+    try:
+        p = model.Player.objects.get(nick=player)
+    except:
+        return "Player not found."
+    try:
+        c = model.Character.objects.get(name=character)
+    except:
+        return "Character not found."
+    
+    p.current_character = c
+    p.save()
+    return True
+
+
 def apply_job(worksite, job, character, parttime=False):
     pass
 
