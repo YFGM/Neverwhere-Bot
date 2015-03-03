@@ -572,10 +572,6 @@ def storage_delete(storage):
     return True
 
 
-def storage_remove(storage, item, amount):
-    pass
-
-
 def storage_resize(storage, size):
     try:
         s = model.Storage.objects.get(name=storage)
@@ -591,10 +587,21 @@ def storage_resize(storage, size):
 
 
 def storage_transfer(storage, recipient):
-    pass
+    try:
+        s = model.Storage.objects.get(name=storage)
+    except:
+        return "Storage not found."
+        
+    try:
+        char = model.Character.objects.get(name=recipient)
+    except:
+        return "Character not found."
+    
+    s.owner = char
+    s.save()
+    return True
 
-
-def storage_upgradte(storage, upgrade):
+def storage_upgrade(storage, upgrade):
     pass
 
 

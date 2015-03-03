@@ -572,6 +572,29 @@ def storage(bot, trigger):
         else:
             bot.reply("Usage: !storage delete STORAGE")
             
+    elif args[0] == "steal":
+        bot.reply("Stealing is currently not implemented, sorry!")
+        
+    elif args[0] == "transfer":
+        if len(args) > 1:
+            storage = interface.get_storage(args[1])
+            if isinstance(storage, basestring):
+                bot.say(storage)
+                return
+            if not interface.get_current_character(str(trigger.nick)) in storage["owner"]:
+                bot.reply("You don't own this storage.")
+                return
+            if storage["inventory"]:
+                bot.reply("This storage is an inventory and cannot be transferred.")
+                return
+            s = interface.storage_transfer(args[1], args[2])
+            if isinstance(s, basestring):
+                    bot.say(s)
+                    return 
+            bot.reply("Storage %s ownership transferred to %s." % (args[1], args[2]))
+        else:
+            bot.reply("Usage: !storage transfer STORAGE CHARACTER")
+            
     else:
         d = interface.get_storage(args[0])
         c = interface.get_storage_contents(args[0])
