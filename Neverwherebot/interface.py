@@ -507,7 +507,7 @@ def store(character, storage, item, amount):
     d = update.add_item(item, storage_name = storage, amount=s)
     if isinstance(d, basestring):
         b = update.add_item(item, storage_name = character + "-Inventory", amount=s)
-        return d + " " + b
+        return d
     return s
 
 
