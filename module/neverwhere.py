@@ -466,6 +466,16 @@ def storage(bot, trigger):
                 except:
                     bot.reply("Amount must be a number.")
                     return
+                s = interface.store(interface.get_current_character(str(trigger.nick)),
+                                    args[0], args[1], amount)
+                if isinstance(s, basestring):
+                    bot.say(s)
+                    return
+                
+            bot.reply("Stored %g%s of %s into storage %s successfully." % (s, interface.get_item_type(args[1])["unit"], 
+                                                                    args[1], args[0]))
+        else:
+            bot.reply("Usage: !storage store STORAGE ITEM [AMOUNT]")
                 
     else:
         d = interface.get_storage(args[0])
