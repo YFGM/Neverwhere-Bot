@@ -311,6 +311,8 @@ def recalculate_char(character):
     char = model.Character.objects.get(name=character)
     char.san = 100 + (char.will * 10)
     char.save()
+    inv.size = char.bl * 10
+    inv.save()
     return True
 
 
