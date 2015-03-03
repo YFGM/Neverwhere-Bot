@@ -512,6 +512,7 @@ def storage(bot, trigger):
             if len(args) == 3:
                 s = interface.move(args[1],
                                     args[2], 1.0, interface.get_current_character(str(trigger.nick)) + "-Inventory")
+                amount = 1.0
                 if isinstance(s, basestring):
                     if s == "Not enough room left in the storage.":
                         s = "Not enough room left in your inventory."
@@ -542,6 +543,12 @@ def storage(bot, trigger):
                 if isinstance(s, basestring):
                     bot.say(s)
                     return 
+            if len(args) > 4:
+                bot.reply("Successfully moved %g%s of %s to storage %s." % (amount, interface.get_item_type(args[2])["unit"], 
+                                                                        args[2], args[4]))
+            else:
+                bot.reply("Successfully moved %g%s of %s to your inventory." % (amount, interface.get_item_type(args[2])["unit"], 
+                                                                        args[2]))
         else:
             bot.reply("Usage: !storage move STORAGE ITEM [AMOUNT] [DESTINATION]")
     else:
