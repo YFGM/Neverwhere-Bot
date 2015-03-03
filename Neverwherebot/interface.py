@@ -606,11 +606,44 @@ def storage_upgrade(storage, upgrade):
 
 
 def worksite_create(character, type, name, storage, *args):
-    pass
+    try:
+        char = model.Character.objects.get(name=character)
+    except:
+        return "Cannot find character."
+    try:
+        store = model.Storage.objects.get(name=storage)
+    except:
+        return "Storage not found."
+    if type not in ["farm", "mine", "craft", "wilderness", "other"]:
+        return "Invalid worksite type."
+    
+    new = model.Worksite()
+    new.name = name
+    new.owner = char
+    new.storage = store
+    new.type = type
+    try:
+        new.save()
+    except:
+        return "Failed to create worksite."
 
 
 def get_worksite(worksite):
-    pass
+    try:
+        w = model.Worksite.objects.get(name=worksite)
+    except:
+        return "Cannot find worksite."
+    ret = {}
+    ret["description"] = w.description
+    ret["owner"] = w.owner.name
+    ret["storage"] = w.storage.name
+    ret["type"] = w.type
+    ret["tree"] = w.tree_modifier
+    ret["depth"] = w.depth_dug
+    ret["employees"] = {}
+    for c in model.Employee.objects.filter(worksite=w):
+        ret["employees"][c.character.name] = c.job.name
+    return ret
 
 
 def delete_worksite(worksite):
@@ -618,27 +651,125 @@ def delete_worksite(worksite):
 
 
 def worksite_description(worksite, description):
-    pass
+    try:
+        w = model.Worksite.objects.get(name=worksite)
+    except:
+        return "Cannot find worksite."
+    w.description = description
+    w.save()
+    return True
 
 
 def worksite_changestorage(worksite, storage):
-    pass
+    try:
+        w = model.Worksite.objects.get(name=worksite)
+    except:
+        return "Cannot find worksite."
+    try:
+        store = model.Storage.objects.get(name=storage)
+    except:
+        return "Cannot find storage."
+    w.storage = store
+    w.save()
+    return True
 
 
 def worksite_add(worksite, addition, *args):
-    pass
+    try:
+        w = model.Worksite.objects.get(name=worksite)
+    except:
+        return "Cannot find worksite."
+    
+    if not w.type == "farm":
+        return "This worksite is not a farm."
+    
+    try:
+        acre = model.Acre.objects.get(id=addition)
+    except:
+        return "Cannot find acre."
+    
+    acre.farm = w
+    acre.save()
+    return True
 
 
 def worksite_upgrade(worksite, upgrade, *args):
-    pass
+    try:
+        w = model.Worksite.objects.get(name=worksite)
+    except:
+        return "Cannot find worksite."
+    try:
+        u = model.UpgradeType.objects.get(name=upgrade)
+    except:
+        return "Cannot find upgrade type."
+    
+    if model.Upgrade.objects.filter(worksite=w).exists() and u.unique:
+        return "This upgrade can only be applied once."
+    
+    if w.type not in u.type:
+        return "This upgrade cannot be applied to this type of worksite."
+    
+    new = model.Upgrade()
+    new.worksite = w
+    new.type = u
+    new.save()
+    return True
 
 
 def worksite_hire(worksite, character, job, parttime=False):
-    pass
-
+    try:
+        w = model.Worksite.objects.get(name=worksite)
+    except:
+        return "Cannot find worksite."
+    try:
+        char = model.Character.objects.get(name=character)
+    except:
+        return "Cannot find character."
+    try:
+        j = model.Job.objects.filter(worksite=w).get(name=job)
+    except:
+        return "Cannot find job."
+    
+    try:
+        a = model.Application.objects.filter(worksite=w).filter(character=char).filter(job=j).filter(employer_sent=False).get(part_time=parttime)
+    except:
+        try:
+            a = model.Application.objects.filter(worksite=w).filter(character=char).filter(job=j).filter(employer_sent=True).get(part_time=parttime)
+            return "An invitation has already been sent."
+        except:
+            a = model.Application()
+            a.character = char
+            a.job = j
+            a.employer_sent = True
+            a.part_time = parttime
+            a.worksite = w
+            a.save()
+            return "An invitation has been sent."
+    new = model.Employee()
+    new.character = char
+    new.job = j
+    new.worksite = w
+    new.salary = j.default_salary
+    new.save()
+    a.delete()
+    return True
 
 def worksite_fire(worksite, character):
-    pass
+    try:
+        w = model.Worksite.objects.get(name=worksite)
+    except:
+        return "Cannot find worksite."
+    try:
+        char = model.Character.objects.get(name=character)
+    except:
+        return "Cannot find character."
+    
+    try:
+        e = model.Employee.objects.filter(character=char).get(worksite=w)
+    except:
+        return "Character does not work at that worksite."
+    e.delete()
+    return True 
 
 
 def worksite_salary(worksite, job, amount, money_store=None, frequency=None):

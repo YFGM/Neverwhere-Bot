@@ -212,6 +212,8 @@ class Application(models.Model):
     worksite = models.ForeignKey("Worksite")
     job = models.ForeignKey("Job")
     part_time = models.BooleanField(default=False)
+    employer_sent = models.BooleanField(default=False)
+    sent = models.DateField(auto_now_add=True)
 
     def __str__(self):
         return self.character.name + ":" + self.worksite.name
@@ -244,24 +246,35 @@ class Job(models.Model):
     )
     type = models.CharField(choices=TYPE_CHOICES, max_length=64)
     description = models.TextField(max_length=8192)
-    process = models.ForeignKey("Process", blank=True)
-    default_salary = models.IntegerField()
+    process = models.ForeignKey("Process", blank=True, null=True)
+    default_salary = models.IntegerField(default=0)
+    worksite = models.ForeignKey("Worksite")
 
     def __str__(self):
         return self.name
 
 
 class Upgrade(models.Model):
-    name = models.CharField(max_length=128)
-    worksite = models.ForeignKey("Worksite", blank=True)
-    tunnel = models.ForeignKey("Tunnel", blank=True)
-    acre = models.ForeignKey("Acre", blank=True)
-    storage = models.ForeignKey("Storage", blank=True)
-    building = models.ForeignKey("Building", blank=True)
+    type = models.ForeignKey("UpgradeType")
+    worksite = models.ForeignKey("Worksite", blank=True, null=True)
+    tunnel = models.ForeignKey("Tunnel", blank=True, null=True)
+    acre = models.ForeignKey("Acre", blank=True, null=True)
+    storage = models.ForeignKey("Storage", blank=True, null=True)
+    building = models.ForeignKey("Building", blank=True, null=True)
 
     def __str__(self):
-        return self.name
+        return self.type.name
 
+class UpgradeType(models.Model):
+    name = models.CharField(max_length=128, unique=True)
+    unique = models.BooleanField(default=False)
+    slug = models.CharField(max_length=128)
+    type = models.CharField(max_length=512)
+    required_item = models.ForeignKey("ItemType")
+    
+    def __str__(self):
+        return self.name
+    
 
 class HerbList(models.Model):
     site = models.ForeignKey("Worksite")

@@ -595,6 +595,10 @@ def storage(bot, trigger):
         else:
             bot.reply("Usage: !storage transfer STORAGE CHARACTER")
             
+    # TODO
+    elif args[0] == "upgrade":
+        bot.reply("Upgrading is TODO.")
+            
     else:
         d = interface.get_storage(args[0])
         c = interface.get_storage_contents(args[0])
