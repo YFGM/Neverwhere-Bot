@@ -254,7 +254,11 @@ def add_item(name, storage_name='', storage_id='', amount=1.0, value='', worn=Fa
         item_type = models.ItemType.objects.get(name=name)
     except:
         return "Invalid ItemType."
-    
+    content = 0.0
+    for i in models.Item.objects.filter(stored=storage):
+            content += i.type.weight * i.amount
+    if content + item_type.weight * amount > storage.size:
+        return "Not enough room left in the storage."
     try:
         item = models.Item.objects.filter(stored=storage).get(type=item_type)
         item.amount += amount

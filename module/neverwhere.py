@@ -213,7 +213,7 @@ def set_current_character(bot, trigger):
     if isinstance(s, basestring):
         bot.say(s)
         return
-    bot.reply("Current character succesfully set.")
+    bot.reply("Current character successfully set.")
 
 
 @willie.module.commands("show")
@@ -438,7 +438,35 @@ def storage(bot, trigger):
             bot.reply("Storage successfully resized.")
         else:
             bot.reply("Usage: !storage resize STORAGE SIZE")
-    
+            
+    elif args[0] == "store":
+        if len(args) > 1:
+            storage = interface.get_storage(args[1])
+            if isinstance(storage, basestring):
+                bot.say(storage)
+                return
+            if not interface.get_current_character(str(trigger.nick)) in storage["allowed"] and not interface.get_current_character(str(trigger.nick)) in storage["owner"]:
+                bot.reply("You aren't allowed to store items in this storage.")
+                return
+            if storage["inventory"]:
+                bot.reply("This storage is an inventory, you cannot store things" \
+                          " in it. Use !give to give an item to a character " \
+                          "instead.")
+                return
+            
+            if len(args) == 2:
+                s = interface.store(interface.get_current_character(str(trigger.nick)),
+                                    args[0], args[1], 1.0)
+                if isinstance(s, basestring):
+                    bot.say(s)
+                    return
+            else:
+                try:
+                    amount = float(args[2])
+                except:
+                    bot.reply("Amount must be a number.")
+                    return
+                
     else:
         d = interface.get_storage(args[0])
         c = interface.get_storage_contents(args[0])
@@ -469,15 +497,6 @@ def add_item(bot, trigger):
         return
     if len(args) == 2:
         amount = 1.0
-        item = interface.get_item_type(args[1])
-        if isinstance(item, dict):
-            ret = interface.get_storage_contents(args[0])
-            content = 0.0
-            for i in ret:
-                content += ret[i][0] * interface.get_item_type(i)["weight"]
-            if content + item["weight"] > storage["size"]:
-                bot.reply("Not enough room left in the storage.")
-                return
         s = interface.add_item(args[1], args[0], 1.0)
     else:
         try:
@@ -485,15 +504,6 @@ def add_item(bot, trigger):
         except:
             bot.reply("Amount must be a number.")
             return
-        item = interface.get_item_type(args[1])
-        if isinstance(item, dict):
-            ret = interface.get_storage_contents(args[0])
-            content = 0.0
-            for i in ret:
-                content += ret[i][0] * interface.get_item_type(i)["weight"]
-            if content + item["weight"] * amount > storage["size"]:
-                bot.reply("Not enough room left in the storage.")
-                return
         s = interface.add_item(args[1], args[0], amount)
         
     if isinstance(s, basestring):
