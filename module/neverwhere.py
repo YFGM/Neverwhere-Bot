@@ -343,7 +343,7 @@ def storage(bot, trigger):
     if args[0] == "create":
         if len(args) == 3 and args[1] is not None and args[2] is not None and args[2].isdigit():
             if args[1] in ["create", "allow", "description", "store", "move", "disallow", "steal", "delete", "remove",
-                           "resize", "transfer", "upgrade", "self"]:
+                           "resize", "transfer", "upgrade", "self", "get"]:
                 bot.reply("Invalid name.")
                 return
             s = interface.create_storage(interface.get_current_character(str(trigger.nick)), str(args[1]), int(args[2]))
@@ -480,7 +480,68 @@ def storage(bot, trigger):
                                                                     args[2], args[1]))
         else:
             bot.reply("Usage: !storage store STORAGE ITEM [AMOUNT]")
+    
+    elif args[0] == "move" or args[0] == "get":
+        if len(args) > 2:
+            storage = interface.get_storage(args[1])
+            if isinstance(storage, basestring):
+                bot.say(storage)
+                return
+            if not interface.get_current_character(str(trigger.nick)) in storage["allowed"] and not interface.get_current_character(str(trigger.nick)) in storage["owner"]:
+                bot.reply("You aren't allowed to retrieve items from this storage.")
+                return
+            if storage["inventory"]:
+                bot.reply("This storage is an inventory, you cannot retrieve things" \
+                          " in it. Use !give to give an item to a character " \
+                          "instead.")
+                return
+            if len(args) > 4:
+                dest = interface.get_storage(args[4])
+                if isinstance(dest, basestring):
+                    bot.say(dest)
+                    return
+                if not interface.get_current_character(str(trigger.nick)) in dest["allowed"] and not interface.get_current_character(str(trigger.nick)) in dest["owner"]:
+                    bot.reply("You aren't allowed to store items in this storage.")
+                    return
+                if dest["inventory"]:
+                    bot.reply("This storage is an inventory, you cannot store things" \
+                              " in it. Use !give to give an item to a character " \
+                              "instead.")
+                    return
+            
+            if len(args) == 3:
+                s = interface.move(args[1],
+                                    args[2], 1.0, interface.get_current_character(str(trigger.nick)) + "-Inventory")
+                if isinstance(s, basestring):
+                    if s == "Not enough room left in the storage.":
+                        s = "Not enough room left in your inventory."
+                    bot.say(s)
+                    return
+            elif len(args) == 4:
+                try:
+                    amount = float(args[3])
+                except:
+                    bot.reply("Amount must be a number.")
+                    return
+                s = interface.move(args[1],
+                                    args[2], amount, interface.get_current_character(str(trigger.nick)) + "-Inventory")
+                if isinstance(s, basestring):
+                    if s == "Not enough room left in the storage.":
+                        s = "Not enough room left in your inventory."
+                    bot.say(s)
+                    return
                 
+            elif len(args) > 4:
+                try:
+                    amount = float(args[3])
+                except:
+                    bot.reply("Amount must be a number.")
+                    return
+                s = interface.move(args[1],
+                                    args[2], amount, args[4])
+                if isinstance(s, basestring):
+                    bot.say(s)
+                    return
     else:
         d = interface.get_storage(args[0])
         c = interface.get_storage_contents(args[0])

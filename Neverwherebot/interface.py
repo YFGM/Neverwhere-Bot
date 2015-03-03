@@ -502,17 +502,22 @@ def store(character, storage, item, amount):
     s = update.remove_item(item, storage_name = character + "-Inventory", amount=amount)
     if isinstance(s, basestring):
         return s
-    if s < 0:
-        return "The amount must be a positive number."
     d = update.add_item(item, storage_name = storage, amount=s)
     if isinstance(d, basestring):
-        b = update.add_item(item, storage_name = character + "-Inventory", amount=s)
+        update.add_item(item, storage_name = character + "-Inventory", amount=s)
         return d
     return s
 
 
-def move(character, storage, item, amount, destination):
-    pass
+def move(storage, item, amount, destination):
+    s = update.remove_item(item, storage_name = storage, amount=amount)
+    if isinstance(s, basestring):
+        return s
+    d = update.add_item(item, storage_name = destination, amount=s)
+    if isinstance(d, basestring):
+        update.add_item(item, storage_name = storage, amount=s)
+        return d
+    return s
 
 
 def storage_allow(character, storage):
