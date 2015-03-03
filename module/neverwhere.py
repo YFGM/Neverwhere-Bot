@@ -458,6 +458,8 @@ def storage(bot, trigger):
                 s = interface.store(interface.get_current_character(str(trigger.nick)),
                                     args[1], args[2], 1.0)
                 if isinstance(s, basestring):
+                    if s == "No item of that type in storage.":
+                        s = "No item of that type in your inventory."
                     bot.say(s)
                     return
             else:
@@ -469,6 +471,8 @@ def storage(bot, trigger):
                 s = interface.store(interface.get_current_character(str(trigger.nick)),
                                     args[1], args[2], amount)
                 if isinstance(s, basestring):
+                    if s == "No item of that type in storage.":
+                        s = "No item of that type in your inventory."
                     bot.say(s)
                     return
                 
