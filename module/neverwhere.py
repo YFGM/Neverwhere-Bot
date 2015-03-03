@@ -440,7 +440,7 @@ def storage(bot, trigger):
             bot.reply("Usage: !storage resize STORAGE SIZE")
             
     elif args[0] == "store":
-        if len(args) > 1:
+        if len(args) > 2:
             storage = interface.get_storage(args[1])
             if isinstance(storage, basestring):
                 bot.say(storage)
@@ -454,20 +454,20 @@ def storage(bot, trigger):
                           "instead.")
                 return
             
-            if len(args) == 2:
+            if len(args) == 3:
                 s = interface.store(interface.get_current_character(str(trigger.nick)),
-                                    args[0], args[1], 1.0)
+                                    args[1], args[2], 1.0)
                 if isinstance(s, basestring):
                     bot.say(s)
                     return
             else:
                 try:
-                    amount = float(args[2])
+                    amount = float(args[3])
                 except:
                     bot.reply("Amount must be a number.")
                     return
                 s = interface.store(interface.get_current_character(str(trigger.nick)),
-                                    args[0], args[1], amount)
+                                    args[1], args[2], amount)
                 if isinstance(s, basestring):
                     bot.say(s)
                     return
