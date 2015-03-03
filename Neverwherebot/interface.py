@@ -202,7 +202,7 @@ def add_perk(perk, character):
         except:
             return "Failed to import module %s." % str(f)
     else:
-        if not "Skill" in p.name:
+        if not "Skill" in p.category:
             return "File %s not found." % str(f)
 
     if not can_take:

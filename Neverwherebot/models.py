@@ -290,7 +290,7 @@ class HuntingList(models.Model):
     nat20 = models.BooleanField(default=False)
 
     def __str__(self):
-        return self.site.name + ":" + prey.item.name
+        return self.site.name + ":" + self.prey.item.name
 
 
 class Prey(models.Model):
@@ -573,4 +573,4 @@ class Tending(models.Model):
     acre = models.ForeignKey("Acre")
 
     def __str__(self):
-        return self.worksite.name + ":" + acre.id
+        return self.worksite.name + ":" + self.acre.id
