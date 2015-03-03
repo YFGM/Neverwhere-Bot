@@ -461,18 +461,39 @@ def add_item(bot, trigger):
         bot.reply("Usage: !addi STORAGE ITEM [AMOUNT]")
         return
     storage = interface.get_storage(args[0])
+    if isinstance(storage, basestring):
+        bot.say(storage)
+        return
     if not interface.get_current_character(str(trigger.nick)) == storage["owner"]:
         bot.reply("You don't own this storage.")
         return
     if len(args) == 2:
-        s = interface.add_item(args[1], args[0], 1.0)
         amount = 1.0
+        item = interface.get_item_type(args[1])
+        if isinstance(item, dict):
+            ret = interface.get_storage_contents(args[0])
+            content = 0.0
+            for i in ret:
+                content += ret[i][0] * interface.get_item_type(i)["weight"]
+            if content + item["weight"] > storage["size"]:
+                bot.reply("Not enough room left in the storage.")
+                return
+        s = interface.add_item(args[1], args[0], 1.0)
     else:
         try:
             amount = float(args[2])
         except:
             bot.reply("Amount must be a number.")
             return
+        item = interface.get_item_type(args[1])
+        if isinstance(item, dict):
+            ret = interface.get_storage_contents(args[0])
+            content = 0.0
+            for i in ret:
+                content += ret[i][0] * interface.get_item_type(i)["weight"]
+            if content + item["weight"] * amount > storage["size"]:
+                bot.reply("Not enough room left in the storage.")
+                return
         s = interface.add_item(args[1], args[0], amount)
         
     if isinstance(s, basestring):
