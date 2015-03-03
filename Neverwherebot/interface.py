@@ -497,12 +497,12 @@ def set_storage_description(name, description):
 
 
 def store(character, storage, item, amount):
-    s = update.remove_item(item, character + "-Inventory", amount)
+    s = update.remove_item(item, storage_name=character + "-Inventory", amount)
     if isinstance(s, basestring):
         return s
     if s < 0:
         return "The amount must be a positive number."
-    d = update.add_item(item, storage, amount=s)
+    d = update.add_item(item, storage_name=storage, amount=s)
     if isinstance(d, basestring):
         return d
     return s

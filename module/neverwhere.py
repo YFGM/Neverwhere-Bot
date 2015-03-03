@@ -442,7 +442,6 @@ def storage(bot, trigger):
     elif args[0] == "store":
         if len(args) > 2:
             storage = interface.get_storage(args[1])
-            debug(bot, str(storage))
             if isinstance(storage, basestring):
                 bot.say(storage)
                 return
