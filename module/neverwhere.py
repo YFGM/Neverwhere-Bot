@@ -477,7 +477,7 @@ def storage(bot, trigger):
                     return
                 
             bot.reply("Stored %g%s of %s into storage %s successfully." % (float(s), interface.get_item_type(args[2])["unit"], 
-                                                                    args[1], args[0]))
+                                                                    args[2], args[1]))
         else:
             bot.reply("Usage: !storage store STORAGE ITEM [AMOUNT]")
                 
