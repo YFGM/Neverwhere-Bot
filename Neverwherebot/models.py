@@ -505,7 +505,7 @@ class ProcessOutput(models.Model):
 class Item(models.Model):
     type = models.ForeignKey("ItemType")
     amount = models.FloatField(default=1.0)
-    value = models.IntegerField(blank=True)
+    value = models.IntegerField(blank=True, null=True)
     worn = models.BooleanField(default=False)
     stored = models.ForeignKey("Storage")
     
