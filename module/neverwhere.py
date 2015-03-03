@@ -541,7 +541,9 @@ def storage(bot, trigger):
                                     args[2], amount, args[4])
                 if isinstance(s, basestring):
                     bot.say(s)
-                    return
+                    return 
+        else:
+            bot.reply("Usage: !storage move STORAGE ITEM [AMOUNT] [DESTINATION]")
     else:
         d = interface.get_storage(args[0])
         c = interface.get_storage_contents(args[0])
