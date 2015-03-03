@@ -551,6 +551,27 @@ def storage(bot, trigger):
                                                                         args[2]))
         else:
             bot.reply("Usage: !storage move STORAGE ITEM [AMOUNT] [DESTINATION]")
+        
+    elif args[0] == "delete":
+        if len(args) > 1:
+            storage = interface.get_storage(args[1])
+            if isinstance(storage, basestring):
+                bot.say(storage)
+                return
+            if not interface.get_current_character(str(trigger.nick)) in storage["owner"]:
+                bot.reply("You don't own this storage.")
+                return
+            if storage["inventory"]:
+                bot.reply("This storage is an inventory and cannot be deleted.")
+                return
+            s = interface.storage_delete(args[1])
+            if isinstance(s, basestring):
+                    bot.say(s)
+                    return 
+            bot.reply("Storage %s successfully deleted." % args[1])
+        else:
+            bot.reply("Usage: !storage delete STORAGE")
+            
     else:
         d = interface.get_storage(args[0])
         c = interface.get_storage_contents(args[0])

@@ -562,7 +562,14 @@ def storage_steal(character, storage):
 
 
 def storage_delete(storage):
-    pass
+    try:
+        store = model.Storage.objects.get(name=storage)
+    except:
+        return "Storage not found."
+    for i in model.Item.objects.filter(stored=store):
+        i.delete()
+    store.delete()
+    return True
 
 
 def storage_remove(storage, item, amount):
