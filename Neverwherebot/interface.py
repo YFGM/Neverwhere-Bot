@@ -504,8 +504,8 @@ def store(character, storage, item, amount):
         return "The amount must be a positive number."
     d = update.add_item(item, storage_name = storage, amount=s)
     if isinstance(d, basestring):
-        update.add_item(item, storage_name = character + "-Inventory", amount=s)
-        return d
+        b = update.add_item(item, storage_name = character + "-Inventory", amount=s)
+        return d + " " + b
     return s
 
 
