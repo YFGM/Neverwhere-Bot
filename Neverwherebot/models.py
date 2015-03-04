@@ -483,7 +483,7 @@ class Message(models.Model):
     flags = models.CharField(max_length=64)
 
     def __str__(self):
-        return self.sender.name + ":" + self.receiver.name
+        return self.sender.nick + ":" + self.receiver.nick
 
 
 class Process(models.Model):
