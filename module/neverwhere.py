@@ -975,11 +975,13 @@ def on_join(bot, trigger):
     news = "Welcome to the Neverwherebot Testing Channels. Why don't you try our latest functions (if you get a NoneType error, try using !setc): " \
         "!worksite create, !worksite description, !worksite delete, !worksite changestorage, !worksite add, !worksite upgrade (non functional atm)" \
         ", !worksite hire, !worksite fire, !worksite salary, !worksite createjob, !job apply, !job remapply and !job quit. For some info, see the first " \
-        "few sections of http://pastebin.com/gMmCBJbs (Everything in here is WIP)."
+        "few sections of:"
+    paste = "http://pastebin.com/gMmCBJbs (Everything in here is WIP)."
     if not check_nick(bot, str(trigger.nick)) or not check_user(trigger.nick):
         return
     bot.msg(trigger.nick, "Welcome back %s!" % str(trigger.nick))
     bot.msg(trigger.nick, news)
+    bot.msg(trigger.nick, paste)
     messages = interface.get_messages(str(trigger.nick))
     if len(messages) < 1:
         bot.msg(trigger.nick, "You currently have no messages.")
@@ -1002,8 +1004,10 @@ def news(bot, trigger):
     news = "Welcome to the Neverwherebot Testing Channels. Why don't you try our latest functions (if you get a NoneType error, try using !setc): " \
         "!worksite create, !worksite description, !worksite delete, !worksite changestorage, !worksite add, !worksite upgrade (non functional atm)" \
         ", !worksite hire, !worksite fire, !worksite salary, !worksite createjob, !job apply, !job remapply and !job quit. For some info, see the first " \
-        "few sections of http://pastebin.com/gMmCBJbs (Everything in here is WIP)."
+        "few sections of:"
+    paste = "http://pastebin.com/gMmCBJbs (Everything in here is WIP)."
     bot.say(news)
+    bot.say(paste)
 
 @willie.module.event('NOTICE')
 @willie.module.rule('(.*)')
