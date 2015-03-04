@@ -626,6 +626,21 @@ def worksite_create(character, type, name, storage, *args):
         new.save()
     except:
         return "Failed to create worksite."
+    if type == "farm":
+        create_job(name, "farmer", type="G")
+        create_job(name, "farmhand", type="U")
+    if type == "mine":
+        create_job(name, "overseer", type="G")
+        create_job(name, "miner", type="U")
+    if type == "craft":
+        create_job(name, "craft", type="C")
+    if type == "wilderness":
+        create_job(name, "hunter", type="G")
+        create_job(name, "forager", type="G")
+        create_job(name, "fisher", type="G")
+        create_job(name, "herbalist", type="G")
+        create_job(name, "lumberjack", type="G")
+    return True
 
 
 def get_worksite(worksite):
@@ -647,7 +662,12 @@ def get_worksite(worksite):
 
 
 def delete_worksite(worksite):
-    pass
+    try:
+        w = model.Worksite.objects.get(name=worksite)
+    except:
+        return "Cannot find worksite."
+    w.delete()
+    return True
 
 
 def worksite_description(worksite, description):
@@ -693,6 +713,35 @@ def worksite_add(worksite, addition, *args):
     return True
 
 
+def get_acre(id):
+    try:
+        a = model.Acre.objects.get(id=id)
+    except:
+        return "Acre cannot be found."
+    ret = {}
+    ret["owner"] = a.owner.name
+    ret["fertility"] = a.fertility
+    ret["temperature"] = a.temperature
+    ret["humidity"] = a.humidity
+    if a.crop is not None:
+        ret["crop"] = a.crop.name
+    else:
+        ret["crop"] = None
+    ret["tilled"] = a.tilled
+    ret["planting"] = a.planting
+    ret["planted"] = a.planted
+    ret["harvest"] = a.harvest
+    ret["harvest_per"] = a.harvest_per
+    ret["bonus"] = a.bonus
+    if a.farm is not None:
+        ret["farm"] = a.farm.name
+    else:
+        ret["farm"] = None
+    ret["produce"] = a.produce
+    ret["growth_days"] = a.growth_days
+    return ret
+    
+
 def worksite_upgrade(worksite, upgrade, *args):
     try:
         w = model.Worksite.objects.get(name=worksite)
@@ -703,7 +752,7 @@ def worksite_upgrade(worksite, upgrade, *args):
     except:
         return "Cannot find upgrade type."
     
-    if model.Upgrade.objects.filter(worksite=w).exists() and u.unique:
+    if model.Upgrade.objects.filter(worksite=w).filter(type=u).exists() and u.unique:
         return "This upgrade can only be applied once."
     
     if w.type not in u.type:
@@ -744,6 +793,9 @@ def worksite_hire(worksite, character, job, parttime=False):
             a.part_time = parttime
             a.worksite = w
             a.save()
+            message = "%s has invited you to work at %s as a %s. To accept, do " \
+            "!job apply %s %s" % (w.owner.name, w.name, j.name, w.name, j.name)
+            update.send_message(w.owner.name, char.name, message)
             return "An invitation has been sent."
     new = model.Employee()
     new.character = char
@@ -773,8 +825,55 @@ def worksite_fire(worksite, character):
 
 
 def worksite_salary(worksite, job, amount, money_store=None, frequency=None):
-    pass
+    try:
+        w = model.Worksite.objects.get(name=worksite)
+    except:
+        return "Cannot find worksite."
+    try:
+        j = model.Job.objects.filter(worksite=worksite).get(name=job)
+    except:
+        return "Cannot find job."
+    job.default_salary = amount
+    job.save()
+    return True
 
 
-def create_job(worksite, job_name):
-    pass
+def create_job(worksite, job_name, type="S"):
+    try:
+        w = model.Worksite.objects.get(name=worksite)
+    except:
+        return "Cannot find worksite."
+    try:
+        j = model.Job.objects.filter(worksite=worksite).get(name=job_name)
+        return "Job of that name already exists."
+    except:
+        j = model.Job()
+        j.worksite = w
+        j.name = job_name
+        j.type = type
+        j.save()
+        return True
+    
+
+def get_upgrade(upgrade):
+    try:
+        u = model.UpgradeType.objects.get(name=upgrade)
+    except:
+        return "Upgrade type not found."
+    ret = {}
+    ret["unique"] = u.unique
+    ret["item"] = u.required_item.name
+    ret["slug"] = u.slug
+    ret["type"] = u.type
+    return ret        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+    
+    

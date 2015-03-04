@@ -606,6 +606,222 @@ def storage(bot, trigger):
         debug(bot, str(c))
 
 
+@willie.module.commands("worksite")
+def worksite(bot, trigger):
+    if not check_nick(bot, str(trigger.nick)) or not check_user(trigger.nick):
+        bot.reply("Please register your nick to use this function.")
+        return
+    if trigger.group(2) is not None:
+        args = re.compile('\w+').findall(str(trigger.group(2)))
+    else:
+        bot.reply("Usage: !worksite COMMAND ARGUMENTS")
+        return
+    
+    if args[0] == "create":
+        if len(args) > 3:
+            if args[1] in ["create", "delete", "description", "changestorage", 
+                           "add", "upgrade", "hire", "fire", "salary", "createjob"]:
+                bot.reply("Invalid name.")
+                return
+            s = interface.worksite_create(interface.get_current_character(str(trigger.nick)), args[1], args[2], args[3])
+            if isinstance(s, basestring):
+                    bot.reply(s)
+                    return
+            bot.reply("Worksite %s successfully created!" % args[2])
+        else:
+            bot.reply("Usage: !worksite create TYPE NAME STORAGE")
+        
+    elif args[0] == "delete":
+        if len(args) > 1:
+            w = interface.get_worksite(args[1])
+            if not isinstance(w, dict):
+                bot.reply(w)
+                return
+            if interface.get_current_character(str(trigger.nick)) != w["owner"]:
+                bot.reply("You don't own this worksite.")
+                return
+            s = interface.delete_worksite(args[1])
+            if isinstance(s, basestring):
+                    bot.reply(s)
+                    return
+            bot.reply("Worksite %s succesfully deleted." % args[1])
+        else:
+            bot.reply("Usage: !worksite delete NAME")
+    
+    elif args[0] == "description":
+        if len(args) > 2:
+            w = interface.get_worksite(args[1])
+            if not isinstance(w, dict):
+                bot.reply(w)
+                return
+            if interface.get_current_character(str(trigger.nick)) != w["owner"]:
+                bot.reply("You don't own this worksite.")
+                return
+            desc = ""
+            for i in range(2, len(args)):
+                desc += args[i]
+                if i != len(args) - 1:
+                    desc += " "
+            s = interface.worksite_description(args[1], desc)
+            if isinstance(s, basestring):
+                    bot.reply(s)
+                    return
+            bot.reply("Worksite %s's description successfully set." % args[1])
+        else:
+            bot.reply("Usage: !worksite description NAME DESCRIPTION")
+        
+    elif args[0] == "changestorage":
+        if len(args) > 2:
+            w = interface.get_worksite(args[1])
+            if not isinstance(w, dict):
+                bot.reply(w)
+                return
+            if interface.get_current_character(str(trigger.nick)) != w["owner"]:
+                bot.reply("You don't own this worksite.")
+                return
+            s = interface.worksite_changestorage(args[1], args[2])
+            if isinstance(s, basestring):
+                    bot.reply(s)
+                    return
+            bot.reply("Worksite %s's storage successfully changed to %s." % (args[1], args[2]))
+        else:
+            bot.reply("Usage: !worksite changestorage WORKSITE_NAME STORAGE_NAME")
+            
+    elif args[0] == "add":
+        if len(args) > 2:
+            a = interface.get_acre(args[2])
+            if not isinstance(w, dict):
+                bot.reply(w)
+                return
+            if interface.get_current_character(str(trigger.nick)) != a["owner"]:
+                bot.reply("You don't own this acre.")
+                return
+            s = interface.worksite_add(args[1], args[2])
+            if isinstance(s, basestring):
+                bot.reply(s)
+                return
+            bot.reply("Acre %s successfully added to worksite %s." % (args[2], args[1]))
+        else:
+            bot.reply("Usage: !worksite add NAME ACRE_ID")
+        
+    elif args[0] == "upgrade":
+        if len(args) > 2:
+            w = interface.get_worksite(args[1])
+            if not isinstance(w, dict):
+                bot.reply(w)
+                return
+            if interface.get_current_character(str(trigger.nick)) != w["owner"]:
+                bot.reply("You don't own this worksite.")
+                return
+            u = interface.get_upgrade(args[2])
+            if not isinstance(u, dict):
+                bot.reply(u)
+                return
+            i = interface.remove_item(u["item"], interface.get_current_character(str(trigger.nick)) + "-Inventory", 1.0)
+            if isinstance(i, basestring):
+                if i == "No item of that type in storage.":
+                    i = "The required item for this upgrade was not found in your inventory."
+                bot.reply(i)
+                
+            if i != 1.0:
+                s = interface.add_item(u["item"], interface.get_current_character(str(trigger.nick)) + "-Inventory", i)
+                if isinstance(s, basestring):
+                    bot.reply(s)
+                    return
+                bot.reply("Failed to remove 1 of the necessary upgrade item. This is a bug.")
+                return
+            s = interface.worksite_upgrade(args[1], args[2])
+            if isinstance(s, basestring):
+                    bot.reply(s)
+                    return
+            bot.reply("Upgrade successfully applied.")
+        else:
+            bot.reply("Usage: !worksite upgrade NAME UPGRADE")
+            
+    elif args[0] == "hire":
+        if len(args) == 4:
+            w = interface.get_worksite(args[1])
+            if not isinstance(w, dict):
+                bot.reply(w)
+                return
+            if interface.get_current_character(str(trigger.nick)) != w["owner"]:
+                bot.reply("You don't own this worksite.")
+                return
+            s = interface.worksite_hire(args[1], args[2], args[3])
+            if isinstance(s, basestring):
+                    bot.reply(s)
+                    return
+            bot.reply("You have hired %s as a %s at your worksite %s." % (args[2], args[3], args[1]))
+        if len(args) == 5:
+            if args[4] == "p" or args[4] == "-p":
+                w = interface.get_worksite(args[1])
+                if not isinstance(w, dict):
+                    bot.reply(w)
+                    return
+                if interface.get_current_character(str(trigger.nick)) != w["owner"]:
+                    bot.reply("You don't own this worksite.")
+                    return
+                s = interface.worksite_hire(args[1], args[2], args[3], parttime=True)
+                if isinstance(s, basestring):
+                        bot.reply(s)
+                        return
+                bot.reply("You have hired %s as a %s at your worksite %s." % (args[2], args[3], args[1]))
+        else:
+            bot.reply("Usage: !worksite hire WORKSITE_NAME CHARACTER_NAME JOB_NAME [-p]")
+                
+    elif args[0] == "fire":
+        if len(args) == 3:
+            w = interface.get_worksite(args[1])
+            if not isinstance(w, dict):
+                bot.reply(w)
+                return
+            if interface.get_current_character(str(trigger.nick)) != w["owner"]:
+                bot.reply("You don't own this worksite.")
+                return
+            s = interface.worksite_fire(args[1], args[2])
+            if isinstance(s, basestring):
+                bot.reply(s)
+                return
+            bot.reply("You have fired %s from %s." % (args[2], args[1]))
+        else:
+            bot.reply("Usage: !worksite fire WORKSITE_NAME CHARACTER_NAME")
+            
+    elif args[0] == "salary":
+        if len(args) == 4:
+            w = interface.get_worksite(args[1])
+            if not isinstance(w, dict):
+                bot.reply(w)
+                return
+            if interface.get_current_character(str(trigger.nick)) != w["owner"]:
+                bot.reply("You don't own this worksite.")
+                return
+            if not args[3].isdigit():
+                bot.reply("Amount must be a number.")
+                return
+            s = interface.worksite_salary(args[1], args[2], int(args[3]))
+            if isinstance(s, basestring):
+                bot.reply(s)
+                return
+            bot.reply("Successfully set salary of job %s at worksite %s to %s." (args[2], args[1], args[3]))
+        else:
+            bot.reply("Usage: !worksite salary WORKSITE_NAME JOB_NAME AMOUNT")
+            
+    elif args[0] == "createjob":
+        if len(args) == 3:
+            w = interface.get_worksite(args[1])
+            if not isinstance(w, dict):
+                bot.reply(w)
+                return
+            if interface.get_current_character(str(trigger.nick)) != w["owner"]:
+                bot.reply("You don't own this worksite.")
+                return
+            s = interface.create_job(args[1], args[2])
+            if isinstance(s, basestring):
+                bot.reply(s)
+                return
+            bot.reply("Succesfully created %s job at worksite %s." % (args[2], args[1]))
+
+
 @willie.module.commands("additem")
 @willie.module.commands("addi")
 def add_item(bot, trigger):
