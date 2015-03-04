@@ -690,8 +690,8 @@ def worksite(bot, trigger):
     elif args[0] == "add":
         if len(args) > 2:
             a = interface.get_acre(args[2])
-            if not isinstance(w, dict):
-                bot.reply(w)
+            if not isinstance(a, dict):
+                bot.reply(a)
                 return
             if interface.get_current_character(str(trigger.nick)) != a["owner"]:
                 bot.reply("You don't own this acre.")
