@@ -853,7 +853,7 @@ def job(bot, trigger):
                 return
             bot.reply("You are now working at %s part time." % args[1])
         else:
-            bot.reply("Usage: !job apply WORKSITE_NAME JOB_NAME [-p]"
+            bot.reply("Usage: !job apply WORKSITE_NAME JOB_NAME [-p]")
             
     elif args[0] == "remapply":
         if len(args) == 2:
