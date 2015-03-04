@@ -795,7 +795,7 @@ def worksite_hire(worksite, character, job, parttime=False):
             a.save()
             message = "%s has invited you to work at %s as a %s. To accept, do " \
             "!job apply %s %s" % (w.owner.name, w.name, j.name, w.name, j.name)
-            update.send_message(w.owner.name, char.name, message)
+            update.send_message(w.owner.player.nick, char.player.nick, message)
             return "An invitation has been sent."
     new = model.Employee()
     new.character = char
