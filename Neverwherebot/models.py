@@ -10,6 +10,7 @@ class Game(models.Model):
     start_date = models.DateField(auto_now_add=True)
     date_modifier = models.IntegerField(default=0)  # Added onto current date to determine time of year
     winter_severity = models.IntegerField(default=1)
+    current_date = models.IntegerField(default=0)
 
     def __str__(self):
         return self.name
@@ -166,7 +167,7 @@ class Acre(models.Model):
     crop = models.ForeignKey("Crop", blank=True)
     tilled = models.IntegerField(default=0)  # Increments towards 20, which is tilled
     planting = models.IntegerField(default=0)  # Increments towards 8 hours
-    planted = models.DateField(blank=True)
+    planted = models.IntegerField(blank=True, null=True)
     harvest = models.IntegerField(default=0)
     harvest_per = models.IntegerField(default=0)
     bonus = models.IntegerField(default=0)

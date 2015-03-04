@@ -37,16 +37,14 @@ def startup_scripts():
             except:
                 print("Failed to import module %s." % f)
 
-
-def update():
+# TODO: Create seperate tick function feeding time to update
+def update(hour, day):
     count = 0
     failed_count = 0
     failed = ()
     food_count = 0
     food_failed_count = 0
     food_failed = ()
-    hour = datetime.datetime.now().hour
-    day = datetime.datetime.now().day
 
     this_dir = os.path.dirname(os.path.abspath(__file__))
     scripts_dir = os.path.join(this_dir, 'scripts')
@@ -60,7 +58,7 @@ def update():
     for character in characters:
         update_recovery(character, hour)
 
-        if workday():
+        if day in range(4):
             if update_jobs(character, scripts, scripts_dir, hour):
                 count += 1
             else:
@@ -89,8 +87,6 @@ def update():
 
     for item in cyclic_items:
         update_item(item)
-
-    time.sleep(3600)
 
 
 def enumerate_scripts(scripts_dir):
@@ -129,11 +125,11 @@ def update_recovery(character, hour):
 
 
 def update_jobs(character, scripts, scripts_dir, hour):
-    jobs = models.Employee.objects.filter(character=character.pk)
+    jobs = models.Employee.objects.filter(character=character)
     for job in jobs:
         if job.part == 1 and hour in range(8, 12) or job.part == 2 and hour in range(12, 16) or job.part == 0 and hour in range (8, 16):
-            worksite = models.Worksite.objects.filter(pk=job.worksite)
-            if not worksite.exists():
+            worksite = job.worksite
+            if worksite is None:
                 if job.type == "craft":
                     if not exec_script("", "craft", 'update', character, job, hour):
                         return False
@@ -150,12 +146,12 @@ def update_jobs(character, scripts, scripts_dir, hour):
 
 
 def give_salary(character, part, hour):
-    if hour == 11 and part == 1 and workday() or hour == 15 and part == 2 and workday() or hour == 15 and part == 0 and workday():
-        employee = models.Employee.objects.filter(character=character.pk).filter(part=part)
-        worksite = models.Worksite.objects.filter(pk=employee.worksite)
-        storage = models.Storage.objects.filter(pk=worksite.storage)
-        storage_character = models.Storage.objects.filter(pk=character.inventory)
-        money = remove_item("$", storage_id=storage, amount=employee.salary)
+    if hour == 11 and part == 1 or hour == 15 and part == 2 or hour == 15 and part == 0:
+        employee = models.Employee.objects.filter(character=character).get(part=part)
+        worksite = employee.worksite
+        storage = worksite.storage
+        storage_character = character.inventory
+        money = remove_item("$", storage_name=storage.name, amount=employee.salary)
         if money == -1:
             money = 0
         add_item("$", storage_id=storage_character, amount=money)
@@ -165,32 +161,25 @@ def give_salary(character, part, hour):
                       " you only received %s$. This may be due to your employer running out of money, or" \
                       " a misconfiguration. You may want to contact him to resolve this issue." % (
                 character.name, str(datetime.datetime.now()), str(employee.salary),
-                models.Character.objects.filter(pk=worksite.owner).name, str(money),
+                worksite.owner.name, str(money),
             )
 
-            send_message("", models.Player.objects.filter(pk=character.player).nick, message, flags='bwi')
+            send_message("", character.player.nick, message, flags='bwi')
             message = "At %s, your worksite %s failed to pay %s a fully salary due to a lack of funds in the" \
                       " main storage. You payed him %s, but should have payed him %s. Please transfer " \
                       "more funds to your worksite's storage, and pay your workers what you owe them." % (
                 str(datetime.datetime.now()), worksite.name, character.name, str(money), str(employee.salary),
             )
-            send_message("", models.Player.objects.filter(pk=models.Character.objects.filter(pk=worksite.owner).player).nick, message, flags="bwi")
+            send_message("", worksite.owner.player.nick, message, flags="bwi")
         elif employee.salary != 0:
             message = "Today at %s, you received a salary of %s from your work at %s." % (
                 str(datetime.datetime.now()), str(money), worksite.name,
             )
-            send_message("", models.Player.objects.filter(pk=character.player).nick, message, flags="bw")
+            send_message("", character.player.nick, message, flags="bw")
             message = "Today at %s, you payed %s %s$ for their work at %s" % (
                 str(datetime.datetime.now()), character.name, str(money), worksite.name,
             )
-            send_message("", models.Player.objects.filter(pk=models.Character.objects.filter(pk=worksite.owner).player).nick, message, flags="bw")
-
-
-def workday():
-    if datetime.datetime.today() in range(5):
-        return True
-    else:
-        return False
+            send_message("", worksite.owner.player.nick, message, flags="bw")
 
 
 def remove_item(name, storage_name='', storage_id='', amount=1.0):
@@ -358,10 +347,7 @@ def send_message(sender, receiver, content, flags=''):
 
 
 def get_current_day():
-    now = datetime.date.today()
-    start_date = models.Game.objects.get(id=0).start_date
-    diff = start_date - now
-    return diff.days + models.Game.objects.get(id=0).date_modifier
+    return models.Game.objects.get(id=0).current_day
 
 
 def get_skill(character, skill):
@@ -402,23 +388,36 @@ def get_skill(character, skill):
 def update_acre(acre, hour):
     if hour != 15:
         return True
-    if acre.farm:
-        farm = models.Worksite.objects.filter(pk=acre.farm)
-        employee = models.Employee.objects.filter(worksite=farm).filter(job=models.Job.objects.filter(name="farmer").pk)
-        character = models.Character.objects.filter(pk=employee.character)
+    if not acre.farm is None:
+        farmer = False
+        fail = False
+        farm = acre.farm
+        try:
+            job = models.Job.objects.filter(worksite=farm).get(name="farmer")
+        except:
+            character = None
+            fail = True
+        try:
+            employee = models.Employee.objects.filter(worksite=farm).get(job=job)
+        except:
+            character = None
+            fail = True
+        if not fail:
+            character = employee.character
+            farmer = True
     elif acre.owner:
-        character = models.Character.objects.filter(pk=acre.owner)
+        character = acre.owner
     else:
         character = None
 
-    if models.Upgrade.objects.filter(acre=acre.pk).exists():
-        for upgrade in models.Upgrade.objects.filter(acre=acre.pk):
+    if models.Upgrade.objects.filter(acre=acre).exists():
+        for upgrade in models.Upgrade.objects.filter(acre=acre):
             exec_script(os.path.join("acre", "upgrades"), upgrade.name, 'on_pre_update', acre)
 
-    if acre.crop:
-        crop = models.Crop.objects.filter(pk=acre.crop)
+    if acre.crop is not None:
+        crop = acre.crop
         if acre.temperature not in crop.temperature_survive:
-            growth_time = (datetime.date.today() - acre.planted).days
+            growth_time = get_current_day() - acre.planted
             acre.growth_days = growth_time
             acre.save()
             if acre.temperature in crop.temperature_tolerate:
@@ -432,6 +431,7 @@ def update_acre(acre, hour):
                                             acre.temperature)
                     send_message("", character.name, message, "bwi")
                 acre.bonus -= 10
+                acre.save()
 
             if acre.humidity in crop.humidity_tolerate:
                 acre.bonus -= 1
@@ -447,14 +447,14 @@ def update_acre(acre, hour):
                 acre.bonus -= 10
                 acre.save()
 
-            if not character or character.pk == acre.owner:
-                last_30 = models.Tending.objects.filter(acre=acre.pk).filter(day__in=[get_current_day()-30, get_current_day()])
+            if not farmer:
+                last_30 = models.Tending.objects.filter(acre=acre).filter(day__in=range(get_current_day()-30, get_current_day()+1))
                 if len(last_30) < 25:
                     acre.bonus -= 5
                     acre.save()
 
             if acre.growth_days == crop.time:
-                acre.produce = crop.gross_yield * (1+(acre.bonus/100))
+                acre.produce = crop.gross_yield * (1.0+(acre.bonus/100.0))
                 if acre.fertility == "Barren":
                     acre.produce = int(acre.produce*0.1)
                 elif acre.fertility == "Bad":
@@ -465,7 +465,7 @@ def update_acre(acre, hour):
                     acre.produce = int(acre.prodce*1.3)
                 acre.harvest_per = acre.produce / 5
                 acre.save()
-                if character:
+                if character is not None:
                     message = "Your acre %s is ready for harvest! Better do so soon or the yield will begin to " \
                               "rot." % acre.id
                     send_message("", character.name, message, "bwi")
@@ -499,16 +499,22 @@ def update_acre(acre, hour):
                 running = True
                 count = 0
                 while running:
-                    if models.Tending.objects.filter(day=get_current_day()-count).filter(acre=acre.pk).exists and count <= 30:
-                        acre.bonus += (models.Tending.objects.filter(day=get_current_day()-count).filter(acre=acre.pk).roll-crop.difficulty) * 5
+                    found = False
+                    try:
+                        t = models.Tending.objects.filter(day=get_current_day()-count).get(acre=acre)
+                        found = True
+                    except:
+                        pass
+                    if count <= 30 and found:
+                        acre.bonus += t.roll - crop.difficulty * 5
                         running = False
                     elif count > 30:
                         running = False
                     else:
                         count += 1
                 acre.save()
-    if models.Upgrade.objects.filter(acre=acre.pk).exists():
-        for upgrade in models.Upgrade.objects.filter(acre=acre.pk):
+    if models.Upgrade.objects.filter(acre=acre).exists():
+        for upgrade in models.Upgrade.objects.filter(acre=acre):
             exec_script(os.path.join("acre", "upgrades"), upgrade.name, 'on_post_update', acre)
 
 
