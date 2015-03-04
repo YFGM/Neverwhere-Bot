@@ -463,7 +463,7 @@ def update_acre(acre, hour):
                     acre.produce = int(acre.produce*1.1)
                 elif acre.fertility == "Very Fertile":
                     acre.produce = int(acre.prodce*1.3)
-                acre.harvest_per = acre.produce / 5
+                acre.harvest_per = acre.produce / 40
                 acre.save()
                 if character is not None:
                     message = "Your acre %s is ready for harvest! Better do so soon or the yield will begin to " \

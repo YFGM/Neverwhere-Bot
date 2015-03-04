@@ -6,7 +6,7 @@ import Neverwherebot.scripts.worksites.farm.farmer as farmer
 def update(character, hour, employment):
     override = farmer.check_upgrades("on_start", employment, character)
 
-    if not models.Job.objects.filter(pk=employment.job).name == "farmhand":
+    if not employment.job.name == "farmhand":
         print("Farmhand.py update called without the employee being a farmer, what's up with that?")
         return False
     if hour == 15 and employment.current_activity == "" and not override:
