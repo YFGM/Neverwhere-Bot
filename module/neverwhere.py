@@ -820,6 +820,8 @@ def worksite(bot, trigger):
                 bot.reply(s)
                 return
             bot.reply("Succesfully created %s job at worksite %s." % (args[2], args[1]))
+        else:
+            bot.reply("Usage: !worksite createjob WORKSITE_NAME JOB_NAME"
             
         
     else:
@@ -850,6 +852,8 @@ def job(bot, trigger):
                 bot.reply(s)
                 return
             bot.reply("You are now working at %s part time." % args[1])
+        else:
+            bot.reply("Usage: !job apply WORKSITE_NAME JOB_NAME [-p]"
             
     elif args[0] == "remapply":
         if len(args) == 2:
@@ -858,7 +862,9 @@ def job(bot, trigger):
                 bot.reply(s)
                 return
             bot.reply("Successfully removed all applications to %s." % args[1])
-        
+        else:
+            bot.reply("Usage: !job remapply WORKSITE_NAME")
+                      
     elif args[0] == "quit":
         if len(args) == 1:
             s = interface.quit_job(interface.get_current_character(str(trigger.nick)))
@@ -873,6 +879,8 @@ def job(bot, trigger):
                 bot.reply(s)
                 return
             bot.reply("Successfully quit your job.")
+        else:
+            bot.reply("Usage: !job quit [JOB]")
             
     else:
         debug(bot, str(interface.get_job(args[0])))
