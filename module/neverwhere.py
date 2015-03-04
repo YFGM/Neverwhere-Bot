@@ -821,11 +821,9 @@ def worksite(bot, trigger):
                 return
             bot.reply("Succesfully created %s job at worksite %s." % (args[2], args[1]))
             
-    elif args[0] == "upgrade":
-        bot.reply("Upgrading is TODO.")
         
     else:
-        bot.debug(bot, str(interface.get_worksite(args[0])))
+        debug(bot, str(interface.get_worksite(args[0])))
 
 
 @willie.module.commands("additem")
