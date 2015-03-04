@@ -802,7 +802,7 @@ def worksite(bot, trigger):
             if isinstance(s, basestring):
                 bot.reply(s)
                 return
-            bot.reply("Successfully set salary of job %s at worksite %s to %s." (args[2], args[1], args[3]))
+            bot.reply("Successfully set salary of job %s at worksite %s to %s." % (args[2], args[1], args[3]))
         else:
             bot.reply("Usage: !worksite salary WORKSITE_NAME JOB_NAME AMOUNT")
             
