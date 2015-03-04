@@ -833,8 +833,8 @@ def worksite_salary(worksite, job, amount, money_store=None, frequency=None):
         j = model.Job.objects.filter(worksite=w).get(name=job)
     except:
         return "Cannot find job."
-    job.default_salary = amount
-    job.save()
+    j.default_salary = amount
+    j.save()
     return True
 
 
