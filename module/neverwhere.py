@@ -619,7 +619,7 @@ def worksite(bot, trigger):
     
     if args[0] == "create":
         if len(args) > 3:
-            if args[1] in ["create", "delete", "description", "changestorage", 
+            if args[2] in ["create", "delete", "description", "changestorage", 
                            "add", "upgrade", "hire", "fire", "salary", "createjob"]:
                 bot.reply("Invalid name.")
                 return
