@@ -846,7 +846,7 @@ def job(bot, trigger):
                 bot.reply(s)
                 return
             bot.reply("You are now working at %s." % args[1])
-        if len(args) == 4 and (args[3] == "p" or args[3] == "-p"):
+        elif len(args) == 4 and (args[3] == "p" or args[3] == "-p"):
             s = interface.apply_job(args[1], args[2], interface.get_current_character(str(trigger.nick)), parttime=True)
             if isinstance(s, basestring):
                 bot.reply(s)
@@ -873,7 +873,7 @@ def job(bot, trigger):
                 return
             bot.reply("Successfully quit your job(s).")
             
-        if len(args) == 2 and args[1].isdigit():
+        elif len(args) == 2 and args[1].isdigit():
             s = interface.quit_job(interface.get_current_character(str(trigger.nick)), int(args[1]))
             if isinstance(s, basestring):
                 bot.reply(s)
