@@ -427,19 +427,144 @@ def set_current_character(player, character):
 
 
 def apply_job(worksite, job, character, parttime=False):
-    pass
-
+    try:
+        w = model.Worksite.objects.get(name=worksite)
+    except:
+        return "Worksite not found."
+    try:
+        j = model.Job.objects.filter(worksite=w).get(name=job)
+    except:
+        return "Job not found."
+    try:
+        char = model.Character.objects.get(name=character)
+    except:
+        return "Character not found."
+    
+    try:
+        a = model.Application.objects.filter(worksite=w).filter(character=char).filter(job=j).filter(employer_sent=False).get(part_time=parttime)
+    except:
+        try:
+            a = model.Application.objects.filter(worksite=w).filter(character=char).filter(job=j).filter(employer_sent=True).get(part_time=parttime)
+            part = 0
+            if model.Employee.objects.filter(character=char).exists():
+                if len(model.Employee.objects.filter(character=char)) == 1 and parttime:
+                    if model.Employee.objects.get(character=char).part == 1:
+                        part = 2
+                    elif model.Employee.objects.get(character=char).part == 2:
+                        part = 1
+                else:
+                    if not parttime:
+                        if len(model.Employee.objects.filter(character=char)) == 2:
+                            s = quit_job(character, 2)
+                            if isinstance(s, basestring):
+                                return s
+                            s = quit_job(character, 1)
+                            if isinstance(s, basestring):
+                                return s
+                        else:
+                            s = quit_job(character)
+                            if isinstance(s, basestring):
+                                return s 
+                    else:
+                        if len(model.Employee.objects.filter(character=char)) == 2:
+                            s = quit_job(character, 2)
+                            if isinstance(s, basestring):
+                                return s
+                        else:
+                            s = quit_job(character)
+                            if isinstance(s, basestring):
+                                return s 
+                        
+            new = model.Employee()
+            new.character = char
+            new.job = j
+            new.worksite = w
+            new.salary = j.default_salary
+            new.part_time = parttime
+            new.part = part
+            new.save()
+            a.delete()
+            return True
+        except:
+            a = model.Application()
+            a.character = char
+            a.job = j
+            a.employer_sent = False
+            a.part_time = parttime
+            a.worksite = w
+            a.save()
+            if not parttime:
+                message = "%s has asked to work at %s as a %s. To accept, do " \
+                "!worksite hire %s %s %s" % (char.name, w.name, j.name, w.name, char.name, j.name)
+            else:
+                message = "%s has asked to work at %s as a %s part time. To accept, do " \
+                "!worksite hire %s %s %s -p" % (char.name, w.name, j.name, w.name, char.name, j.name)
+            update.send_message(char.player.nick, w.owner.player.nick, message)
+            return "An application has been sent."
+    return "An application has already been sent."
+    
 
 def remove_apply(character, worksite):
-    pass
+    try:
+        w = model.Worksite.objects.get(name=worksite)
+    except:
+        return "Worksite not found."
+    try:
+        char = model.Character.objects.get(name=character)
+    except:
+        return "Character not found."
+    
+    a = model.Application.objects.filter(character=char).filter(worksite=w)
+    if a.exists():
+        for p in a:
+            p.delete()
+        return True
+    else:
+        return "No applications to delete."
 
 
-def remove_job(character, job):
-    pass
+def quit_job(character, job=0):
+    try:
+        char = model.Character.objects.get(name=character)
+    except:
+        return "Character not found."
+    try:
+        j = model.Employee.objects.filter(character=char).get(part=job)
+    except:
+        if job == 0:
+            j = model.Employee.objects.filter(character=char)
+            if j.exists():
+                for e in j:
+                    e.delete()
+                return True
+        else:      
+            return "You aren't working at that time of day."
+    
+    j.delete()
+    return True
 
 
 def get_job(character):
-    pass
+    try:
+        char = model.Character.objects.get(name=character)
+    except:
+        return "Character not found."
+    ret = []
+    j = model.Employee.objects.filter(character=char)
+    if j.exists():
+        for e in j:
+            emp = {}
+            emp["worksite"] = e.worksite.name
+            emp["job"] = e.job.name
+            emp["parttime"] = e.part_time
+            emp["tunnel"] = e.tunnel.pk
+            emp["part"] = e.part
+            emp["craft"] = e.craft.pk
+            emp["salary"] = e.salary
+            emp["current_activity"] = e.current_activity
+            emp["acre"] = e.acre.id
+            ret.append(emp)
+    return ret
 
 
 def create_storage(character, name, size):
@@ -793,15 +918,50 @@ def worksite_hire(worksite, character, job, parttime=False):
             a.part_time = parttime
             a.worksite = w
             a.save()
-            message = "%s has invited you to work at %s as a %s. To accept, do " \
-            "!job apply %s %s" % (w.owner.name, w.name, j.name, w.name, j.name)
+            if not parttime:
+                message = "%s has invited you to work at %s as a %s. To accept, do " \
+                "!job apply %s %s" % (w.owner.name, w.name, j.name, w.name, j.name)
+            else:
+                message = "%s has invited you to work at %s as a %s part time. To accept, do " \
+                "!job apply %s %s -p" % (w.owner.name, w.name, j.name, w.name, j.name)
             update.send_message(w.owner.player.nick, char.player.nick, message)
             return "An invitation has been sent."
+    part = 0
+    if model.Employee.objects.filter(character=char).exists():
+        if len(model.Employee.objects.filter(character=char)) == 1 and parttime:
+            if model.Employee.objects.get(character=char).part == 1:
+                part = 2
+            elif model.Employee.objects.get(character=char).part == 2:
+                part = 1
+        else:
+            if not parttime:
+                if len(model.Employee.objects.filter(character=char)) == 2:
+                    s = quit_job(character, 2)
+                    if isinstance(s, basestring):
+                        return s
+                    s = quit_job(character, 1)
+                    if isinstance(s, basestring):
+                        return s
+                else:
+                    s = quit_job(character)
+                    if isinstance(s, basestring):
+                        return s 
+            else:
+                if len(model.Employee.objects.filter(character=char)) == 2:
+                    s = quit_job(character, 2)
+                    if isinstance(s, basestring):
+                        return s
+                else:
+                    s = quit_job(character)
+                    if isinstance(s, basestring):
+                        return s 
     new = model.Employee()
     new.character = char
     new.job = j
     new.worksite = w
     new.salary = j.default_salary
+    new.part_time = parttime
+    new.part = part
     new.save()
     a.delete()
     return True

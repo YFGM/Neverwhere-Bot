@@ -826,6 +826,58 @@ def worksite(bot, trigger):
         debug(bot, str(interface.get_worksite(args[0])))
 
 
+@willie.module.commands("job")
+def job(bot, trigger):
+    if not check_nick(bot, str(trigger.nick)) or not check_user(trigger.nick):
+        bot.reply("Please register your nick to use this function.")
+        return
+    if trigger.group(2) is not None:
+        args = re.compile('\w+').findall(str(trigger.group(2)))
+    else:
+        bot.reply("Usage: !job COMMAND ARGUMENTS")
+        return
+    
+    if args[0] == "apply":
+        if len(args) == 3:
+            s = interface.apply_job(args[1], args[2], interface.get_current_character(str(trigger.nick)))
+            if isinstance(s, basestring):
+                bot.reply(s)
+                return
+            bot.reply("You are now working at %s." % args[1])
+        if len(args) == 4 and (args[3] == "p" or args[3] == "-p"):
+            s = interface.apply_job(args[1], args[2], interface.get_current_character(str(trigger.nick)), parttime=True)
+            if isinstance(s, basestring):
+                bot.reply(s)
+                return
+            bot.reply("You are now working at %s part time." % args[1])
+            
+    elif args[0] == "remapply":
+        if len(args) == 2:
+            s = interface.remove_apply(interface.get_current_character(str(trigger.nick)), args[1])
+            if isinstance(s, basestring):
+                bot.reply(s)
+                return
+            bot.reply("Successfully removed all applications to %s." % args[1])
+        
+    elif args[0] == "quit":
+        if len(args) == 1:
+            s = interface.quit_job(interface.get_current_character(str(trigger.nick)))
+            if isinstance(s, basestring):
+                bot.reply(s)
+                return
+            bot.reply("Successfully quit your job(s).")
+            
+        if len(args) == 2 and args[1].isdigit():
+            s = interface.quit_job(interface.get_current_character(str(trigger.nick)), int(args[1]))
+            if isinstance(s, basestring):
+                bot.reply(s)
+                return
+            bot.reply("Successfully quit your job.")
+            
+    else:
+        debug(bot, str(interface.get_job(args[0])))
+
+
 @willie.module.commands("additem")
 @willie.module.commands("addi")
 def add_item(bot, trigger):
@@ -911,6 +963,10 @@ def show_args(bot, trigger):
     s = trigger.group(2)
     bot.say("Group 2: " + s)
 
+news = "Welcome to the Neverwherebot Testing Channels. Why don't you try our latest functions (if you get a NoneType error, try using !setc): " \
+        "!worksite create, !worksite description, !worksite delete, !worksite changestorage, !worksite add, !worksite upgrade (non functional atm)" \
+        ", !worksite hire, !worksite fire, !worksite salary, !worksite createjob, !job apply, !job remapply and !job quit. For some info, see the first " \
+        "few sections of http://pastebin.com/gMmCBJbs (Everything in here is WIP)."
 
 @willie.module.event('JOIN')
 @willie.module.rule('.*')
@@ -923,7 +979,7 @@ def on_join(bot, trigger):
         "Note that currently the only supported type of item is 'Sword'. If you find any bugs or have feedback, please use '!sendm YFGM' to keep the " \
         "developer up to date. Thank you!"
     bot.msg(trigger.nick, "Welcome back %s!" % str(trigger.nick))
-    bot.msg(trigger.nick, s)
+    bot.msg(trigger.nick, news)
     messages = interface.get_messages(str(trigger.nick))
     if len(messages) < 1:
         bot.msg(trigger.nick, "You currently have no messages.")
@@ -943,11 +999,7 @@ def on_join(bot, trigger):
 
 @willie.module.commands("news")
 def news(bot, trigger):
-    s = "Welcome to the Neverwherebot Testing Channels. Why don't you try our latest functions (be sure to set your character by using !setc): " \
-        "!storage, !storage create, !storage description, !storage resize, !storage allow, !storage disallow, !additem and !removeitem. " \
-        "Note that currently the only supported type of item is 'Sword'. If you find any bugs or have feedback, please use '!sendm YFGM' to keep the " \
-        "developer up to date. Thank you!"
-    bot.say(s)
+    bot.say(news)
 
 @willie.module.event('NOTICE')
 @willie.module.rule('(.*)')
