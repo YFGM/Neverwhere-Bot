@@ -821,7 +821,7 @@ def worksite(bot, trigger):
                 return
             bot.reply("Succesfully created %s job at worksite %s." % (args[2], args[1]))
         else:
-            bot.reply("Usage: !worksite createjob WORKSITE_NAME JOB_NAME"
+            bot.reply("Usage: !worksite createjob WORKSITE_NAME JOB_NAME")
             
         
     else:
