@@ -972,12 +972,12 @@ news = "Welcome to the Neverwherebot Testing Channels. Why don't you try our lat
 @willie.module.rule('.*')
 @willie.module.priority('low')
 def on_join(bot, trigger):
+    news = "Welcome to the Neverwherebot Testing Channels. Why don't you try our latest functions (if you get a NoneType error, try using !setc): " \
+        "!worksite create, !worksite description, !worksite delete, !worksite changestorage, !worksite add, !worksite upgrade (non functional atm)" \
+        ", !worksite hire, !worksite fire, !worksite salary, !worksite createjob, !job apply, !job remapply and !job quit. For some info, see the first " \
+        "few sections of http://pastebin.com/gMmCBJbs (Everything in here is WIP)."
     if not check_nick(bot, str(trigger.nick)) or not check_user(trigger.nick):
         return
-    s = "Welcome to the Neverwherebot Testing Channels. Why don't you try our latest functions (be sure to set your character by using !setc): " \
-        "!storage, !storage create, !storage description, !storage resize, !storage allow, !storage disallow, !additem and !removeitem. " \
-        "Note that currently the only supported type of item is 'Sword'. If you find any bugs or have feedback, please use '!sendm YFGM' to keep the " \
-        "developer up to date. Thank you!"
     bot.msg(trigger.nick, "Welcome back %s!" % str(trigger.nick))
     bot.msg(trigger.nick, news)
     messages = interface.get_messages(str(trigger.nick))
@@ -999,6 +999,10 @@ def on_join(bot, trigger):
 
 @willie.module.commands("news")
 def news(bot, trigger):
+    news = "Welcome to the Neverwherebot Testing Channels. Why don't you try our latest functions (if you get a NoneType error, try using !setc): " \
+        "!worksite create, !worksite description, !worksite delete, !worksite changestorage, !worksite add, !worksite upgrade (non functional atm)" \
+        ", !worksite hire, !worksite fire, !worksite salary, !worksite createjob, !job apply, !job remapply and !job quit. For some info, see the first " \
+        "few sections of http://pastebin.com/gMmCBJbs (Everything in here is WIP)."
     bot.say(news)
 
 @willie.module.event('NOTICE')
