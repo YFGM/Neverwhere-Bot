@@ -5,7 +5,7 @@ import os
 import datetime
 
 
-def update(character, hour, employment):
+def update(character, employment, hour):
     random.seed()
     override = check_upgrades("on_start", employment, character)
 

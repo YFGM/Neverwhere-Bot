@@ -307,7 +307,7 @@ def add_perk(bot, trigger):
         bot.reply("Please register your nick to use this function.")
         return
     if trigger.group(2) is not None:
-        args = re.compile('\w+').findall(str(trigger.group(2)))
+        args = str(trigger.group(2)).split()
     else:
         bot.reply("Usage: !addperk CHARACTER PERK")
         return
@@ -335,7 +335,7 @@ def storage(bot, trigger):
         bot.reply("Please register your nick to use this function.")
         return
     if trigger.group(2) is not None:
-        args = re.compile('\w+').findall(str(trigger.group(2)))
+        args = str(trigger.group(2)).split()
     else:
         bot.reply("Usage: !storage COMMAND ARGUMENTS")
         return
@@ -612,7 +612,7 @@ def worksite(bot, trigger):
         bot.reply("Please register your nick to use this function.")
         return
     if trigger.group(2) is not None:
-        args = re.compile('\w+').findall(str(trigger.group(2)))
+        args = str(trigger.group(2)).split()
     else:
         bot.reply("Usage: !worksite COMMAND ARGUMENTS")
         return
@@ -834,7 +834,7 @@ def job(bot, trigger):
         bot.reply("Please register your nick to use this function.")
         return
     if trigger.group(2) is not None:
-        args = re.compile('\w+').findall(str(trigger.group(2)))
+        args = str(trigger.group(2)).split()
     else:
         bot.reply("Usage: !job COMMAND ARGUMENTS")
         return
@@ -893,7 +893,7 @@ def add_item(bot, trigger):
         bot.reply("Please register your nick to use this function.")
         return
     if trigger.group(2) is not None:
-        args = re.compile('\w+').findall(str(trigger.group(2)))
+        args = str(trigger.group(2)).split()
     else:
         bot.reply("Usage: !addi STORAGE ITEM [AMOUNT]")
         return
@@ -931,7 +931,7 @@ def remove_item(bot, trigger):
         bot.reply("Please register your nick to use this function.")
         return
     if trigger.group(2) is not None:
-        args = re.compile('\w+').findall(str(trigger.group(2)))
+        args = str(trigger.group(2)).split()
     else:
         bot.reply("Usage: !remi STORAGE ITEM [AMOUNT]")
         return

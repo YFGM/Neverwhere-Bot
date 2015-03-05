@@ -130,14 +130,17 @@ def update_jobs(character, scripts, scripts_dir, hour):
         if job.part == 1 and hour in range(8, 12) or job.part == 2 and hour in range(12, 16) or job.part == 0 and hour in range (8, 16):
             worksite = job.worksite
             if worksite is None:
-                if job.type == "craft":
+                if job.type == "craft" or job.current_activity == "craft":
                     if not exec_script("", "craft", 'update', character, job, hour):
                         return False
                 else:
                     print("No worksite found for character %s job %s." % (character.name, str(job.part)))
                     return False
             elif os.path.join(scripts_dir, worksite.type) in scripts:
-                if not exec_script(os.path.join("worksites", worksite.type), job.name, 'update', character, job, hour):
+                if job.current_activity == "craft":
+                    if not exec_script("", "craft", 'update', character, job, hour):
+                        return False
+                elif not exec_script(os.path.join("worksites", worksite.type), job.name, 'update', character, job, hour):
                     return False
                 else:
                     print("Couldn't find script for %s, assuming it is a service job" % job.name)
@@ -184,6 +187,10 @@ def give_salary(character, part, hour):
 
 def remove_item(name, storage_name='', storage_id='', amount=1.0):
     # Returns how much, if any, was removed
+    
+    if amount == 0 or amount == 0.0:
+        return 0.0
+    
     if storage_name != '':
         try:
             storage = models.Storage.objects.get(name=storage_name)
@@ -223,6 +230,9 @@ def remove_item(name, storage_name='', storage_id='', amount=1.0):
 
 
 def add_item(name, storage_name='', storage_id='', amount=1.0, value='', worn=False):
+    
+    if amount == 0 or amount == 0.0:
+        return True
 
     if storage_name != '':
         try:

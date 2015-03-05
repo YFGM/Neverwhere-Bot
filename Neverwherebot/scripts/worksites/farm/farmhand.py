@@ -3,7 +3,7 @@ import Neverwherebot.update
 import Neverwherebot.scripts.worksites.farm.farmer as farmer
 
 
-def update(character, hour, employment):
+def update(character, employment, hour):
     override = farmer.check_upgrades("on_start", employment, character)
 
     if not employment.job.name == "farmhand":

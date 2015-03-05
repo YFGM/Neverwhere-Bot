@@ -460,15 +460,14 @@ class Craft(models.Model):
         ('AM', "Amazing"),
     )
     difficulty = models.CharField(choices=DIFFICULTY_CHOICES, max_length=64)
-    wr = models.CharField(max_length=32)
-    blueprint = models.CharField(choices=DIFFICULTY_CHOICES, blank=True , max_length=64)
-    part_time = models.BooleanField(default=False)
+    wr = models.FloatField() # Taken * to get work
+    blueprint = models.CharField(choices=DIFFICULTY_CHOICES, blank=True , max_length=64, null=True)
     take_10 = models.BooleanField(default=False)
     amount = models.IntegerField(default=1)
     hours = models.IntegerField(default=0)
     resources = models.IntegerField(default=0)
-    worksite = models.ForeignKey("Worksite", blank=True)
-    started = models.DateTimeField(auto_now_add=True)
+    worksite = models.ForeignKey("Worksite", blank=True, null=True)
+    started = models.IntegerField()
 
     def __str__(self):
         return self.character.name + ":" + self.item.name

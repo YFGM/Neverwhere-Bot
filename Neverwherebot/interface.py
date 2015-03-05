@@ -1,6 +1,10 @@
 # Interface.py
 # Provides access to all core game world functionalities to external programs. Does NOT check any form of authentication
 
+# TODO: Encumbrance, item bonuses, activity queue, crafting, jobs (farming, mining, hunting, foraging, herbalism, fishing, lumber),
+# buildings(simple), spell learning, rolling funcs, gameworld ticks, webinterface, content(items, buildings,
+# prey, fish, perks, spells, crops, monsters), PnP-module(?)
+
 import imp
 import os
 import math
