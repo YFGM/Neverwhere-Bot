@@ -978,7 +978,7 @@ def tick(bot, trigger):
     
     for i in range(int(args[0])):
         t = interface.get_time()
-        bot.debug(bot, "Ticking hour %i of day %i." % (t["hour"], t["day"]))
+        debug(bot, "Ticking hour %i of day %i." % (t["hour"], t["day"]))
         interface.tick()
 
 @willie.module.commands("argshow")
