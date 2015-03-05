@@ -752,7 +752,7 @@ def worksite(bot, trigger):
                     bot.reply(s)
                     return
             bot.reply("You have hired %s as a %s at your worksite %s." % (args[2], args[3], args[1]))
-        if len(args) == 5:
+        if len(args) > 4:
             if args[4] == "p" or args[4] == "-p":
                 w = interface.get_worksite(args[1])
                 if not isinstance(w, dict):
