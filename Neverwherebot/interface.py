@@ -1,9 +1,9 @@
 # Interface.py
 # Provides access to all core game world functionalities to external programs. Does NOT check any form of authentication
 
-# TODO: Encumbrance, item bonuses, activity queue, crafting(mostly done), jobs (farming(mostly done), mining, hunting, foraging, herbalism, fishing, lumber),
-# buildings(simple), spell learning, rolling funcs, gameworld ticks, webinterface, content(items, buildings,
-# prey, fish, perks, spells, crops, monsters), PnP-module(?)
+# TODO: Encumbrance(done), item bonuses, activity queue(should work), crafting(mostly done), jobs (farming(mostly done), mining, hunting, foraging, herbalism, fishing, lumber),
+# buildings(simple), spell learning, rolling funcs, webinterface, content(items, buildings,
+# prey, fish, perks, spells, crops, monsters)
 
 import imp
 import os
@@ -315,18 +315,50 @@ def recalculate_char(character):
             s.on_recalc(character)
     char = model.Character.objects.get(name=character)
     char.san = 100 + (char.will * 10)
+    if char.mo < 4:
+        char.mo = 3
     char.save()
     inv.size = char.bl * 10
     inv.save()
+    weight = 0
+    for i in model.Item.objects.filter(stored=inv):
+        weight += i.amount * i.type.weight
+    if weight / char.bl > 6:
+        char.mo = int(math.floor(char.mo*0.2))
+        char.ac -= 5
+    elif weight / char.bl > 3:
+        char.mo = int(math.floor(char.mo*0.4))
+        char.ac -= 3    
+    elif weight / char.bl > 2:
+        char.mo = int(math.floor(char.mo*0.6))
+        char.ac -= 2
+    elif weight / char.bl > 1:
+        char.mo = int(math.floor(char.mo*0.8))
+        char.ac -= 1
+    char.save()
     return True
 
 
 def add_item(item, storage, amount, value=0):
-    return update.add_item(item, storage_name=storage, amount=amount, value=value)
+    r = update.add_item(item, storage_name=storage, amount=amount, value=value)
+    if isinstance(r, basestring):
+        return r
+    s = model.Storage.objects.get(name=storage)
+    if s.inventory:
+        char = model.Character.objects.get(inv=s)
+        recalculate_char(char)
+    return r
 
 
 def remove_item(item, storage, amount):
-    return update.remove_item(item, storage_name=storage, amount=amount)
+    r = update.remove_item(item, storage_name=storage, amount=amount)
+    if isinstance(r, basestring):
+        return r
+    s = model.Storage.objects.get(name=storage)
+    if s.inventory:
+        char = model.Character.objects.get(inv=s)
+        recalculate_char(char)
+    return r
 
 
 def get_item_type(item):
