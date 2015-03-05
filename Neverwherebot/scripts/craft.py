@@ -132,7 +132,7 @@ def update(character, employment, hour):
 def check_upgrades(function, employment, *args):
     if models.Upgrade.objects.filter(worksite=employment.worksite).exists():
         for upgrade in models.Upgrade.objects.filter(worksite=employment.worksite):
-            result = Neverwherebot.update.exec_script(os.path.join("worksites", employment.worksite.type, "upgrades"), upgrade.type.name, function, *args)
+            result = update.exec_script(os.path.join("worksites", employment.worksite.type, "upgrades"), upgrade.type.name, function, *args)
             if result == "override":
                 return True
             else:
