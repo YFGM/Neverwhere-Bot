@@ -8,6 +8,7 @@
 import imp
 import os
 import math
+import new
 
 os.environ["DJANGO_SETTINGS_MODULE"] = "Neverwhere.settings"
 
@@ -1032,6 +1033,147 @@ def get_upgrade(upgrade):
     return ret        
         
         
+#TODO: Activity queue for part time 
+def craft_start(character, item_name, skill_name, difficulty, worksite_name=None, job=0, take_10=False, amount=1):
+    try:
+        char = model.Character.objects.get(name=character)
+    except:
+        return "Character not found."
+    try:
+        item = model.ItemType.objects.get(name=item_name)
+    except:
+        return "Item not found."
+    try:
+        skill = model.Skill.objects.get(name=skill_name)
+    except:
+        return "Skill not found."
+    worksite = None
+    if worksite_name is not None:
+        try:
+            worksite = model.Worksite.objects.get(name=worksite_name)
+        except:
+            return "Worksite not found."
+    employment = None
+    if model.Employee.objects.filter(character=char).exists():
+        if len(model.Employee.objects.filter(character=char)) == 1:
+            employment = model.Employee.objects.get(character=char)
+        else:
+            try:
+                employment = model.Employee.objects.filter(character=char).get(part=job)
+            except:
+                return "Failed to get employment."
+
+    
+    new = model.Craft()
+    new.character = char
+    new.item = item
+    new.skill = skill
+    if difficulty.lower() == "s":
+        new.difficulty = "Simple"
+    elif difficulty.lower() == "a":
+        new.difficulty = "Average"
+    elif difficulty.lower() == "c":
+        new.difficulty = "Complex"
+    else:
+        new.difficulty = "Amazing"
+    new.take_10 = take_10
+    new.amount = amount
+    new.worksite = worksite
+    new.started = update.get_current_day()
+    new.save()
+    
+    if employment is None:
+        cj = model.Employee()
+        cj.character = char
+        cj.craft = new
+        cj.worksite = worksite
+        cj.part = job
+        cj.current_activity = "craft"
+        cj.save()
+    else:
+        employment.craft = new
+        employment.current_activity = "craft"
+        employment.save()
+    return True
+        
+        
+def craft_cancel(id):
+    try:
+        craft = model.Craft.objects.get(pk=id)
+    except:
+        return "Cannot find craft."
+        
+    if model.Employee.objects.filter(craft=craft).filter(current_activity="craft").exists():
+        for e in model.Employee.objects.filter(craft=craft):
+            e.current_activity = ""
+            e.save()
+            if e.worksite is None:
+                e.delete()
+    craft.delete()
+    return True
+
+
+def get_crafts(character):
+    try:
+        char = model.Character.objects.get(name=character)
+    except:
+        return "Cannot find Character."
+    
+    ret= {}
+    for e in model.Employee.objects.filter(character=char):
+        if e.craft is not None:
+            craft = {}
+            craft["id"] = e.craft.pk
+            craft["item"] = e.craft.item.name
+            craft["skill"] = e.craft.skill.name
+            craft["difficulty"] = e.craft.difficulty
+            craft["blueprint"] = e.craft.blueprint
+            craft["take_10"] = e.craft.take_10
+            craft["amount"] = e.craft.amount
+            craft["hours"] = e.craft.hours
+            craft["worksite"] = e.craft.worksite.name
+            craft["started"] = e.craft.started
+            ret[e.pk] = craft
+    return ret
+
+
+def get_craft(id):
+    try:
+        c = model.Craft.objects.get(pk=id)
+    except:
+        return "Craft not found."
+    craft = {}
+    craft["id"] = c.pk
+    craft["item"] = c.item.name
+    craft["skill"] = c.skill.name
+    craft["difficulty"] = c.difficulty
+    craft["blueprint"] = c.blueprint
+    craft["take_10"] = c.take_10
+    craft["amount"] = c.amount
+    craft["hours"] = c.hours
+    if c.worksite is not None:
+        craft["worksite"] = c.worksite.name
+    else:
+        craft["worksite"] = None
+    craft["started"] = c.started
+    craft["character"] = c.character.name
+    return craft
+
+    
+def set_t10(craft, flip=True, set=False):
+    try:
+        c = model.Craft.objects.get(pk=craft)
+    except:
+        return "Craft not found."
+    if flip:
+        c.take_10 = not c.take_10
+        c.save()
+    else:
+        c.take_10 = set
+        c.save()
+    return True
+        
+        
 def tick():
     try:
         g = model.Game.objects.get(id=0)
@@ -1056,7 +1198,7 @@ def get_time():
     ret["day"] = g.current_day
     return ret
         
-        
+    
         
     
     

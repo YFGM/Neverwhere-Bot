@@ -8,7 +8,6 @@ import datetime
 def update(character, employment, hour):
     random.seed()
     override = check_upgrades("on_start", employment, character)
-    print "Updating farmer for character %s" % character.name
     if hour == 15 and employment.current_activity == "" and not override:
         if not employment.job.name == "farmer":
             print("Farmer.py update called without the employee being a farmer, what's up with that?")

@@ -221,9 +221,8 @@ class Application(models.Model):
 
 class Employee(models.Model):
     character = models.ForeignKey("Character")
-    worksite = models.ForeignKey("Worksite")
-    job = models.ForeignKey("Job")
-    part_time = models.BooleanField(default=False)
+    worksite = models.ForeignKey("Worksite", blank=True, null=True)
+    job = models.ForeignKey("Job", blank=True, null=True)
     tunnel = models.ForeignKey("Tunnel", blank=True, null=True)
     part = models.IntegerField(max_length=16, default=0)
     craft = models.ForeignKey("Craft", blank=True, null=True)
@@ -451,7 +450,6 @@ class Craft(models.Model):
     character = models.ForeignKey("Character")
     item = models.ForeignKey("ItemType")
     skill = models.ForeignKey("Skill")
-    value = models.IntegerField()
     DIFFICULTY_CHOICES = (
         ('S', "Simple"),
         ('A', "Average"),
@@ -459,12 +457,10 @@ class Craft(models.Model):
         ('AM', "Amazing"),
     )
     difficulty = models.CharField(choices=DIFFICULTY_CHOICES, max_length=64)
-    wr = models.FloatField() # Taken * to get work
     blueprint = models.CharField(choices=DIFFICULTY_CHOICES, blank=True , max_length=64, null=True)
     take_10 = models.BooleanField(default=False)
     amount = models.IntegerField(default=1)
     hours = models.IntegerField(default=0)
-    resources = models.IntegerField(default=0)
     worksite = models.ForeignKey("Worksite", blank=True, null=True)
     started = models.IntegerField()
 
@@ -563,6 +559,7 @@ class ItemType(models.Model):
     spoils = models.IntegerField(blank=True, null=True)
     herbal_uses = models.CharField(blank=True, max_length=64, null=True)
     cyclical = models.BooleanField(default=False)
+    wr = models.FloatField() # Taken * to get work
 
     def __str__(self):
         return self.name

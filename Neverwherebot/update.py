@@ -131,14 +131,13 @@ def update_jobs(character, scripts, scripts_dir, hour):
         if job.part == 1 and hour in range(8, 12) or job.part == 2 and hour in range(12, 16) or job.part == 0 and hour in range (8, 16):
             worksite = job.worksite
             if worksite is None:
-                if job.type == "craft" or job.current_activity == "craft":
+                if job.current_activity == "craft":
                     if not exec_script("", "craft", 'update', character, job, hour):
                         return False
                 else:
                     print("No worksite found for character %s job %s." % (character.name, str(job.part)))
                     return False
             elif os.path.isdir(os.path.join(scripts_dir, "worksites", worksite.type)):
-                print "Is dir."
                 if job.current_activity == "craft":
                     if not exec_script("", "craft", 'update', character, job, hour):
                         return False
@@ -550,7 +549,6 @@ def verbose_humidity_tolerance(crop):
 
 def exec_script(path, name, function, *args):
     f = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'scripts', path, name + ".py")
-    print "Path: %s" % str(f)
     if os.path.isfile(f):
         try:
             mod = imp.load_source(f[:-3], f)

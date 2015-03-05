@@ -884,6 +884,102 @@ def job(bot, trigger):
             
     else:
         debug(bot, str(interface.get_job(args[0])))
+        
+        
+@willie.module.commands("craft")
+def craft(bot, trigger):
+    if not check_nick(bot, str(trigger.nick)) or not check_user(trigger.nick):
+        bot.reply("Please register your nick to use this function.")
+        return
+    if trigger.group(2) is not None:
+        args = str(trigger.group(2)).split()
+    else:
+        bot.reply("Usage: !craft COMMAND PARAMETERS")
+        return
+    if len(args) < 1:
+        bot.reply("Usage: !craft COMMAND PARAMETERS")
+        return
+    
+    if args[0] == "cancel":
+        if len(args) > 1:
+            if args[1].isdigit():
+                c = interface.get_craft(int(args[1]))
+                if not isinstance(c, dict):
+                    bot.reply(str(c))
+                    return
+                if not interface.get_current_character(str(trigger.nick)) == c["character"]:
+                    bot.reply("Invalid Craft ID.")
+                    return
+                s = interface.craft_cancel(int(args[1]))
+                if isinstance(s, basestring):
+                    bot.reply(s)
+                    return
+                bot.reply("Craft %s cancelled." % args[1])
+            else:
+                bot.reply("ID must be a number.")
+        else:
+            bot.reply("Usage: !craft cancel CRAFT_ID")
+    
+    elif args[0] == "show":
+        if len(args) > 1:
+            debug(bot, str(interface.get_crafts(args[1])))
+        else:
+            bot.reply("Usage: !craft show CHARACTER")
+            
+    elif args[0] == "t10":
+        if len(args) > 1:
+            if args[1].isdigit():
+                c = interface.get_craft(int(args[1]))
+                if not isinstance(c, dict):
+                    bot.reply(str(c))
+                    return
+                if not interface.get_current_character(str(trigger.nick)) == c["character"]:
+                    bot.reply("Invalid Craft ID.")
+                    return
+                interface.set_t10(int(args[1]))
+            else:
+                bot.reply("Craft ID must be a number.")
+                return
+        else:
+            bot.reply("Usage: !craft t10 CRAFT_ID")
+            
+    else:
+        if len(args) > 2:
+            if args[2].lower() in ["simple", "average", "complex"]:
+                args[2] = args[2].lower()[0]
+            elif args[2].lower() == "amazing":
+                args[2] = "am"
+            elif args[2].lower() in ["s", "a", "c", "am"]:
+                args[2] = args[2].lower()
+            else:
+                bot.reply("Invalid difficulty.")
+                return
+            try:
+                w = args.index("-w")
+                w = args[w+1]
+            except:
+                w = None
+            
+            try:
+                j = args.index("-j")
+                j = int(args[j+1])
+            except:
+                j = None
+                
+            try:
+                a = args.index("-a")
+                a = int(args[j+1])
+            except:
+                a = 1
+            
+            s = interface.craft_start(interface.get_current_character(str(trigger.nick)), args[0], args[1], args[2], worksite_name=w, job=j, amount=a)
+            if isinstance(s, basestring):
+                bot.reply(s)
+                return
+            bot.reply("Craft started.")
+        else:
+            bot.reply("Usage: !craft ITEM_NAME SKILL_NAME DIFFICULTY [-w WORKSITE] [-j JOB] [-t10] [-a AMOUNT]")
+
 
 
 @willie.module.commands("additem")
@@ -981,6 +1077,7 @@ def tick(bot, trigger):
         debug(bot, "Ticking hour %i of day %i." % (t["hour"], t["day"]))
         interface.tick()
 
+
 @willie.module.commands("argshow")
 def show_args(bot, trigger):
     s = trigger.group(0)
@@ -990,10 +1087,6 @@ def show_args(bot, trigger):
     s = trigger.group(2)
     bot.say("Group 2: " + s)
 
-news = "Welcome to the Neverwherebot Testing Channels. Why don't you try our latest functions (if you get a NoneType error, try using !setc): " \
-        "!worksite create, !worksite description, !worksite delete, !worksite changestorage, !worksite add, !worksite upgrade (non functional atm)" \
-        ", !worksite hire, !worksite fire, !worksite salary, !worksite createjob, !job apply, !job remapply and !job quit. For some info, see the first " \
-        "few sections of http://pastebin.com/gMmCBJbs (Everything in here is WIP)."
 
 @willie.module.event('JOIN')
 @willie.module.rule('.*')

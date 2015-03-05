@@ -42,7 +42,7 @@ def update(character, employment, hour):
             
             result = int(math.floor(roll / difficulty))
             
-            hours = int(math.ceil(employment.craft.value / 3.0 * employment.craft.wr / 2))
+            hours = int(math.ceil(employment.craft.item.value / 3.0 * employment.craft.item.wr / 2))
             
             if employment.craft.hours + result >= hours:
                 if employment.craft.worksite is None and employment.worksite is None:
@@ -67,6 +67,8 @@ def update(character, employment, hour):
                     update.send_message("", employment.character.player.nick, message, flags="bw")
                     if employment.craft.amount <= 0:
                         employment.craft.delete()
+                        employment.current_activity = ""
+                        employment.save()
                     return True
                         
                 elif employment.craft.worksite is not None:
@@ -90,6 +92,8 @@ def update(character, employment, hour):
                     update.send_message("", employment.character.player.nick, message, flags="bw")
                     if employment.craft.amount <= 0:
                         employment.craft.delete()
+                        employment.current_activity = ""
+                        employment.save()
                     update.give_salary(character, employment.part, hour)
                     return True
                 elif employment.worksite is not None:
@@ -113,6 +117,8 @@ def update(character, employment, hour):
                     update.send_message("", employment.character.player.nick, message, flags="bw")
                     if employment.craft.amount <= 0:
                         employment.craft.delete()
+                        employment.current_activity = ""
+                        employment.save()
                     update.give_salary(character, employment.part, hour)
                     return True
             else:
