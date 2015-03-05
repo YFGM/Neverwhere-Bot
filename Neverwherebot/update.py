@@ -84,7 +84,7 @@ def update(hour, day):
 
     for storage in storages:
         update_storage(storage)  # Check for spoilage etc
-    if item is not None:
+    if cyclic_items is not None:
         for item in cyclic_items:
             update_item(item)
 
