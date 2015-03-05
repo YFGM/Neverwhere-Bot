@@ -138,6 +138,7 @@ def update_jobs(character, scripts, scripts_dir, hour):
                     print("No worksite found for character %s job %s." % (character.name, str(job.part)))
                     return False
             elif os.path.isdir(os.path.join(scripts_dir, "worksites", worksite.type)):
+                print "Is dir."
                 if job.current_activity == "craft":
                     if not exec_script("", "craft", 'update', character, job, hour):
                         return False
