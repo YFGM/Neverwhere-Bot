@@ -93,7 +93,7 @@ def enumerate_scripts(scripts_dir):
     # Returns a directory with the directory's path name as key leading to a tuple of scripts
     scripts = {}
     for dirname, dirnames, filenames in os.walk(scripts_dir):
-        scripts[dirname] = ()
+        scripts[dirname] = []
         for subdirname in dirnames:
             if subdirname != "startup":
                 scripts = dict(scripts.items() + enumerate_scripts(subdirname).items())
