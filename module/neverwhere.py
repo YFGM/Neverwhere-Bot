@@ -969,7 +969,10 @@ def tick(bot, trigger):
         return
     if trigger.group(2) is not None:
         args = str(trigger.group(2)).split()
-    if not args[0].isdigit():
+    else:
+        bot.reply("Parameter must be a number.")
+        return
+    if len(args) > 0 and not args[0].isdigit():
         bot.reply("Parameter must be a number.")
         return
     
