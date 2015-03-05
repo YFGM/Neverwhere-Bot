@@ -2,7 +2,6 @@ import Neverwherebot.models as models
 import Neverwherebot.update
 import random
 import os
-import datetime
 
 
 def update(character, employment, hour):

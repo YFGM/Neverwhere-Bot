@@ -69,6 +69,9 @@ def update(character, employment, hour):
                         employment.craft.delete()
                         employment.current_activity = ""
                         employment.save()
+                        ac = update.get_next_unbound(character)
+                        if ac.employment == employment or ac.employment is None:
+                            update.apply_activity(ac)
                     return True
                         
                 elif employment.craft.worksite is not None:
@@ -94,6 +97,9 @@ def update(character, employment, hour):
                         employment.craft.delete()
                         employment.current_activity = ""
                         employment.save()
+                        ac = update.get_next_unbound(character)
+                        if ac.employment == employment or ac.employment is None:
+                            update.apply_activity(ac)
                     update.give_salary(character, employment.part, hour)
                     return True
                 elif employment.worksite is not None:
@@ -119,6 +125,9 @@ def update(character, employment, hour):
                         employment.craft.delete()
                         employment.current_activity = ""
                         employment.save()
+                        ac = update.get_next_unbound(character)
+                        if ac.employment == employment or ac.employment is None:
+                            update.apply_activity(ac)
                     update.give_salary(character, employment.part, hour)
                     return True
             else:

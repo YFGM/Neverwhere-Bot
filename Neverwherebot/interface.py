@@ -1,7 +1,7 @@
 # Interface.py
 # Provides access to all core game world functionalities to external programs. Does NOT check any form of authentication
 
-# TODO: Encumbrance, item bonuses, activity queue, crafting, jobs (farming, mining, hunting, foraging, herbalism, fishing, lumber),
+# TODO: Encumbrance, item bonuses, activity queue, crafting(mostly done), jobs (farming(mostly done), mining, hunting, foraging, herbalism, fishing, lumber),
 # buildings(simple), spell learning, rolling funcs, gameworld ticks, webinterface, content(items, buildings,
 # prey, fish, perks, spells, crops, monsters), PnP-module(?)
 
@@ -1091,11 +1091,59 @@ def craft_start(character, item_name, skill_name, difficulty, worksite_name=None
         cj.current_activity = "craft"
         cj.save()
     else:
-        employment.craft = new
-        employment.current_activity = "craft"
-        employment.save()
+        if employment.current_activity == "craft":
+            queue_activity(character, job, activity="craft", craft=new.pk)
+        else:
+            employment.craft = new
+            employment.current_activity = "craft"
+            employment.save()
     return True
         
+        
+def queue_activity(character, job=None, activity=None, acre=None, craft=None, tunnel=None, day=None, hour=None, process=None):
+    try:
+        char = model.Character.objects.get(name=character)
+    except:
+        return "Character not found."
+    if job is not None:
+        try:
+            e = model.Employee.objects.filter(character=char).get(part=job)
+        except:
+            return "Employment not found."
+    else:
+        e = None
+    new = model.Activity()
+    new.character = char
+    new.employment = e
+    new.activity = activity
+    new.hour = hour
+    new.day = day
+    if acre is not None:
+        try:
+            a = model.Acre.objects.get(id=acre)
+            new.acre = a
+        except:
+            return "Acre not found."
+    if craft is not None:
+        try:
+            c = model.Craft.objects.get(pk=craft)
+            new.craft = c
+        except:
+            return "Craft not found."
+    if tunnel is not None:
+        try:
+            t = model.Acre.objects.get(pk=tunnel)
+            new.tunnel = t
+        except:
+            return "Tunnel not found."
+    if process is not None:
+        try:
+            p = model.Process.objects.get(pk=process)
+        except:
+            return "Process not found."
+    new.save()
+    return True    
+            
         
 def craft_cancel(id):
     try:

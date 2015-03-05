@@ -229,10 +229,25 @@ class Employee(models.Model):
     salary = models.IntegerField(default=0)
     current_activity = models.CharField(default="", max_length=64)
     acre = models.ForeignKey("Acre", blank=True, null=True)
+    process = models.ForeignKey("Process", blank=True, null=True)
 
     def __str__(self):
         return self.character.name + ":" + self.worksite.name
 
+
+class Activity(models.Model):
+    character = models.ForeignKey("Character")
+    employment = models.ForeignKey("Employee", blank=True, null=True)
+    activity = models.CharField(blank=True, null=True, max_length=64)
+    acre = models.ForeignKey("Acre", blank=True, null=True)
+    craft = models.ForeignKey("Craft", blank=True, null=True)
+    tunnel = models.ForeignKey("Tunnel", blank=True, null=True)
+    day = models.IntegerField(null=True, blank=True)
+    hour = models.IntegerField(null=True, blank=True)
+    process = models.ForeignKey("Process", blank=True, null=True)
+    on_idle = models.BooleanField(default=False)
+    persistant = models.BooleanField(default=False)
+    
 
 class Job(models.Model):
     name = models.CharField(max_length=64)
@@ -245,7 +260,6 @@ class Job(models.Model):
     )
     type = models.CharField(choices=TYPE_CHOICES, max_length=64)
     description = models.TextField(max_length=8192)
-    process = models.ForeignKey("Process", blank=True, null=True)
     default_salary = models.IntegerField(default=0)
     worksite = models.ForeignKey("Worksite")
 

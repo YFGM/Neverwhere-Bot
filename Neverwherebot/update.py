@@ -57,6 +57,7 @@ def update(hour, day):
 
     for character in characters:
         update_recovery(character, hour)
+        check_activity_queue(character, hour, day)
 
         if day in range(5):
             if update_jobs(character, scripts, scripts_dir, hour):
@@ -64,6 +65,7 @@ def update(hour, day):
             else:
                 failed_count += 1
                 failed = failed + (character.name,)
+                
 
         if hour == 12:
             if update_food(character):
@@ -570,3 +572,102 @@ def update_item(item):
 
 def update_storage(storage):
     pass
+
+
+def check_activity_queue(character, hour, day):
+    queue = models.Activity.objects.filter(hour=hour).filter(day=day).filter(character=character)
+    
+    for a in queue:
+        apply_activity(a)
+    
+
+def get_next_unbound(character):
+    unbound = models.Activity.objects.filter(day=None).filter(hour=None).filter(character=character)
+    if not unbound.exists():
+        return None
+    ret = None
+    for a in unbound:
+        if ret is None:
+            ret = a
+        else:
+            if a.pk < ret.pk:
+                ret = a
+    return ret
+
+    
+def apply_activity(activity):
+    if activity is None:
+        return None
+    if activity.activity is not None:
+        activity.employment.activity = activity.activity
+    if activity.acre is not None:
+        activity.employment.acre = activity.acre
+    if activity.craft is not None:
+        activity.employment.craft = activity.craft
+    if activity.tunnel is not None:
+        activity.employment.tunnel = activity.tunnel
+    if activity.process is not None:
+        activity.employment.process = activity.process
+    activity.employment.save()
+    if not activity.persistant:
+        activity.delete()
+    return True
+        
+    
+        
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+
+
+
+
