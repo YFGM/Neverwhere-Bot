@@ -141,7 +141,7 @@ def update_jobs(character, scripts, scripts_dir, hour):
                 if job.current_activity == "craft":
                     if not exec_script("", "craft", 'update', character, job, hour):
                         return False
-                elif not exec_script(os.path.join("worksites", worksite.type), job.name, 'update', character, job, hour):
+                elif not exec_script(os.path.join("worksites", worksite.type), job.job.name, 'update', character, job, hour):
                     return False
                 else:
                     print("Couldn't find script for %s, assuming it is a service job" % job.name)
