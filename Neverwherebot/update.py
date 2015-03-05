@@ -550,7 +550,7 @@ def verbose_humidity_tolerance(crop):
 
 
 def exec_script(path, name, function, *args):
-    f = os.path.join(os.path.abspath(__file__), 'scripts', path, name + ".py")
+    f = os.path.join(os.path.realpath(__file__), 'scripts', path, name + ".py")
     print "Path: %s" % str(f)
     if os.path.isfile(f):
         try:
