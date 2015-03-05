@@ -224,12 +224,12 @@ class Employee(models.Model):
     worksite = models.ForeignKey("Worksite")
     job = models.ForeignKey("Job")
     part_time = models.BooleanField(default=False)
-    tunnel = models.ForeignKey("Tunnel", blank=True)
+    tunnel = models.ForeignKey("Tunnel", blank=True, null=True)
     part = models.IntegerField(max_length=16, default=0)
-    craft = models.ForeignKey("Craft", blank=True)
+    craft = models.ForeignKey("Craft", blank=True, null=True)
     salary = models.IntegerField(default=0)
     current_activity = models.CharField(default="", max_length=64)
-    acre = models.ForeignKey("Acre", blank=True)
+    acre = models.ForeignKey("Acre", blank=True, null=True)
 
     def __str__(self):
         return self.character.name + ":" + self.worksite.name
