@@ -117,7 +117,8 @@ def get_storages():
 
 
 def get_cyclical_items():
-    return models.Item.objects.filter(cyclical=True)  # Returns a list of all items that are cyclical
+    # return models.Item.objects.filter(cyclical=True)  # Returns a list of all items that are cyclical
+    pass
 
 
 def update_recovery(character, hour):
