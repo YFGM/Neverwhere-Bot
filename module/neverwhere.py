@@ -962,6 +962,22 @@ def remove_item(bot, trigger):
                                                                     args[1], args[0]))
 
 
+@willie.module.commands("tick")
+def tick(bot, trigger):
+    if not check_nick(bot, str(trigger.nick)) or not check_user(trigger.nick) or str(trigger.nick) != "YFGM":
+        bot.reply("Admin only function.")
+        return
+    if trigger.group(2) is not None:
+        args = str(trigger.group(2)).split()
+    if not args[0].isdigit():
+        bot.reply("Parameter must be a number.")
+        return
+    
+    for i in range(int(args[0])):
+        t = interface.get_time()
+        bot.debug(bot, "Ticking hour %i of day %i." % (t["hour"], t["day"]))
+        interface.tick()
+
 @willie.module.commands("argshow")
 def show_args(bot, trigger):
     s = trigger.group(0)

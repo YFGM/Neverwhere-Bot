@@ -58,7 +58,7 @@ def update(hour, day):
     for character in characters:
         update_recovery(character, hour)
 
-        if day in range(4):
+        if day in range(5):
             if update_jobs(character, scripts, scripts_dir, hour):
                 count += 1
             else:

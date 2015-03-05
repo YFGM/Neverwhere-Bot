@@ -1032,10 +1032,29 @@ def get_upgrade(upgrade):
     return ret        
         
         
+def tick():
+    try:
+        g = model.Game.objects.get(id=0)
+    except:
+        return "Game rules not found. This is a severe misconfiguration."
+    update.update(g.current_hour+1, g.current_day % 7)
+    g.current_hour += 1
+    if g.current_hour == 24:
+        g.current_hour = 0
+        g.current_day += 1
+    g.save()
+    return True
         
         
-        
-        
+def get_time():
+    try:
+        g = model.Game.objects.get(id=0)
+    except:
+        return "Game rules not found. This is a severe misconfiguration."
+    ret = {}
+    ret["hour"] = g.current_hour
+    ret["day"] = g.current_day
+    return ret
         
         
         

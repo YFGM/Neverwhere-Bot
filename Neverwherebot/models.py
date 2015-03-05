@@ -7,10 +7,9 @@ class Game(models.Model):
     id = models.IntegerField(primary_key=True, default=0)
     name = models.CharField(max_length=64)
     interval = models.IntegerField(default=30)
-    start_date = models.DateField(auto_now_add=True)
-    date_modifier = models.IntegerField(default=0)  # Added onto current date to determine time of year
     winter_severity = models.IntegerField(default=1)
-    current_date = models.IntegerField(default=0)
+    current_day = models.IntegerField(default=0)
+    current_hour = models.IntegerField(default=0)
 
     def __str__(self):
         return self.name
