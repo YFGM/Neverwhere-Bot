@@ -63,14 +63,14 @@ def update(hour, day):
                 count += 1
             else:
                 failed_count += 1
-                failed = failed + (character.name + ": " + character.job.name)
+                failed = failed + (character.name)
 
         if hour == 12:
             if update_food(character):
                 food_count += 1
             else:
                 food_failed_count += 1
-                food_failed = food_failed + (character.name + ": " + character.job.name)
+                food_failed = food_failed + (character.name)
 
         if is_winter():
             check_for_freezing(character, hour)
