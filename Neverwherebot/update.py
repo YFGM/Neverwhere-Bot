@@ -550,6 +550,7 @@ def verbose_humidity_tolerance(crop):
 
 def exec_script(path, name, function, *args):
     f = os.path.join(os.path.abspath(__file__), 'scripts', path, name + ".py")
+    print "Path: %s" % str(f)
     if os.path.isfile(f):
         try:
             mod = imp.load_source(f[:-3], f)
@@ -562,6 +563,7 @@ def exec_script(path, name, function, *args):
         except:
             print("Failed to import module %s." % f)
             return False
+        
 
 
 def update_item(item):
