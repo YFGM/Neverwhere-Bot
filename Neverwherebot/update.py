@@ -147,7 +147,6 @@ def update_jobs(character, scripts, scripts_dir, hour):
             else:
                 print("Couldn't find script for %s, assuming it is a service job" % job.job.name)
                 give_salary(character, job.part, hour)
-            print "Worksite script path not found."
     return True
 
 

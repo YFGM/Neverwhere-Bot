@@ -327,6 +327,7 @@ def check_upgrades(function, employment, *args):
                 return True
             else:
                 return False
+    return False
 
 
 def start_planting(employment):
