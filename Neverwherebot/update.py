@@ -84,9 +84,9 @@ def update(hour, day):
 
     for storage in storages:
         update_storage(storage)  # Check for spoilage etc
-
-    for item in cyclic_items:
-        update_item(item)
+    if item is not None:
+        for item in cyclic_items:
+            update_item(item)
 
 
 def enumerate_scripts(scripts_dir):
