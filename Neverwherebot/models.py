@@ -541,36 +541,9 @@ class ItemType(models.Model):
     value = models.IntegerField()
     unit = models.CharField(blank=True, max_length=64, null=True)
     flags = models.CharField(max_length=64, blank=True, null=True)
-    DAMAGE_TYPES = (
-        ('B', "Bludgeoning"),
-        ('P', "Piercing"),
-        ('S', "Slashing"),
-    )
-    damage = models.CharField(choices=DAMAGE_TYPES, blank=True, max_length=64, null=True)
-    ac = models.IntegerField(blank=True, null=True)
-    ap = models.IntegerField(blank=True, null=True)
-    re = models.IntegerField(blank=True, null=True)
-    wearable = models.BooleanField(default=False)
-    WEAPON_CLASSES = (
-        ('S', "Simple"),
-        ('A', "Axes"),
-        ('B', "Bows"),
-        ('CW', "Claw Weapons"),
-        ('C', "Crossbows"),
-        ('EW', "Exotic Weapons"),
-        ('HB', "Heavy Blades"),
-        ('LB', "Light Blades"),
-        ('M', "Maces and Hammers"),
-        ('P', "Polearms"),
-        ('ST', "Slings and Thrown Weapons"),
-        ('SP', "Speaks and Lances"),
-    )
-    weapon_class = models.CharField(choices=WEAPON_CLASSES, blank=True, max_length=64, null=True)
-    bonus = models.IntegerField(blank=True, null=True)
-    skill = models.ForeignKey("Skill", null=True, blank=True)
+    slot = models.CharField(max_length=64, blank=True, null=True)
     el = models.IntegerField(blank=True, null=True)
     kcal = models.IntegerField(blank=True, null=True)
-    spoils = models.IntegerField(blank=True, null=True)
     herbal_uses = models.CharField(blank=True, max_length=64, null=True)
     cyclical = models.BooleanField(default=False)
     wr = models.FloatField() # Taken * to get work
