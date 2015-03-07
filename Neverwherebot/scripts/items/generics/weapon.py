@@ -1,25 +1,26 @@
 from Neverwherebot.scripts.items.generics.item import Item
 import Neverwherebot.models as models
+from slugify import slugify
 
 class Item(Item):
     wearable = True
     damage = ""
     ranged = False
     WEAPON_CLASSES = (
-        ('S', "Simple"),
-        ('A', "Axes"),
-        ('B', "Bows"),
-        ('CW', "Claw Weapons"),
-        ('C', "Crossbows"),
-        ('EW', "Exotic Weapons"),
-        ('HB', "Heavy Blades"),
-        ('LB', "Light Blades"),
-        ('M', "Maces and Hammers"),
-        ('P', "Polearms"),
-        ('ST', "Slings and Thrown Weapons"),
-        ('SP', "Speaks and Lances"),
+        "Simple",
+        "Axes",
+        "Bows",
+        "Claw Weapons",
+        "Crossbows",
+        "Exotic Weapons",
+        "Heavy Blades",
+        "Light Blades",
+        "Maces and Hammers",
+        "Polearms",
+        "Slings and Thrown Weapons",
+        "Speaks and Lances",
     )
-    weapon_class = ""
+    weapon_class = WEAPON_CLASSES[0]
     
     def on_recalc(self, character):
         try:
@@ -29,7 +30,7 @@ class Item(Item):
             return False
         
         try:
-            p = models.CharacterPerk.objects.filter(character=char).get(slug="weapon-profficiency-"+self.weapon_class)
+            p = models.CharacterPerk.objects.filter(character=char).get(name="weapon-proficiency-"+slugify(self.weapon_class))
         except:
             if self.ranged:
                 char.rab -= 4

@@ -3,8 +3,6 @@ import Neverwherebot.models as models
 class Item(object):
     name = ""
     wearable = False
-    el = 0
-    kcal = 0
 
     def on_equip(self, character):
         if not self.wearable:

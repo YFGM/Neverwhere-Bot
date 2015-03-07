@@ -23,15 +23,44 @@ def cs(name, difficulty, attribute):
 
 
 def cp(name, category):
-    print "Attempting to create Perk %s." % name
-    new = models.Perk(name=name, category=category)
-    try:
-        new.save()
-    except:
-        print "Failed."
-        return False
-    print "Success."
-    return True
+    if not "Weapon" in category:
+        print "Attempting to create Perk %s." % name
+        new = models.Perk(name=name, category=category)
+        try:
+            new.save()
+        except:
+            print "Failed."
+            return False
+        print "Success."
+        return True
+    else:
+        WEAPON_CLASSES = (
+        "Simple",
+        "Axes",
+        "Bows",
+        "Claw Weapons",
+        "Crossbows",
+        "Exotic Weapons",
+        "Heavy Blades",
+        "Light Blades",
+        "Maces and Hammers",
+        "Polearms",
+        "Slings and Thrown Weapons",
+        "Speaks and Lances",
+        )
+        for c in WEAPON_CLASSES:
+            name = name + " " + slugify(c)
+            print "Attempting to create Perk %s." % name
+            new = models.Perk(name=name, category=category)
+            try:
+                new.save()
+            except:
+                print "Failed."
+                return False
+            print "Success."
+            return True
+            
+            
 
 
 # Basic Perks
@@ -175,5 +204,10 @@ cp(slugify("Woodworking (Bowmaking)"), "Skill Tiered")
 cp(slugify("Woodworking (Carving)"), "Skill Tiered")
 
 
+# Proficiency Perks
+cp(slugify("Weapon Proficiency"), "Weapon")
+cp(slugify("Armor Proficiency (Light)"), "")
+cp(slugify("Armor Proficiency (Light)"), "")
+cp(slugify("Armor Proficiency (Light)"), "")
 
 

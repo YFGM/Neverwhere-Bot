@@ -1,9 +1,12 @@
 # Interface.py
 # Provides access to all core game world functionalities to external programs. Does NOT check any form of authentication
 
-# TODO: Encumbrance(done), item bonuses, activity queue(should work), crafting(mostly done), jobs (farming(mostly done), mining, hunting, foraging, herbalism, fishing, lumber),
+# TODO: Jobs (mining, hunting, foraging, herbalism, fishing, lumber),
 # buildings(simple), spell learning, rolling funcs, webinterface, content(items, buildings,
-# prey, fish, perks, spells, crops, monsters)
+# prey, fish, perks, spells, crops, monsters), food consumption
+
+# Lesser TODO: Encumbrance(done), item bonuses(basics done), activity queue(should work), crafting(mostly done),
+# farming(mostly done)
 
 import imp
 import os
@@ -195,6 +198,7 @@ def add_perk(perk, character):
         return "No free perk slots available. %i perks available, %i taken." % (perks, num)
     
     can_take = True
+    P = None
     f = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'scripts', 'perks', slugify(p.name) + ".py")
     if os.path.isfile(f):
         try:
@@ -206,9 +210,6 @@ def add_perk(perk, character):
                 return "Failed to execute prerequisites module for perk %s." % p.name
         except:
             return "Failed to import module %s." % str(f)
-    else:
-        if not "Skill" in p.category:
-            return "File %s not found." % str(f)
 
     if not can_take:
         return "Character does not fulfill the prerequisites for this perk."
@@ -226,8 +227,9 @@ def add_perk(perk, character):
             return "Character cannot take this perk at this moment due to Tiered restriction. The earliest they can take" \
                    " it is in %i perks." % ((latest + count + 1) - (num + 1))
     if not "Skill" in p.category:
-        if not P.on_add(character):
-            return "Error in 'on_add' function."
+        if P is not None:
+            if not P.on_add(character):
+                return "Error in 'on_add' function."
     else:
         s = skill.Perk()
         s.name = p.name
@@ -307,8 +309,6 @@ def recalculate_char(character):
                         return "Failed to execute on_recalc for perk %s." % p.name
                 except:
                     return "Failed to import module %s." % str(f)
-            else:
-                return "Could not find perk script %s." % str(f)
         else:
             s = skill.Perk()
             s.name = p.name
@@ -336,6 +336,21 @@ def recalculate_char(character):
         char.mo = int(math.floor(char.mo*0.8))
         char.ac -= 1
     char.save()
+    
+    for item in model.Item.objects.filter(stored=char.inv).filter(worn=True):
+        f = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'scripts', 'items', slugify(item.type.name) + ".py")
+        if os.path.isfile(f):
+            try:
+                mod = imp.load_source(f[:-3], f)
+                try:
+                    i = mod.Item()
+                    if not i.on_recalc(character):
+                        return "On recalc failed for item %s." % item.type.name
+                except:
+                    return "Failed to execute on_recalc for item %s." % item.type.name
+            except:
+                return "Failed to import module %s." % str(f)
+            
     return True
 
 
@@ -373,6 +388,62 @@ def get_item_type(item):
     ret["unit"] = i.unit
     ret["flags"] = i.flags
     return ret
+
+
+def equip(item, character):
+    try:
+        char = model.Character.objects.get(name=character)
+    except:
+        return "Character not found."
+    try:
+        it = model.ItemType.objects.get(name=item)
+    except:
+        return "ItemType not found."
+    try:
+        i = model.Item.objects.filter(type=it).get(stored=char.inv)
+    except:
+        return "No item of that type in character inventory."
+    
+    f = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'scripts', 'items', slugify(it.name) + ".py")
+    if os.path.isfile(f):
+        try:
+            mod = imp.load_source(f[:-3], f)
+            try:
+                im = mod.Item()
+                if not im.on_equip(character):
+                    return "You cannot equip %s." % it.name
+                else:
+                    i.worn = True
+                    i.save()
+                    if recalculate_char(character):
+                        return True
+                    else:
+                        return "Error in recalculate character."
+            except:
+                return "Failed to execute on_equip for item %s." % it.name
+        except:
+            return "Failed to import module %s." % str(f)
+    return "You cannot equip %s." % it.name
+
+
+def unequip(item, character):
+    try:
+        char = model.Character.objects.get(name=character)
+    except:
+        return "Character not found."
+    try:
+        it = model.ItemType.objects.get(name=item)
+    except:
+        return "ItemType not found."
+    try:
+        i = model.Item.objects.filter(worn=True).filter(type=it).get(stored=char.inv)
+    except:
+        return "Currently not wearing such an item."
+    
+    i.worn = False
+    i.save()
+    recalculate_char(character)
+    return True
 
 
 def get_character(character):
