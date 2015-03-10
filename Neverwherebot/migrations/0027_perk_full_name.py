@@ -14,7 +14,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='perk',
             name='full_name',
-            field=models.CharField(default='Fix me', unique=True, max_length=128),
+            field=models.CharField(default='Fix me', unique=False, max_length=128),
             preserve_default=False,
         ),
     ]
