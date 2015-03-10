@@ -56,7 +56,7 @@ class Character(models.Model):
     house = models.ForeignKey("Building", null=True)
     rations = models.CharField(max_length=64) # Full Minimum Half
     foodstore = models.ForeignKey("Storage", null=True, related_name="f")
-    dead = models.BoolenField(default=False)
+    dead = models.BooleanField(default=False)
     deathflag = models.BooleanField(default=False)
     
     def __str__(self):
@@ -300,7 +300,7 @@ class Job(models.Model):
 
 
 class Caretaking(models.Model):
-    caretaker = models.ForeignKey("Employment")
+    caretaker = models.ForeignKey("Employee")
     patient = models.ForeignKey("Character")
     type = models.CharField(max_length=64)
     day = models.IntegerField()

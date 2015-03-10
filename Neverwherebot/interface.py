@@ -1,7 +1,7 @@
 # Interface.py
 # Provides access to all core game world functionalities to external programs. Does NOT check any form of authentication
 
-# TODO: Jobs (mining, hunting, foraging, herbalism, fishing, lumber),
+# TODO: Jobs (mining, hunting, foraging, herbalism, fishing, lumber, medicals), processes,
 # buildings(simple), spell learning, rolling funcs, webinterface, content(items, buildings,
 # prey, fish, perks, spells, crops, monsters), cleanup tick (activities, tends, cares)
 
