@@ -11,7 +11,6 @@
 import imp
 import os
 import math
-import new
 
 os.environ["DJANGO_SETTINGS_MODULE"] = "Neverwhere.settings"
 
@@ -493,19 +492,7 @@ def get_perk_name(perk):
     except:
         return "Could not find Perk %s." % name
     if "Skill" not in p.category:
-        f = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'scripts', 'perks', name + ".py")
-        if os.path.isfile(f):
-            try:
-                mod = imp.load_source(f[:-3], f)
-                try:
-                    P = mod.Perk()
-                    return P.name
-                except:
-                    return "Failed to find name for perk %s." % name
-            except:
-                return "Failed to import module %s." % str(f)
-        else:
-            return "Could not find perk script %s." % str(f)
+        return p.full_name
     else:
         s = model.Skill.objects.get(slug=name)
         return s.name
@@ -1288,9 +1275,9 @@ def get_crafts(character):
     return ret
 
 
-def get_craft(id):
+def get_craft(key):
     try:
-        c = model.Craft.objects.get(pk=id)
+        c = model.Craft.objects.get(pk=key)
     except:
         return "Craft not found."
     craft = {}
@@ -1311,7 +1298,7 @@ def get_craft(id):
     return craft
 
     
-def set_t10(craft, flip=True, set=False):
+def set_t10(craft, flip=True, s=False):
     try:
         c = model.Craft.objects.get(pk=craft)
     except:
@@ -1320,7 +1307,7 @@ def set_t10(craft, flip=True, set=False):
         c.take_10 = not c.take_10
         c.save()
     else:
-        c.take_10 = set
+        c.take_10 = s
         c.save()
     return True
         

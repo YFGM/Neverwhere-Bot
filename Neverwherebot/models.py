@@ -97,6 +97,7 @@ class Perk(models.Model):
     name = models.CharField(max_length=128, unique=True)
     # Quirk, Flaw, Basic, Combat, Weapon, Skill, Magic, Spellcasting
     category = models.CharField(max_length=64)
+    full_name = models.CharField(max_length=128, unique=True)
 
     def __str__(self):
         return self.name
