@@ -54,6 +54,8 @@ class Character(models.Model):
     description = models.TextField(max_length=8192, blank=True)
     deleted = models.BooleanField(default=False)
     house = models.ForeignKey("Building", null=True)
+    rations = models.CharField(max_length=64) # Full Minimum Half
+    foodstore = models.ForeignKey("Storage", null=True, related_name="f")
 
     def __str__(self):
         return self.name
