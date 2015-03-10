@@ -56,9 +56,38 @@ class Character(models.Model):
     house = models.ForeignKey("Building", null=True)
     rations = models.CharField(max_length=64) # Full Minimum Half
     foodstore = models.ForeignKey("Storage", null=True, related_name="f")
-
+    dead = models.BoolenField(default=False)
+    deathflag = models.BooleanField(default=False)
+    
     def __str__(self):
         return self.name
+
+
+class Wound(models.Model):
+    character = models.ForeignKey("Character")
+    kind = models.CharField(max_length=3) # hp, fp, san
+    damage = models.IntegerField()
+    location = models.CharField(max_length=64, null=True) # Hit location
+    flags = models.CharField(max_length=64, default="") # Starvation, unhealable etc
+    description = models.CharField(max_length=1024, default="")
+    
+    def __str__(self):
+        if description != "":
+            return self.character.name + ": " + self.description
+        else:
+            return self.character.name + ":" + self.kind + ":" + str(self.damage)
+    
+
+class Meal(models.Model):
+    character = models.ForeignKey("Character")
+    day = models.IntegerField()
+    calories = models.FloatField()
+    protein = models.FloatField(default=0)
+    vegetables = models.FloatField(default=0)
+    fruit = models.FloatField(default=0)
+    
+    def __str__(self):
+        return self.character.name + ":" + self.day
 
 
 # TODO: Optional specialties
@@ -268,6 +297,15 @@ class Job(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class Caretaking(models.Model):
+    caretaker = models.ForeignKey("Employment")
+    patient = models.ForeignKey("Character")
+    type = models.CharField(max_length=64)
+    day = models.IntegerField()
+    hour = models.IntegerField()
+    roll = models.IntegerField()
 
 
 class Upgrade(models.Model):

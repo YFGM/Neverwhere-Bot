@@ -46,7 +46,7 @@ def cp(name, category, full_name):
         "Maces and Hammers",
         "Polearms",
         "Slings and Thrown Weapons",
-        "Speaks and Lances",
+        "Spears and Lances",
         )
         for c in WEAPON_CLASSES:
             name = name + " " + slugify(c)

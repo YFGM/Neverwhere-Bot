@@ -18,7 +18,7 @@ class Item(Item):
         "Maces and Hammers",
         "Polearms",
         "Slings and Thrown Weapons",
-        "Speaks and Lances",
+        "Spears and Lances",
     )
     weapon_class = WEAPON_CLASSES[0]
     

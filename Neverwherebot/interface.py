@@ -3,10 +3,11 @@
 
 # TODO: Jobs (mining, hunting, foraging, herbalism, fishing, lumber),
 # buildings(simple), spell learning, rolling funcs, webinterface, content(items, buildings,
-# prey, fish, perks, spells, crops, monsters), food consumption
+# prey, fish, perks, spells, crops, monsters), cleanup tick (activities, tends, cares)
 
 # Lesser TODO: Encumbrance(done), item bonuses(basics done), activity queue(should work), crafting(mostly done),
-# farming(mostly done)
+# farming(mostly done), food consumption (deficiencies), crippling and death, exhaustion penalty to Str skills,
+# recovery (medical)
 
 import imp
 import os
@@ -177,10 +178,6 @@ def add_perk(perk, character):
     except:
         return "Character not found."
 
-    old_hp = char.hp
-    old_fp = char.fp
-    old_san = char.san
-
     if perk.isdigit():
         try:
             p = model.Perk.objects.get(pk=perk)
@@ -242,23 +239,6 @@ def add_perk(perk, character):
     s = recalculate_char(character)
     if isinstance(s, basestring):
         return s
-    char = model.Character.objects.get(name=character)
-    inv = model.Storage.objects.get(name=char.name + "-Inventory")
-    if old_hp != char.hp and old_hp is not None:
-        char.current_HP += char.hp - old_hp
-    if old_fp != char.fp and old_fp is not None:
-        char.current_FP += char.fp - old_fp
-    if old_san != char.san and old_san is not None:
-        char.current_san += char.san - old_san
-    if old_hp is None:
-        char.current_HP = char.hp
-    if old_fp is None:
-        char.current_FP = char.fp
-    if old_san is None:
-        char.current_san = char.san
-    char.save()
-    inv.size += math.ceil(char.bl)
-    inv.save()
     return True
 
 
@@ -314,6 +294,9 @@ def recalculate_char(character):
             s.on_recalc(character)
     char = model.Character.objects.get(name=character)
     char.san = 100 + (char.will * 10)
+    char.current_san = char.san
+    char.current_hp = char.hp
+    char.current_fp = char.fp
     if char.mo < 4:
         char.mo = 3
     char.save()
@@ -350,7 +333,59 @@ def recalculate_char(character):
             except:
                 return "Failed to import module %s." % str(f)
             
+    food = {}
+    for meal in model.Meal.objects.filter(character=char).filter(day__in=range(update.get_current_day()-7, update.get_current_day())):
+        if meal.day in food:
+            food[meal.day] = (meal.calories+food[meal.day][0], meal.protein+food[meal.day][1], meal.vegetables+food[meal.day][2], meal.fruit+food[meal.day][3],)
+        else:
+            food[meal.day] = (meal.calories, meal.protein, meal.vegetables, meal.fruit,)
+    
+    fatigue = 0.0
+    protein = 0.0
+    vegetables = 0.0
+    fruit = 0.0
+    for d in range(update.get_current_day()-7, update.get_current_day()):
+        if d in food:
+            if food[d][0] < 900.0:
+                fatigue += 1
+            elif food[d][0] >= 1800.0 and fatigue > 0:
+                fatigue -= 1
+            protein += food[d][1]
+            vegetables += food[d][2]
+            fruit += food[d][3]
+    deal_fp(character, fatigue, "s")
+    if protein > 2100.0:
+        # Check for muscle decay
+        pass
+    if vegetables > 1400.0:
+        # Check for mineral deficiency
+        pass
+    if fruit > 700.0:
+        # Check for Scurvy
+        pass
+    
+    for w in model.Wound.objects.filter(character=char):
+        if w.kind == "hp":
+            char.current_hp -= w.damage
+        if w.kind == "fp":
+            char.current_fp -= w.damage
+        if w.kind == "san":
+            char.current_san -= w.damage
+    if char.current_fp < char.fp / 4:
+        char.mo = math.floor(char.mo / 2.0)
+        char.ac = char.ac - math.floor(char.re / 2)
+        if char.mo < 3:
+            char.mo = 3
+    char.save()  
     return True
+
+
+def deal_fp(character, fp, kind, description=""):
+    return update.deal_fp(character, fp, kind, description)
+
+
+def deal_hp(character, hp, kind, location="", description=""):
+    return update.deal_hp(character, hp, kind, location, description)
 
 
 def add_item(item, storage, amount, value=0):

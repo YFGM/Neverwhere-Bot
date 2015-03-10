@@ -9,6 +9,7 @@ import re
 import time
 import Neverwherebot.models as models
 import django.core.exceptions
+from django.db.models.lookups import Day
 
 threads = []
 
@@ -67,7 +68,7 @@ def update(hour, day):
                 failed = failed + (character.name,)
                 
 
-        if hour == 12:
+        if hour == 12 or hour == 6 or hour == 18:
             if update_food(character):
                 food_count += 1
             else:
@@ -124,7 +125,21 @@ def get_cyclical_items():
 
 
 def update_recovery(character, hour):
-    pass  # Checks whether the character is valid to recover HP or similar and does so if yes.
+    # Checks whether the character is valid to recover HP or similar and does so if yes.
+    if character.dead:
+        return True
+    if hour == 0:
+        recover_hp(character.name, 1)
+        
+    recover_fp(character, 5)
+    
+    try:
+        care = models.Caretaking.objects.get(patient=character)
+        # Check type and do the appropriate things
+    except:
+        pass
+    
+    return True
 
 
 def update_jobs(character, scripts, scripts_dir, hour):
@@ -310,9 +325,113 @@ def is_item(name, storage_name='', storage_id='', amount=0):
 
 
 
-def update_food(character):
-    pass  # Checks the character's rations set, deducts food from his food storage or inventory,
-          # or adjusts ration setting if necessary
+def update_food(character, day):
+    # Checks the character's rations set, deducts food from his food storage or inventory,
+    # or adjusts ration setting if necessary
+    if character.rations == "Minimum":
+        m = eat_meal(character, day, 600.0, 0.0, 0.0, 0.0)
+        if m.calories < 600.0:
+            message = "%s was unable to eat as much as he wanted on day %i. They wanted to eat " \
+                    "at least 600kcal, but could only find %gkcal worth of food." % (character.name, day, m.calories)
+            send_message("", character.player.nick, message, flags="bi")
+        
+    elif character.rations == "Half":
+        m = eat_meal(character, day, 300.0, 0.0, 0.0, 0.0)
+        if m.calories < 300.0:
+            message = "%s was unable to eat as much as he wanted on day %i. They wanted to eat " \
+                    "at least 300kcal, but could only find %gkcal worth of food." % (character.name, day, m.calories)
+            send_message("", character.player.nick, message, flags="bi")
+    
+    elif character.rations == "Full":
+        protein = 0.0
+        vegetables = 0.0
+        calories = 0.0
+        fruit = 0.0
+        for meal in models.Meal.objects.filter(character=character).filter(day__in=range(day-7, day)):
+            calories += meal.calories
+            vegetables += meal.vegetables
+            protein += meal.protein
+            fruit += meal.fruit
+        calories = 14700.0 - calories
+        protein = 2100.0 - protein
+        vegetables = 1400.0 - vegetables
+        fruit = 700.0 - fruit
+        if calories > 1500.0:
+            calories = 1500.0
+        if (protein + vegetables + fruit) > 1500.0:
+            while (protein + vegetables + fruit) > 1500.0:
+                protein -= 1.0
+                vegetables -= 1.0
+                fruit -= 1.0
+        m = eat_meal(character, day, 700.0 + calories, 100.0 + protein, 66.0 + vegetables, 33.0 + fruit)
+        if m.calories < 700.0 or m.protein < 100.0 or m.vegetables < 66.0 or m.fruit < 33.0:
+            message = "%s was unable to eat as much as he wanted on day %i." % (character.name, day)
+            if m.calories < 700.0:
+                message += " They wanted to eat at least 700kcal, but could only find %gkcal worth of food." % m.calories
+            if m.protein < 100.0:
+                message += " They wanted to eat at least 100kcal worth of meat, but could only find %gkcal worth of food." % m.protein
+            if m.vegetables < 66.0:
+                message += " They wanted to eat at least 66kcal worth of vegetables, but could only find %gkcal worth of food." % m.vegetables
+            if m.fruit < 33.0:
+                message += " They wanted to eat at least 33kcal worth of fruit, but could only find %gkcal worth of food." % m.fruit
+            send_message("", character.player.nick, message, flags="bi")
+    return True
+
+        
+def eat_meal(character, day, calories, p, v, f):
+    left = calories
+    protein = p
+    vegetable = v
+    fruit = f
+    for i in models.Item.objects.filter(stored=character.foodstore).filter(type__in=models.ItemType.objects.filter(kcal__gt=0).exclude(flags__contains="p").exclude(flags__contains="v").exclude(flags__contains="f")):
+        if left > (protein + vegetable + fruit):
+            amount = (left - (protein + vegetable + fruit)) / i.type.kcal
+            s = remove_item(i.type.name, storage_id=character.foodstore.pk, amount=amount)
+            left -= s * i.type.kcal
+    for i in models.Item.objects.filter(stored=character.foodstore).filter(type__in=models.ItemType.objects.filter(kcal__gt=0).exclude(flags__contains="v").exclude(flags__contains="f")):
+        if protein > 0:
+            amount = protein / i.type.kcal
+            s = remove_item(i.type.name, storage_id=character.foodstore.pk, amount=amount)
+            protein -= s * i.type.kcal
+            left -= s * i.type.kcal
+    for i in models.Item.objects.filter(stored=character.foodstore).filter(type__in=models.ItemType.objects.filter(kcal__gt=0).exclude(flags__contains="p").exclude(flags__contains="f")):
+        if vegetable > 0:
+            amount = vegetable / i.type.kcal
+            s = remove_item(i.type.name, storage_id=character.foodstore.pk, amount=amount)
+            vegetable -= s * i.type.kcal
+            left -= s * i.type.kcal
+    for i in models.Item.objects.filter(stored=character.foodstore).filter(type__in=models.ItemType.objects.filter(kcal__gt=0).exclude(flags__contains="p").exclude(flags__contains="v")):
+        if fruit > 0:
+            amount = fruit / i.type.kcal
+            s = remove_item(i.type.name, storage_id=character.foodstore.pk, amount=amount)
+            fruit -= s * i.type.kcal
+            left -= s * i.type.kcal
+    if left > 0:
+        for i in models.Item.objects.filter(stored=character.foodstore).filter(type__in=models.ItemType.objects.filter(kcal__gt=0).exclude(flags__contains="p").exclude(flags__contains="v").exclude(flags__contains="f")):
+            amount = left / i.type.kcal
+            s = remove_item(i.type.name, storage_id=character.foodstore.pk, amount=amount)
+            left -= s * i.type.kcal
+    if left > 0:
+        for i in models.Item.objects.filter(stored=character.foodstore).filter(type__in=models.ItemType.objects.filter(kcal__gt=0)):
+            amount = left / i.type.kcal
+            s = remove_item(i.type.name, storage_id=character.foodstore.pk, amount=amount)
+            left -= s * i.type.kcal
+            if "p" in i.type.flags:
+                protein -= s * i.type.kcal
+            if "v" in i.type.flags:
+                vegetable -= s * i.type.kcal
+            if "f" in i.type.flags:
+                fruit -= s * i.type.kcal
+    new = models.Meal()
+    new.character = character
+    new.day = day
+    new.calories = calories - left
+    new.protein = p - protein
+    new.vegetables = v - vegetable
+    new.fruit = f - fruit
+    new.save()
+    return new
+
 
 
 def is_winter():
@@ -614,15 +733,125 @@ def apply_activity(activity):
     return True
         
     
+def deal_fp(character, fp, kind="", description=""):
+    try:
+        char = models.Character.objects.get(name=character)
+    except:
+        return "Character not found."
+    
+    current = char.fp
+    for w in models.Wound.objects.filter(character=char).filter(kind="fp"):
+        current -= w.damage
         
+    if (current - fp) < 0:
+        if current <= 0:
+            deal_hp(character, fp, "s")
+        else:
+            deal_hp(character, fp - current, "s")
+        if current - fp < -char.fp:
+            fp = current + char.fp
+            
+    if fp == 0:
+        return True
     
+    if kind == "s":
+        try:
+            w = models.Wound.objects.filter(character=char).filter(kind="fp").get(flags="s")
+            if w.damage > fp:
+                try:
+                    h = models.Wound.objects.filter(character=char).filter(kind="hp").get(flags="s")
+                    recover_hp(character, w.damage - fp, "s")
+                except:
+                    pass
+            w.damage = fp
+            w.save()
+            return True
+        except:
+            pass
     
+    new = models.Wound()
+    new.character = char
+    new.kind = "fp"
+    new.damage = fp
+    new.description = description
+    new.flags = kind
+    new.save()
+    return True 
+
+
+def deal_hp(character, hp, kind="", location="", description=""):
+    try:
+        char = models.Character.objects.get(name=character)
+    except:
+        return "Character not found."
     
+    if location != "":
+        # Check for crippling
+        pass
     
+    # Check for death etc
     
+    if kind == "s":
+        try:
+            w = models.Wound.objects.filter(character=char).filter(kind="hp").get(flags="s")
+            w.damage = hp
+            w.save()
+            return True
+        except:
+            pass
     
+    new = models.Wound()
+    new.character = char
+    new.kind = "hp"
+    new.damage = hp
+    new.description = description
+    new.flags = kind
+    new.location = location
+    new.save()
+    return True         
+
     
+def recover_hp(character, hp, kind=""):
+    try:
+        char = models.Character.objects.get(name=character)
+    except:
+        return "Character not found."        
     
+    if kind != "s" and kind != "u":
+        for w in models.Wound.objects.filter(character=char).filter(kind="hp").exclude(flags__in=["u", "s"]):
+            if hp > 0:
+                w.damage -= hp
+                if w.damage <= 0:
+                    hp = -w.damage
+                    w.delete()
+                else:
+                    w.save()
+    elif kind == "s":
+        w = models.Wound.objects.filter(character=char).filter(kind="hp").get(flags="s")
+        w.damage -= hp
+        w.save()
+        hp = 0
+    
+    return hp # Return leftover HP not healed
+
+
+def recover_fp(character, fp, kind=""):
+    try:
+        char = models.Character.objects.get(name=character)
+    except:
+        return "Character not found."        
+    
+    if kind != "s" and kind != "u":
+        for w in models.Wound.objects.filter(character=char).filter(kind="fp").exclude(flags__in=["u", "s"]):
+            if fp > 0:
+                w.damage -= fp
+                if w.damage <= 0:
+                    fp = -w.damage
+                    w.delete()
+                else:
+                    w.save()
+    
+    return fp
     
     
     
