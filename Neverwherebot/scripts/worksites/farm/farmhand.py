@@ -1,4 +1,3 @@
-import Neverwherebot.models as models
 import Neverwherebot.update
 import Neverwherebot.scripts.worksites.farm.farmer as farmer
 

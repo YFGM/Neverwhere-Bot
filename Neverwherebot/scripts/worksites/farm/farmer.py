@@ -7,7 +7,7 @@ import os
 def update(character, employment, hour):
     random.seed()
     override = check_upgrades("on_start", employment, character)
-    if hour == 15 and employment.current_activity == "" and not override:
+    if hour in [15, 11] and employment.current_activity == "" and not override:
         if not employment.job.name == "farmer":
             print("Farmer.py update called without the employee being a farmer, what's up with that?")
             return False
@@ -15,7 +15,10 @@ def update(character, employment, hour):
         if not override:
             for acre in models.Acre.objects.filter(farm=employment.worksite):
                 if not models.Tending.objects.filter(day=Neverwherebot.update.get_current_day()).filter(acre=acre).exists():
-                    roll = Neverwherebot.update.get_skill(character, "farming") + random.randint(1, 20)
+                    if employment.take_10:
+                        roll = Neverwherebot.update.get_skill(character, "farming") + 10
+                    else:
+                        roll = Neverwherebot.update.get_skill(character, "farming") + random.randint(1, 20)
                     today = models.Tending()
                     today.worksite = employment.worksite
                     today.day = Neverwherebot.update.get_current_day()

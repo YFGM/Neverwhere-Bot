@@ -262,6 +262,7 @@ class Employee(models.Model):
     current_activity = models.CharField(default="", max_length=64)
     acre = models.ForeignKey("Acre", blank=True, null=True)
     process = models.ForeignKey("Process", blank=True, null=True)
+    take_10 = models.BooleanField(default=False)
 
     def __str__(self):
         return self.character.name + ":" + self.worksite.name
@@ -389,6 +390,8 @@ class MiningSite(models.Model):
     name = models.CharField(max_length=128, unique=True)
     depth = models.IntegerField()
     description = models.TextField(max_length=8192, blank=True)
+    worksite = models.ForeignKey("Worksite")
+    has_had_rush = models.BooleanField(default=False)
 
     def __str__(self):
         return self.name
@@ -413,7 +416,7 @@ class Tunnel(models.Model):
         ('D', "Dead"),
     )
     richness = models.CharField(choices=RICHNESS_CHOICES, max_length=64)
-    ore = models.ForeignKey("Ore")
+    ore = models.ForeignKey("ItemType")
     charge = models.ForeignKey("Charge", blank=True, related_name="t")
     blueprint = models.BooleanField(default=False)
 
@@ -422,7 +425,7 @@ class Tunnel(models.Model):
 
 
 class OreList(models.Model):
-    ore = models.ForeignKey("Ore")
+    ore = models.ForeignKey("ItemType")
     chance = models.IntegerField(default=1)
 
 
@@ -504,7 +507,8 @@ class Storage(models.Model):
 class Craft(models.Model):
     character = models.ForeignKey("Character")
     item = models.ForeignKey("ItemType")
-    skill = models.ForeignKey("Skill")
+    skill = models.ForeignKey("Skill", null=True)
+    attribute = models.CharField(max_length=3, default="")
     DIFFICULTY_CHOICES = (
         ('S', "Simple"),
         ('A', "Average"),
@@ -513,11 +517,11 @@ class Craft(models.Model):
     )
     difficulty = models.CharField(choices=DIFFICULTY_CHOICES, max_length=64)
     blueprint = models.CharField(choices=DIFFICULTY_CHOICES, blank=True , max_length=64, null=True)
-    take_10 = models.BooleanField(default=False)
     amount = models.IntegerField(default=1)
     hours = models.IntegerField(default=0)
     worksite = models.ForeignKey("Worksite", blank=True, null=True)
     started = models.IntegerField()
+    coop = models.IntegerField(default=0)
 
     def __str__(self):
         return self.character.name + ":" + self.item.name
@@ -575,6 +579,7 @@ class Item(models.Model):
     def __str__(self):
         return self.stored.name + ":" + self.type.name
 
+
 # TODO: Move everything but flags to script class
 class ItemType(models.Model):
     name = models.CharField(max_length=128, unique=True)
@@ -611,3 +616,18 @@ class Tending(models.Model):
 
     def __str__(self):
         return self.worksite.name + ":" + self.acre.id
+    
+    
+class Overseeing(models.Model):
+    character = models.ForeignKey("Character")
+    tunnel = models.ForeignKey("Tunnel")
+    day = models.IntegerField()
+    roll = models.IntegerField(default=0)
+    
+    def __str__(self):
+        return self.character.name + ":" + self.tunnel.pk
+    
+    
+    
+    
+    

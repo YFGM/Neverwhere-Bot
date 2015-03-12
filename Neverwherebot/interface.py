@@ -1,13 +1,14 @@
 # Interface.py
 # Provides access to all core game world functionalities to external programs. Does NOT check any form of authentication
 
-# TODO: Jobs (mining, hunting, foraging, herbalism, fishing, lumber, medicals), processes,
+# TODO: Jobs (hunting, foraging, herbalism, fishing, lumber, medicals), processes,
 # buildings(simple), spell learning, rolling funcs, webinterface, content(items, buildings,
 # prey, fish, perks, spells, crops, monsters), cleanup tick (activities, tends, cares)
 
 # Lesser TODO: Encumbrance(done), item bonuses(basics done), activity queue(should work), crafting(mostly done),
 # farming(mostly done), food consumption (deficiencies), crippling and death, exhaustion penalty to Str skills,
-# recovery (medical)
+# recovery (medical), unskilled crafting (interface), cooperative crafting (interface), deeper mineshafts,
+# mining (Maybe done, missing one set of tools per employee)
 
 import imp
 import os
@@ -1159,7 +1160,7 @@ def get_upgrade(upgrade):
         
         
 #TODO: Activity queue for part time 
-def craft_start(character, item_name, skill_name, difficulty, worksite_name=None, job=0, take_10=False, amount=1):
+def craft_start(character, item_name, skill_name, difficulty, worksite_name=None, job=0, take_10=False, amount=1, attribute="", coop=0):
     try:
         char = model.Character.objects.get(name=character)
     except:
@@ -1171,7 +1172,11 @@ def craft_start(character, item_name, skill_name, difficulty, worksite_name=None
     try:
         skill = model.Skill.objects.get(name=skill_name)
     except:
-        return "Skill not found."
+        if attribute in ["str", "dex", "int", "vit"]:
+            skill = None
+        else: 
+            return "Skill not found."
+         
     worksite = None
     if worksite_name is not None:
         try:
@@ -1201,10 +1206,12 @@ def craft_start(character, item_name, skill_name, difficulty, worksite_name=None
         new.difficulty = "Complex"
     else:
         new.difficulty = "Amazing"
+    new.attribute = attribute
     new.take_10 = take_10
     new.amount = amount
     new.worksite = worksite
     new.started = update.get_current_day()
+    new.coop = coop
     new.save()
     
     if employment is None:

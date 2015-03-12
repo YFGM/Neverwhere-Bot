@@ -483,10 +483,20 @@ def get_current_day():
 
 
 def get_skill(character, skill):
+    
     try:
         char = models.Character.objects.get(name=character)
     except:
         return False
+    if skill == "str":
+        return char.str - 10
+    elif skill == "dex":
+        return char.dex - 10
+    elif skill == "int":
+        return char.int - 10
+    elif skill == "vit":
+        return char.vit - 10
+    
     try:
         cs = models.CharacterSkill.objects.filter(character=char).get(skill=models.Skill.objects.get(name=skill))
         characterskill = cs.level

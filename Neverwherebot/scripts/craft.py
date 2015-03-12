@@ -19,8 +19,12 @@ def update(character, employment, hour):
     if hour in range(8, 16) and not override:
         override = check_upgrades("on_craft", employment)
         if not override:
-            if employment.craft.take_10:
-                roll = update.get_skill(character.name, employment.craft.skill.name) + 10
+            if employment.craft.skill is None:
+                skill = employment.craft.attribute
+            else:
+                skill = employment.craft.skill.name
+            if employment.take_10:
+                roll = update.get_skill(character.name, skill) + 10
             else:
                 roll = random.randint(1, 20)
                 if roll == 1:
@@ -29,7 +33,7 @@ def update(character, employment, hour):
                 if roll == 20:
                     # Critical success
                     pass
-                roll += update.get_skill(character.name, employment.craft.skill.name)
+                roll += update.get_skill(character.name, skill)
             
             if employment.craft.difficulty == "Simple":
                 difficulty = 5.0
@@ -42,7 +46,7 @@ def update(character, employment, hour):
             
             result = int(math.floor(roll / difficulty))
             
-            hours = int(math.ceil(employment.craft.item.value / 3.0 * employment.craft.item.wr / 2))
+            hours = int(math.ceil(employment.craft.item.value / 3.0 * employment.craft.item.wr / 2)) # 2 is hour value
             
             if employment.craft.hours + result >= hours:
                 if employment.craft.worksite is None and employment.worksite is None:
